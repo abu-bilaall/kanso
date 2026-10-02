@@ -104,79 +104,70 @@ export function CartPage() {
 
   return (
     <PageShell title="Cart — Kanso" width="default">
-      {/*
-        PageShell's own `gap-lg` resolves to nothing: `--spacing-md`, `-lg` and
-        `-xl` are not in the `@theme` block, so those utilities are never
-        generated and the shell's children stack with no gap at all. This wrapper
-        carries the vertical rhythm for this page rather than depending on a
-        token that is not there — see `docs/CONTRACT-REQUESTS.md`.
-      */}
-      <div className="flex flex-col gap-6">
-        <header className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-          <h1 className="font-display text-heading uppercase leading-none tracking-tight text-ink">
-            Cart
-          </h1>
-          <span className="font-editorial text-[11px] uppercase tracking-wider text-ink-subtle">
-            {loading ? '—' : `${cart.itemCount} ${cart.itemCount === 1 ? 'unit' : 'units'}`}
-          </span>
-        </header>
+      <header className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+        <h1 className="font-display text-heading uppercase leading-none tracking-tight text-ink">
+          Cart
+        </h1>
+        <span className="font-editorial text-[11px] uppercase tracking-wider text-ink-subtle">
+          {loading ? '—' : `${cart.itemCount} ${cart.itemCount === 1 ? 'unit' : 'units'}`}
+        </span>
+      </header>
 
-        {failed ? (
-          <ErrorState
-            title="Your cart did not load"
-            error={cart.error}
-            onRetry={() => {
-              void cart.refresh();
-            }}
-          />
-        ) : loading ? (
-          <CartSkeleton />
-        ) : cart.items.length === 0 ? (
-          <EmptyState
-            title="Your cart is empty"
-            description={
-              auth.status === 'anonymous'
-                ? 'Nothing here yet. Your cart travels with your Kanso account, so sign in at checkout and it will be waiting.'
-                : 'Nothing here yet. The catalogue is a good place to start.'
-            }
-            action={
-              <Link
-                to={ROUTE_PATHS.catalog}
-                className={buttonClasses({ variant: 'primary', size: 'md' })}
-              >
-                Browse the catalogue
-              </Link>
-            }
-          />
-        ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_20rem] md:items-start">
-            <section aria-label="Items in your cart" className="flex flex-col">
-              <ul className="flex flex-col">
-                {cart.items.map((item) => (
-                  <CartLine
-                    key={item.id}
-                    item={item}
-                    busy={cart.isMutating}
-                    error={failure?.productId === item.product_id ? failure.message : null}
-                    onQuantityChange={(quantity) => {
-                      void changeQuantity(item, quantity);
-                    }}
-                    onRemove={() => {
-                      void remove(item);
-                    }}
-                  />
-                ))}
-              </ul>
-            </section>
+      {failed ? (
+        <ErrorState
+          title="Your cart did not load"
+          error={cart.error}
+          onRetry={() => {
+            void cart.refresh();
+          }}
+        />
+      ) : loading ? (
+        <CartSkeleton />
+      ) : cart.items.length === 0 ? (
+        <EmptyState
+          title="Your cart is empty"
+          description={
+            auth.status === 'anonymous'
+              ? 'Nothing here yet. Your cart travels with your Kanso account, so sign in at checkout and it will be waiting.'
+              : 'Nothing here yet. The catalogue is a good place to start.'
+          }
+          action={
+            <Link
+              to={ROUTE_PATHS.catalog}
+              className={buttonClasses({ variant: 'primary', size: 'md' })}
+            >
+              Browse the catalogue
+            </Link>
+          }
+        />
+      ) : (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_20rem] md:items-start">
+          <section aria-label="Items in your cart" className="flex flex-col">
+            <ul className="flex flex-col">
+              {cart.items.map((item) => (
+                <CartLine
+                  key={item.id}
+                  item={item}
+                  busy={cart.isMutating}
+                  error={failure?.productId === item.product_id ? failure.message : null}
+                  onQuantityChange={(quantity) => {
+                    void changeQuantity(item, quantity);
+                  }}
+                  onRemove={() => {
+                    void remove(item);
+                  }}
+                />
+              ))}
+            </ul>
+          </section>
 
-            <CartSummary
-              subtotalKobo={cart.subtotalKobo}
-              itemCount={cart.itemCount}
-              blockedReason={blockingStockMessage(cart.items)}
-            />
-          </div>
-        )}
-      </div>
+          <CartSummary
+            subtotalKobo={cart.subtotalKobo}
+            itemCount={cart.itemCount}
+            blockedReason={blockingStockMessage(cart.items)}
+          />
+        </div>
+      )}
     </PageShell>
   );
 }

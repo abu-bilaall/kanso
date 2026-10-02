@@ -159,123 +159,108 @@ export function CheckoutPage() {
       width="narrow"
       header={<MobileHeader backTo={ROUTE_PATHS.cart} contextLabel="Cart" />}
     >
-      {/*
-        PageShell's own `gap-lg` resolves to nothing: `--spacing-md`, `-lg` and
-        `-xl` are not in the `@theme` block, so those utilities are never
-        generated and the shell's children stack with no gap at all. This wrapper
-        carries the vertical rhythm for this page rather than depending on a
-        token that is not there — see `docs/CONTRACT-REQUESTS.md`.
-      */}
-      <div className="flex flex-col gap-6">
-        <h1 className="font-display text-heading uppercase leading-none tracking-tight text-ink">
-          Checkout
-        </h1>
+      <h1 className="font-display text-heading uppercase leading-none tracking-tight text-ink">
+        Checkout
+      </h1>
 
-        {auth.isLoading ? (
-          <div className="flex flex-col gap-4" aria-busy="true">
-            <p className="sr-only" role="status">
-              Checking your session
-            </p>
-            <Skeleton className="h-11 w-full" />
-            <Skeleton className="h-11 w-full" />
-            <Skeleton className="h-11 w-2/3" />
-          </div>
-        ) : !auth.isAuthenticated ? (
-          <SignInRequired onSignIn={signIn} />
-        ) : cart.status === 'error' ? (
-          <ErrorState
-            title="Your cart did not load"
-            error={cart.error}
-            onRetry={() => {
-              void cart.refresh();
-            }}
+      {auth.isLoading ? (
+        <div className="flex flex-col gap-4" aria-busy="true">
+          <p className="sr-only" role="status">
+            Checking your session
+          </p>
+          <Skeleton className="h-11 w-full" />
+          <Skeleton className="h-11 w-full" />
+          <Skeleton className="h-11 w-2/3" />
+        </div>
+      ) : !auth.isAuthenticated ? (
+        <SignInRequired onSignIn={signIn} />
+      ) : cart.status === 'error' ? (
+        <ErrorState
+          title="Your cart did not load"
+          error={cart.error}
+          onRetry={() => {
+            void cart.refresh();
+          }}
+        />
+      ) : cart.isLoading ? (
+        <div className="flex flex-col gap-4" aria-busy="true">
+          <p className="sr-only" role="status">
+            Loading your order
+          </p>
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-11 w-full" />
+          <Skeleton className="h-11 w-2/3" />
+        </div>
+      ) : cart.items.length === 0 ? (
+        <EmptyState
+          title="There is nothing to check out"
+          description="Your cart is empty. Add something from the catalogue and come back."
+          action={
+            <Link
+              to={ROUTE_PATHS.catalog}
+              className={buttonClasses({ variant: 'primary', size: 'md' })}
+            >
+              Browse the catalogue
+            </Link>
+          }
+        />
+      ) : blocked !== null ? (
+        <>
+          <Alert tone="danger" title="Stock changed">
+            {blocked}{' '}
+            <Link to={ROUTE_PATHS.cart} className="underline underline-offset-2">
+              Adjust your cart
+            </Link>{' '}
+            before placing this order.
+          </Alert>
+          <OrderSummary
+            items={cart.items}
+            subtotalKobo={cart.subtotalKobo}
+            itemCount={cart.itemCount}
           />
-        ) : cart.isLoading ? (
-          <div className="flex flex-col gap-4" aria-busy="true">
-            <p className="sr-only" role="status">
-              Loading your order
-            </p>
-            <Skeleton className="h-24 w-full" />
-            <Skeleton className="h-11 w-full" />
-            <Skeleton className="h-11 w-2/3" />
-          </div>
-        ) : cart.items.length === 0 ? (
-          <EmptyState
-            title="There is nothing to check out"
-            description="Your cart is empty. Add something from the catalogue and come back."
+        </>
+      ) : (
+        <>
+          <OrderSummary
+            items={cart.items}
+            subtotalKobo={cart.subtotalKobo}
+            itemCount={cart.itemCount}
+          />
+
+          <CheckoutForm
+            formError={formError}
+            fieldErrors={serverFieldErrors}
+            onFieldEdited={(field: AddressField) => {
+              setServerFieldErrors((previous) => {
+                if (previous === undefined || previous[field] === undefined) return previous;
+                const next = { ...previous };
+                delete next[field];
+                return next;
+              });
+            }}
+            isSubmitting={isSubmitting}
+            defaults={{
+              ...(auth.user?.email === undefined ? {} : { email: auth.user.email }),
+              ...(typeof fullName === 'string' && fullName.trim().length > 0
+                ? { fullName: fullName.trim() }
+                : {}),
+            }}
+            onSubmit={(shipping) => {
+              void placeOrder(shipping);
+            }}
             action={
-              <Link
-                to={ROUTE_PATHS.catalog}
-                className={buttonClasses({ variant: 'primary', size: 'md' })}
-              >
-                Browse the catalogue
-              </Link>
+              <div className="flex flex-col gap-3 border-t border-hairline pt-5">
+                <Button variant="primary" size="lg" fullWidth type="submit" loading={isSubmitting}>
+                  Place order
+                </Button>
+                <p className="text-xs leading-5 text-ink-subtle">
+                  Placing the order reserves your items. No payment is taken in this version.
+                </p>
+              </div>
             }
           />
-        ) : blocked !== null ? (
-          <>
-            <Alert tone="danger" title="Stock changed">
-              {blocked}{' '}
-              <Link to={ROUTE_PATHS.cart} className="underline underline-offset-2">
-                Adjust your cart
-              </Link>{' '}
-              before placing this order.
-            </Alert>
-            <OrderSummary
-              items={cart.items}
-              subtotalKobo={cart.subtotalKobo}
-              itemCount={cart.itemCount}
-            />
-          </>
-        ) : (
-          <>
-            <OrderSummary
-              items={cart.items}
-              subtotalKobo={cart.subtotalKobo}
-              itemCount={cart.itemCount}
-            />
-
-            <CheckoutForm
-              formError={formError}
-              fieldErrors={serverFieldErrors}
-              onFieldEdited={(field: AddressField) => {
-                setServerFieldErrors((previous) => {
-                  if (previous === undefined || previous[field] === undefined) return previous;
-                  const next = { ...previous };
-                  delete next[field];
-                  return next;
-                });
-              }}
-              isSubmitting={isSubmitting}
-              defaults={{
-                ...(auth.user?.email === undefined ? {} : { email: auth.user.email }),
-                ...(typeof fullName === 'string' && fullName.trim().length > 0
-                  ? { fullName: fullName.trim() }
-                  : {}),
-              }}
-              onSubmit={(shipping) => {
-                void placeOrder(shipping);
-              }}
-              action={
-                <div className="flex flex-col gap-3 border-t border-hairline pt-5">
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    fullWidth
-                    type="submit"
-                    loading={isSubmitting}
-                  >
-                    Place order
-                  </Button>
-                  <p className="text-xs leading-5 text-ink-subtle">
-                    Placing the order reserves your items. No payment is taken in this version.
-                  </p>
-                </div>
-              }
-            />
-          </>
-        )}
-      </div>
+        </>
+      )}
     </PageShell>
   );
 }

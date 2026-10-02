@@ -26,6 +26,43 @@ gate was `if (level === 'info' && logLevel === 'error') return`, so the default
 in `docs/LOGGING.md` as a minimum severity, and the Edge Function's copy already
 implemented that. The line is removed; the gate is now a threshold.
 
+
+---
+
+## Resolutions — integration pass 2
+
+**Closed on `chore/integration-2`.** Two more defects in the foundation layer,
+both found downstream and both fixed at the source. Neither needed a change to
+`docs/CONTRACTS.md`: the documented contracts hold exactly as written.
+
+| # | Request | Resolution |
+| --- | --- | --- |
+| 10 | `--spacing-md` / `-lg` / `-xl` are never generated | **Applied.** Three lines added to `@theme inline` beside the `--spacing-xs` / `--spacing-sm` entries already there, each pointing at the primitive that was always declared: `--spacing-md: var(--k-space-md)`, `-lg`, `-xl`. The scale is extended, not replaced — `gap-lg` and `gap-6` are the same 24px. The three `flex flex-col gap-6` wrappers A5 put on the cart, checkout and confirmation pages existed only to stand in for the missing `gap-lg`; all three, and their comments, are gone. |
+| 11 | `useCart` is per-call-site, so the badge never clears | **Applied.** Cart state now lives in one external store, `src/hooks/internal/cartStore.ts`, and every `useCart()` call site subscribes to it. `useCart`'s public API and return shape are unchanged, `docs/CONTRACTS.md` § *Hooks* is untouched, and no new provider has to be mounted. Concurrent consumers share one request; a mutation in any of them republishes to all of them. |
+
+**Two more dead class names, found by the same sweep and fixed the same way.**
+
+- `font-label` appeared on 28 call sites and generated nothing. Stitch's own
+  config puts Archivo on both `body-lg` and `label-lg`, so the Kanso name for
+  that face is `--font-sans`; `--font-label: var(--font-sans)` makes the class
+  say what it means instead of rendering nothing.
+- `focus:border-hard` (the skip link) and `focus:bg-surface-container-high`
+  (`Input`, `Select`) also generated nothing. The first because `border-hard` was
+  a rule inside `@layer utilities`, which gets no variants; the three shared
+  utilities are `@utility` declarations now. The second because it is the
+  Stitch token name — Kanso calls that colour `surface-high`.
+
+**And a guard, so this cannot come back silently.** `npm run check:classes`
+compiles the real stylesheet and reports every class name `src/` uses for which
+Tailwind emits nothing. It found 10 before the fix and 0 after.
+`tests/unit/styles/designTokens.test.ts` pins the same ground at unit level;
+all five of its tests fail against the pre-fix `tokens.css`.
+
+**Not actioned.** A5's other two requests stay open and stay documented in
+[`CART-CHECKOUT.md`](./CART-CHECKOUT.md) § 2 and § 5: the `AuthCallbackPage`
+return-to reader is A6's page to build, and anonymous carts need a product
+decision plus a schema and RLS change. Neither is small, and neither is a
+defect.
 ---
 
 **What you are building:** the data layer — `supabase/migrations/**`,

@@ -155,6 +155,16 @@
   --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Archivo Black", "Archivo", ui-sans-serif, system-ui, sans-serif;
   --font-editorial: ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
+  /*
+   * `--font-label` is not a fourth face. Stitch names the type styles it emits
+   * `body-lg` / `label-lg` / `display-hero`, and its own config puts **Archivo
+   * on both** `body-lg` and `label-lg`. The Kanso name for that one face is
+   * `--font-sans`; `--font-label` exists so a call site can say what it means
+   * (a functional label) instead of restating the family on every element.
+   * Without it, `font-label` on 28 call sites is a class name that resolves to
+   * nothing at all.
+   */
+  --font-label: var(--font-sans);
 
   /* Type scale (Stitch: body-lg / label-lg / display-hero) ---------------------- */
   --text-meta: 0.6875rem; /* 11px  — the mono meta strip */
@@ -180,6 +190,9 @@
   /* Spacing aliases mirroring the Stitch scale ------------------------------- */
   --spacing-xs: var(--k-space-xs);
   --spacing-sm: var(--k-space-sm);
+  --spacing-md: var(--k-space-md);
+  --spacing-lg: var(--k-space-lg);
+  --spacing-xl: var(--k-space-xl);
   --spacing-gutter: var(--k-gutter);
   --spacing-gutter-desktop: var(--k-gutter-desktop);
   --spacing-rail: var(--k-rail-width);
@@ -260,27 +273,31 @@
 /* ===========================================================================
    Small utilities used by more than one component. Anything that appears twice
    lives here; anything that appears once stays inline at its call site.
+
+   Declared with `@utility`, not as bare rules in `@layer utilities`. The
+   difference is variants: a bare `.border-hard { }` emits one rule and
+   `focus:border-hard` is not a class at all — it silently does nothing, which
+   is how the skip link lost its hard edge on focus. `@utility` registers the
+   name with the engine, so every variant of it resolves.
    =========================================================================== */
 
-@layer utilities {
-  /* The single place the "hard edge" rule is expressed. */
-  .border-hard {
-    border-width: var(--k-border-hard);
-    border-style: solid;
-  }
+/* The single place the "hard edge" rule is expressed. */
+@utility border-hard {
+  border-width: var(--k-border-hard);
+  border-style: solid;
+}
 
-  /* 44px minimum tap target — PLAN 3. Use on anything a thumb has to hit. */
-  .tap-target {
-    min-height: var(--k-tap-target);
-    min-width: var(--k-tap-target);
-  }
+/* 44px minimum tap target — PLAN 3. Use on anything a thumb has to hit. */
+@utility tap-target {
+  min-height: var(--k-tap-target);
+  min-width: var(--k-tap-target);
+}
 
-  /* Motion that communicates a state change. Opt-in, never decorative. */
-  .transition-kanso {
-    transition-property: color, background-color, border-color, transform, opacity;
-    transition-duration: var(--k-motion-base);
-    transition-timing-function: var(--k-ease);
-  }
+/* Motion that communicates a state change. Opt-in, never decorative. */
+@utility transition-kanso {
+  transition-property: color, background-color, border-color, transform, opacity;
+  transition-duration: var(--k-motion-base);
+  transition-timing-function: var(--k-ease);
 }
 
 /* One-shot shimmer for `Skeleton`. Runs once, never loops; killed outright

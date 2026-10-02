@@ -12,9 +12,14 @@ against `main` as of the `feat/cart-checkout` merge.
 | --- | --- | --- |
 | 1 | Freeze the `create-order` error envelope | **Resolved** — see below |
 | 2 | `AuthCallbackPage` honours the checkout return after OAuth | **Open** |
-| 3 | `--spacing-md/-lg/-xl` are never generated | **Open** |
-| 4 | `useCart` is per-call-site, so the cart badge never clears | **Open** |
+| 3 | `--spacing-md/-lg/-xl` are never generated | **Closed** on `chore/integration-2` |
+| 4 | `useCart` is per-call-site, so the cart badge never clears | **Closed** on `chore/integration-2` |
 | 5 | An anonymous visitor cannot build a cart | **Open — needs a product decision** |
+
+> Items 3 and 4 below were closed by the integration pass on
+> `chore/integration-2`; see [`CONTRACT-REQUESTS.md`](./CONTRACT-REQUESTS.md)
+> § *Resolutions — integration pass 2* for what was actually done. Items 2 and 5
+> are still open and are still the right shape as written below.
 
 ---
 
@@ -83,7 +88,7 @@ integration pass rather than in a branch.
 
 ---
 
-## 3. `--spacing-md/-lg/-xl` are never generated — OPEN
+## 3. `--spacing-md/-lg/-xl` are never generated — CLOSED on `chore/integration-2`
 
 **What I am building.** A5: cart, checkout and order confirmation, all inside
 `PageShell`.
@@ -123,9 +128,18 @@ worked around it, the confirmation screen ran its items block straight into the
 **Who else depends on it.** Every page, including A4's storefront and A6's
 account page.
 
+**Resolved on `chore/integration-2`.** Applied in the token layer, which is
+where it belongs: `--spacing-md`, `-lg` and `-xl` are in `@theme inline` now,
+each pointing at the `--k-space-*` primitive that was already declared. The
+three `flex flex-col gap-6` wrappers this agent put on the cart, checkout and
+confirmation pages existed only to stand in for the missing `gap-lg`, and all
+three are gone; the shell's own `gap-lg` does that work now. The sweep that
+found this also found `font-label`, `focus:border-hard` and
+`focus:bg-surface-container-high` — see the contract-requests log.
+
 ---
 
-## 4. `useCart` is per-call-site, so the cart badge never clears — OPEN
+## 4. `useCart` is per-call-site, so the cart badge never clears — CLOSED on `chore/integration-2`
 
 **The exact change.** Either hoist cart state into `AuthProvider` (or a new
 `CartProvider`) so every `useCart()` call site reads one instance and a mutation
@@ -143,6 +157,17 @@ just placed.
 the checkout page would refresh only the copy in a component that unmounts
 seconds later, and shipping it would look like a fix.
 
+
+**Resolved on `chore/integration-2`.** Cart state moved into one external
+store, `src/hooks/internal/cartStore.ts`, which every `useCart()` call site
+subscribes to. Measured in the running app with a signed-in user: four mounted
+consumers (rail, mobile header, tab bar, page) issue **one** `carts` read, and a
+`removeItem` on the cart page clears the rail badge and the mobile header badge
+in the same view with one further read — no reload, no manual refresh. The
+public API and return shape in `docs/CONTRACTS.md` are unchanged; `useCart`
+reads the store through `useSyncExternalStore` and derives the same fields it
+always returned, including `status: 'loading'` while the session settles.
+`tests/unit/cart/sharedCartStore.test.tsx` pins all three.
 ---
 
 ## 5. An anonymous visitor cannot build a cart — OPEN, needs a decision
