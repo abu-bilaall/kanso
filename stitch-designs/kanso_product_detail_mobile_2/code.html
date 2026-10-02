@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Kanso — Product Detail (Mobile)</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Archivo:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        'surface': '#faf9f5',
+        'surface-dim': '#dbdad6',
+        'surface-bright': '#faf9f5',
+        'surface-container-lowest': '#ffffff',
+        'surface-container-low': '#f5f4f0',
+        'surface-container': '#efeeea',
+        'surface-container-high': '#e9e8e4',
+        'surface-container-highest': '#e3e2df',
+        'on-surface': '#1b1c1a',
+        'on-surface-variant': '#44474a',
+        'primary': '#121314',
+        'on-primary': '#ffffff',
+        'secondary-container': '#d4f024',
+        'on-secondary-fixed': '#191e00',
+        'secondary': '#576400'
+      },
+      fontFamily: {
+        'display-hero': ['"Archivo Black"', 'Archivo', 'sans-serif'],
+        'body-lg': ['Archivo', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
+<style>
+  body { background-color: #faf9f5; color: #1b1c1a; font-family: 'Archivo', sans-serif; }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+  .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+  ::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body class="bg-surface text-on-surface flex flex-col min-h-screen antialiased">
+<!-- Sticky Header with Back Nav -->
+<header class="sticky top-0 z-50 bg-surface/90 backdrop-blur-md border-b border-surface-container-highest pt-safe">
+<div class="h-14 px-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<a class="w-9 h-9 rounded-lg border border-surface-container-highest flex items-center justify-center bg-surface hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</a>
+<span class="text-xs font-mono uppercase tracking-wider text-on-surface-variant">OBJ-014 [150MM-BRASS]</span>
+</div>
+<div class="flex items-center gap-2">
+<a class="relative w-9 h-9 rounded-lg border border-surface-container-highest flex items-center justify-center bg-surface hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+<span class="absolute -top-1 -right-1 flex items-center justify-center min-w-[17px] h-[17px] px-1 bg-secondary-container text-on-secondary-fixed text-[10px] font-black rounded-full border border-primary">2</span>
+</a>
+</div>
+</div>
+</header>
+<main class="flex-1 flex flex-col pb-28">
+<!-- Stock Status Ribbon -->
+<div class="px-4 py-2 bg-surface-container-low border-b border-surface-container-highest flex items-center justify-between text-[11px] font-mono">
+<span class="text-on-surface-variant">SHOP / DESK / OBJECT 01</span>
+<span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-fixed font-bold">● IN STOCK — SHIPS IN 24H</span>
+</div>
+<!-- Hero Photo Viewport -->
+<div class="px-4 pt-4">
+<div class="relative aspect-square rounded-xl overflow-hidden bg-surface-container border-2 border-primary mb-3 shadow-sm">
+<img alt="Milled Brass Desk Weight Angle View" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+<div class="absolute top-2.5 left-2.5 px-2 py-1 rounded bg-surface/90 backdrop-blur-md text-[9px] font-mono uppercase font-bold border border-surface-container-highest">
+        ● SCALE RATIO 1:1 · METRIC CALIBRATED
+      </div>
+<div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-primary text-on-primary text-[10px] font-mono">
+        FIG. 01 / ANGLE 45°
+      </div>
+</div>
+<!-- Thumbnails Gallery -->
+<div class="grid grid-cols-3 gap-2 mb-4">
+<div class="aspect-[4/3] rounded-lg overflow-hidden border-2 border-primary bg-surface-container">
+<img alt="Base Grip" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+</div>
+<div class="aspect-[4/3] rounded-lg overflow-hidden border border-surface-container-highest bg-surface-container opacity-70">
+<img alt="Casing" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+</div>
+<div class="aspect-[4/3] rounded-lg overflow-hidden border border-surface-container-highest bg-surface-container opacity-70">
+<img alt="In Situ" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+</div>
+</div>
+</div>
+<!-- Title & Narrative Specs -->
+<div class="px-4">
+<div class="flex items-baseline justify-between mb-1">
+<h1 class="font-display-hero text-xl uppercase tracking-tight text-primary">
+        Milled Brass Desk Weight &amp; 15cm Rule
+      </h1>
+</div>
+<div class="text-lg font-mono font-bold text-primary mb-3">
+      $84.00 <span class="text-xs font-normal text-on-surface-variant">USD · TAX INCL.</span>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed mb-4">
+      Machined from a single solid billet of untreated brass. Calibrated to hold heavy parchment while functioning as an infallible tactile straightedge. Designed to eliminate desk flutter and center attention through sheer physical mass.
+    </p>
+<!-- Specs Table -->
+<div class="rounded-xl border border-surface-container-highest overflow-hidden text-xs font-mono mb-4 bg-surface-container-lowest">
+<div class="flex justify-between p-2.5 border-b border-surface-container-highest bg-surface-container-low">
+<span class="text-on-surface-variant uppercase">MATERIAL</span>
+<span class="font-bold text-primary">C360 SOLID BRASS</span>
+</div>
+<div class="flex justify-between p-2.5 border-b border-surface-container-highest">
+<span class="text-on-surface-variant uppercase">DIMENSIONS</span>
+<span class="font-bold text-primary">150 × 24 × 12 MM</span>
+</div>
+<div class="flex justify-between p-2.5 border-b border-surface-container-highest bg-surface-container-low">
+<span class="text-on-surface-variant uppercase">WEIGHT</span>
+<span class="font-bold text-primary">420 GRAMS (0.92 LBS)</span>
+</div>
+<div class="flex justify-between p-2.5">
+<span class="text-on-surface-variant uppercase">FINISH</span>
+<span class="font-bold text-primary">MATTE BEAD-BLASTED RAW</span>
+</div>
+</div>
+<!-- Alloy Chemical Card -->
+<div class="bg-surface-container-low rounded-xl p-3 border border-surface-container-highest flex gap-3 items-center mb-4">
+<div class="w-12 h-12 rounded-lg bg-primary text-on-primary flex flex-col items-center justify-center shrink-0 font-mono">
+<span class="text-sm font-black">Cu</span>
+<span class="text-[8px]">60%</span>
+</div>
+<div class="text-xs">
+<span class="font-mono font-bold text-primary uppercase text-[10px] tracking-wider block">ALLOY SPECIFICATION // C360</span>
+<p class="text-on-surface-variant text-[11px] leading-tight mt-0.5">Zero synthetic surface lacquer. Will develop an individual deep patina through contact with fingertips.</p>
+</div>
+</div>
+<!-- Technical Accordions -->
+<div class="border-t border-surface-container-highest flex flex-col mb-4">
+<details class="group py-3 border-b border-surface-container-highest" open="">
+<summary class="flex justify-between items-center cursor-pointer font-bold text-xs uppercase tracking-wider text-primary">
+<span>01/ CRAFT &amp; MATERIALITY</span>
+<span class="material-symbols-outlined text-[18px] group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<p class="text-xs text-on-surface-variant leading-relaxed mt-2.5">
+          Every unit is CNC-milled in Tokyo from high-grade architectural brass billet. Metric gradations are laser-engraved with an industrial high-power fiber laser down to 0.1mm depth, guaranteeing calibrations will never wear off.
+        </p>
+</details>
+<details class="group py-3 border-b border-surface-container-highest">
+<summary class="flex justify-between items-center cursor-pointer font-bold text-xs uppercase tracking-wider text-primary">
+<span>02/ FULFILLMENT &amp; GUARANTEE</span>
+<span class="material-symbols-outlined text-[18px] group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<p class="text-xs text-on-surface-variant leading-relaxed mt-2.5">
+          Shipped in custom shock-absorbing molded fiber sleeve with hot-wax archival stamp. Lifetime guarantee on dimensional trueness.
+        </p>
+</details>
+<details class="group py-3 border-b border-surface-container-highest">
+<summary class="flex justify-between items-center cursor-pointer font-bold text-xs uppercase tracking-wider text-primary">
+<span>03/ CARE &amp; MAINTENANCE</span>
+<span class="material-symbols-outlined text-[18px] group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<p class="text-xs text-on-surface-variant leading-relaxed mt-2.5">
+          To maintain bead-blasted sheen, wipe with anhydrous micro-fiber. To encourage patination, allow natural skin contact without chemical intervention.
+        </p>
+</details>
+</div>
+</div>
+</main>
+<!-- Sticky Purchase Bar at Bottom -->
+<div class="fixed bottom-0 w-full z-50 bg-surface/95 backdrop-blur-xl border-t border-surface-container-highest p-3 pb-safe shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+<div class="flex items-center gap-3">
+<!-- Stepper -->
+<div class="flex items-center border-2 border-primary rounded-lg bg-surface-container-lowest h-11 px-1">
+<button class="w-8 h-full flex items-center justify-center font-bold text-sm text-primary">-</button>
+<span class="w-8 text-center font-mono font-bold text-sm text-primary">1</span>
+<button class="w-8 h-full flex items-center justify-center font-bold text-sm text-primary">+</button>
+</div>
+<!-- Add to Cart CTA -->
+<button class="flex-1 h-11 rounded-lg bg-primary text-on-primary font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 border-2 border-primary hover:bg-secondary-container hover:text-on-secondary-fixed transition-colors">
+<span class="material-symbols-outlined text-[18px]">shopping_bag</span>
+<span>Add to Order — $84.00</span>
+</button>
+</div>
+</div>
+</body>
+</html>

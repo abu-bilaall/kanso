@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+.netlify/
+
+# Environment — never commit credentials. .env.example is the exception.
+.env
+.env.*
+!.env.example
+supabase/.env.local
+supabase/.temp/
+
+# Product image masters (large, unprocessed). Derived derivatives are committed.
+product-images/_masters/*
+!product-images/_masters/.gitkeep
+
+# Caches
+.cache/
+.vite/
+*.tsbuildinfo
+
+# Editor / OS
+.DS_Store
+.idea/
+*.swp

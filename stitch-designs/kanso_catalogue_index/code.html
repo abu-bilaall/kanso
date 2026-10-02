@@ -1,0 +1,523 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Archivo:ital,wght@0,400;0,600;0,700;1,400&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"inverse-surface":"#30312e","on-error":"#ffffff","surface-tint":"#5e5e5f","on-secondary-fixed":"#191e00","outline-variant":"#c5c6c9","error-container":"#ffdad6","tertiary-container":"#1f1b1a","secondary-container":"#d4f024","error":"#ba1a1a","on-tertiary-fixed-variant":"#4b4544","primary-fixed":"#e3e2e3","background":"#faf9f5","on-background":"#1b1c1a","primary":"#000000","outline":"#75777a","tertiary-fixed-dim":"#cec4c2","surface-bright":"#faf9f5","surface-container":"#efeeea","secondary-fixed-dim":"#b9d300","on-primary-fixed":"#1b1c1d","tertiary":"#000000","surface-container-high":"#e9e8e4","secondary-fixed":"#d4f024","on-primary":"#ffffff","inverse-on-surface":"#f2f1ed","on-tertiary-fixed":"#1f1b1a","on-error-container":"#93000a","primary-fixed-dim":"#c7c6c7","surface-container-low":"#f5f4f0","on-primary-fixed-variant":"#464748","on-surface-variant":"#44474a","surface-container-lowest":"#ffffff","inverse-primary":"#c7c6c7","primary-container":"#1b1c1d","tertiary-fixed":"#eae0de","on-secondary-container":"#5d6b00","on-secondary-fixed-variant":"#414c00","surface-dim":"#dbdad6","surface":"#faf9f5","on-tertiary-container":"#8a8280","on-surface":"#1b1c1a","surface-variant":"#e3e2df","on-secondary":"#ffffff","surface-container-highest":"#e3e2df","secondary":"#576400","on-primary-container":"#848485","on-tertiary":"#ffffff"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-lg":"1.5rem","space-md":"1rem","gutter":"1rem","gutter-desktop":"1.5rem","space-xs":"0.25rem","margin-tablet":"1.5rem","space-xl":"2.5rem","margin":"1rem","margin-desktop":"2.5rem","space-sm":"0.5rem"},"fontFamily":{"body-lg":["Archivo"],"label-lg":["Archivo"],"display-hero":["Archivo Black"]},"fontSize":{"body-lg":["18px",{"lineHeight":"28px","letterSpacing":"0em","fontWeight":"400"}],"label-lg":["14px",{"lineHeight":"18px","letterSpacing":"0.06em","fontWeight":"600"}],"display-hero":["56px",{"lineHeight":"60px","letterSpacing":"-0.03em","fontWeight":"700"}]}}}}</script></head><body class="bg-surface font-body-lg text-on-surface selection:bg-secondary-container selection:text-on-secondary-container"><aside class="fixed left-0 top-0 h-full w-48 bg-surface border-r-2 border-primary z-50 flex flex-col justify-between p-space-md"><div class="flex flex-col gap-space-lg"><div class="pt-space-xs"><a class="inline-block" data-path="shop" href="#"><img alt="Kanso Wordmark Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WxN5uEoM6Nv1er_qZTMeUN7OcsviFAsPvzXTBIOvxlOMcjh5iyb4X4cVoJr3aUzN4_Mtd5KeyzobmOR4zioS6E5yD5z8X8--Fcpzw4wfynqKh743C6qdOejd1CNLunanv_cA3BP3vREPJawpJ8Dx7Ykkt-9RICWnfJlatY_KxY-Wiqg7aa34EQFLk_gYsXvmoXbqbZ3h1uTeQWxZiyxFcRrdc7H-JWBYLAuZde8FV5qGrQYpwFQIQ6GQ"></a></div><nav class="flex flex-col gap-space-md" data-active-classes="text-primary font-bold translate-x-1"><div class="flex flex-col gap-space-xs"><a aria-current="page" class="tracking-wider uppercase transition-all text-primary font-bold translate-x-1" data-path="shop" href="#">SHOP</a><div class="flex flex-col pl-space-sm gap-1 border-l border-outline-variant"><a aria-current="page" class="leading-5 uppercase transition-colors text-primary font-bold translate-x-1" data-path="shop" href="#">ALL</a><a class="font-label-lg text-[12px] leading-5 uppercase text-on-surface-variant hover:text-on-surface transition-colors" data-path="desk" href="#">DESK</a><a class="font-label-lg text-[12px] leading-5 uppercase text-on-surface-variant hover:text-on-surface transition-colors" data-path="carry" href="#">CARRY</a><a class="font-label-lg text-[12px] leading-5 uppercase text-on-surface-variant hover:text-on-surface transition-colors" data-path="write" href="#">WRITE</a></div></div><a class="font-label-lg text-label-lg tracking-wider uppercase text-on-surface-variant hover:text-on-surface transition-all" data-path="about" href="#">ABOUT</a><a class="font-label-lg text-label-lg tracking-wider uppercase text-on-surface-variant hover:text-on-surface transition-all flex items-center justify-between" data-path="cart" href="#"><span class="">CART</span><span class="bg-secondary-container text-on-secondary-container text-[11px] font-bold px-1.5 py-0.5 rounded-full border border-primary leading-none">0</span></a><a class="font-label-lg text-label-lg tracking-wider uppercase text-on-surface-variant hover:text-on-surface transition-all" data-path="account" href="#">ACCOUNT</a></nav></div><div class="pt-space-md border-t border-outline-variant flex flex-col gap-space-xs text-[11px] font-mono tracking-tight text-on-surface-variant"><div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-secondary-container border border-primary animate-pulse"></span><span class="">SYS / ONLINE</span></div><div class="">KANSO ED. 2025</div><div class="">ALL RIGHTS RESERVED</div></div></aside><div class="pl-48 min-h-screen flex flex-col justify-between"><header class="fixed top-0 left-48 right-0 h-16 bg-surface/90 backdrop-blur-md z-40 border-b-2 border-primary flex items-center justify-between px-gutter-desktop"><div class="flex items-center gap-space-sm"><span class="font-label-lg text-label-lg uppercase tracking-wider text-on-surface">KANSO</span><span class="font-mono text-xs text-on-surface-variant">[TOOLS FOR FOCUS]</span></div><div class="flex items-center gap-space-md"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="w-full pt-16 bg-surface p-gutter-desktop flex-1"><div class="flex flex-col w-full">
+<!-- Top Utility Bar & Archive Header -->
+<section class="flex flex-col gap-space-md mb-space-xl">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md bg-surface-container-low p-space-lg rounded-lg shadow-sm relative overflow-hidden">
+<div class="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-secondary-container/20 blur-2xl pointer-events-none"></div>
+<div class="flex flex-col gap-space-xs relative z-10">
+<div class="flex items-center gap-space-sm font-mono text-xs text-on-surface-variant uppercase tracking-wider"><span class="w-2 h-2 rounded-full bg-secondary-fixed"></span><span class="font-label-lg text-xs uppercase tracking-wider text-on-surface-variant">10 PRODUCTS AVAILABLE</span></div>
+<h1 class="font-label-lg font-bold text-[36px] md:text-[44px] leading-tight uppercase tracking-tight text-on-surface my-1">PRODUCT CATALOG</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">Tactile tools and accessories engineered for cognitive clarity and focused work.</p>
+</div>
+<!-- Live Metric Pill -->
+<div class="flex items-center gap-space-md bg-surface-container-lowest p-space-sm rounded-lg shadow-sm border border-outline-variant/30 relative z-10"><div class="flex flex-col pr-space-md border-r border-outline-variant/40"><span class="font-mono text-[10px] text-on-surface-variant uppercase tracking-widest">EDITION</span><span class="font-label-lg text-sm text-on-surface font-bold">BATCH 04</span></div><div class="flex flex-col"><span class="font-mono text-[10px] text-on-surface-variant uppercase tracking-widest">STATUS</span><span class="font-mono text-xs text-secondary font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> IN STOCK</span></div></div>
+</div>
+<!-- Filter Control Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-md bg-surface-container p-space-sm rounded-lg">
+<!-- Category Tabs -->
+<div class="flex items-center gap-space-xs overflow-x-auto" id="filter-tabs">
+<button class="filter-btn active-filter px-space-md py-space-xs rounded font-label-lg text-label-lg uppercase tracking-wider bg-primary text-on-primary transition-all" data-filter="all">
+          ALL (10)
+        </button>
+<button class="filter-btn px-space-md py-space-xs rounded font-label-lg text-label-lg uppercase tracking-wider text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-filter="desk">
+          DESK (4)
+        </button>
+<button class="filter-btn px-space-md py-space-xs rounded font-label-lg text-label-lg uppercase tracking-wider text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-filter="carry">
+          CARRY (3)
+        </button>
+<button class="filter-btn px-space-md py-space-xs rounded font-label-lg text-label-lg uppercase tracking-wider text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-all" data-filter="write">
+          WRITE (3)
+        </button>
+</div>
+<!-- Sorting & View Controls -->
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-2 bg-surface-container-lowest px-space-md py-space-xs rounded shadow-sm">
+<span class="material-symbols-outlined text-base text-on-surface-variant">tune</span>
+<span class="font-mono text-xs text-on-surface-variant uppercase tracking-wider">ORDER:</span>
+<select class="bg-transparent font-label-lg text-label-lg text-on-surface focus:outline-none cursor-pointer" id="sort-select">
+<option value="index">Featured [All Items]</option>
+<option value="price-asc">Price [Low to High]</option>
+<option value="price-desc">Price [High to Low]</option>
+<option value="material">Material Composition</option>
+</select>
+</div>
+<div class="hidden sm:flex items-center bg-surface-container-high p-0.5 rounded">
+<button class="p-1 rounded bg-surface text-on-surface shadow-sm">
+<span class="material-symbols-outlined text-[18px] block">grid_view</span>
+</button>
+<button class="p-1 rounded text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[18px] block">view_agenda</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Product Catalogue Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-space-md" id="product-grid">
+<!-- Item 01 -->
+<article class="product-card group flex flex-col bg-surface-container-lowest rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden" data-category="desk" data-index="1" data-material="Brass" data-price="84">
+<div class="relative w-full aspect-[4/3] bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="Close up architectural macro studio shot of a solid CNC milled cylindrical brass desk weight resting on raw off-white concrete surface, warm diffused overhead softbox lighting, ultra minimalist Japanese industrial design aesthetic with crisp geometric edges and subtle satin patina." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBgrTL4Hvi_HTvzCRgXOt_X92fz13WrXl8rxZBRRNPh4bJjNKbjju07KpUFTAC80nddTppFz-PImYW6Q245LNTjd_87GnqYn0YkfR_ENWGE8CWD1jvykH9RFCF0LlxxmJgO1R3U34FNATB_U77CPAQzwV7v1H3wtkol7LR2c-QxZmQYBz7tHRwOtXGmqV6UfDgeDD8u4Vc9be2IGQwDgDZ8jAkk8uaarXYVr-b2tCb6Fw4nHcbfAhn">
+<div class="absolute top-space-sm left-space-sm flex gap-1">
+<span class="bg-primary text-on-primary text-[10px] font-mono uppercase px-2 py-0.5 rounded tracking-widest font-bold">DESK</span>
+<span class="bg-surface-container/90 backdrop-blur-sm text-on-surface text-[10px] font-mono uppercase px-2 py-0.5 rounded">01 // BRASS</span>
+</div>
+<div class="absolute top-space-sm right-space-sm">
+<span class="inline-flex items-center gap-1 bg-surface-container-lowest/90 backdrop-blur-sm text-secondary text-[10px] font-mono px-2 py-0.5 rounded font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> IN STOCK
+          </span>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start gap-2">
+<h3 class="font-label-lg text-label-lg font-bold uppercase text-on-surface tracking-wide group-hover:text-secondary transition-colors">
+              Milled Brass Desk Weight
+            </h3>
+<span class="font-mono text-base font-bold text-on-surface">$84</span>
+</div>
+<p class="font-mono text-xs text-on-surface-variant">Solid machined C360 Brass / 480g monolithic heft / Satin sealed finish</p>
+</div>
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="flex-1 bg-primary hover:bg-secondary text-on-primary hover:text-on-secondary px-space-sm py-2 rounded font-label-lg text-label-lg uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors" onclick="handleAddToCart('Milled Brass Desk Weight')">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Add to Cart</span>
+</button>
+<button aria-label="Inspect Specs" class="p-2 rounded bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px] block">visibility</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Item 02 -->
+<article class="product-card group flex flex-col bg-surface-container-lowest rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden" data-category="desk" data-index="2" data-material="Aluminum" data-price="62">
+<div class="relative w-full aspect-[4/3] bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="High precision studio still life of a dark charcoal bead-blasted anodized aluminum pen tray containing a single matte black mechanical pencil, clean hard cast shadows, neutral grey aesthetic, industrial desk organization artifact." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuETT-jQwpGzfuODy39BnxoX1F8_jRxcC_b7aKf8s-5hADZVE6hpC8mXyXAHq-9mDTPiWWkJWjvSa624gq9H-yATQpYYnVq4uNXjNDmivppu3dmx2F3xBZHH_cyvddBi2jtnNeLxg_nAKDDADHIIB2NBQWLkNTJ8JmDV1KO-1dmrdzG9ZlwWHCmI61iU_wXpiunlv97OnofpHcdRweNMBUsoCt3d52goyxqikTIrNtEpFgkWgl2H3F">
+<div class="absolute top-space-sm left-space-sm flex gap-1">
+<span class="bg-primary text-on-primary text-[10px] font-mono uppercase px-2 py-0.5 rounded tracking-widest font-bold">DESK</span>
+<span class="bg-surface-container/90 backdrop-blur-sm text-on-surface text-[10px] font-mono uppercase px-2 py-0.5 rounded">02 // ALUM</span>
+</div>
+<div class="absolute top-space-sm right-space-sm">
+<span class="inline-flex items-center gap-1 bg-surface-container-lowest/90 backdrop-blur-sm text-secondary text-[10px] font-mono px-2 py-0.5 rounded font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> IN STOCK
+          </span>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start gap-2">
+<h3 class="font-label-lg text-label-lg font-bold uppercase text-on-surface tracking-wide group-hover:text-secondary transition-colors">
+              Anodized Aluminum Pen Tray
+            </h3>
+<span class="font-mono text-base font-bold text-on-surface">$62</span>
+</div>
+<p class="font-mono text-xs text-on-surface-variant">6063 Aluminum / Deep concave trough / Micro silicone base pads</p>
+</div>
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="flex-1 bg-primary hover:bg-secondary text-on-primary hover:text-on-secondary px-space-sm py-2 rounded font-label-lg text-label-lg uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors" onclick="handleAddToCart('Anodized Aluminum Pen Tray')">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Add to Cart</span>
+</button>
+<button aria-label="Inspect Specs" class="p-2 rounded bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px] block">visibility</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Item 03 -->
+<article class="product-card group flex flex-col bg-surface-container-lowest rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden" data-category="desk" data-index="3" data-material="Leather" data-price="110">
+<div class="relative w-full aspect-[4/3] bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="Top down overhead visual of a thick, natural vegetable-tanned leather desk mat laying flat on a pale architectural birch desk, subtle pebble texture and burnished edge detailing, warm ambient Scandinavian light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_ZhLYhlqv-J6xOvnqRdNLPsZeT5T7YFYTmPe10ZPGbt0dq98-XOJ4Df2M2ckvwYJwMXNGZERZD3bdhyt_7pmOnjDm-gyRpDwtIQa-v8sElgjqCT3Vft20qgTWz1lA3aZdxQF45ylZvRibHz89wq7YQPKPu7k__N6PzjqSZ7W-aSivXzC-RnY4eFPUB5GHVJtQr5nXA1jAYZRXZ3g6SXn_pdUih4TSyaBfFEZ7nPo2dkWEjEGkBaV_">
+<div class="absolute top-space-sm left-space-sm flex gap-1">
+<span class="bg-primary text-on-primary text-[10px] font-mono uppercase px-2 py-0.5 rounded tracking-widest font-bold">DESK</span>
+<span class="bg-surface-container/90 backdrop-blur-sm text-on-surface text-[10px] font-mono uppercase px-2 py-0.5 rounded">03 // LEATHER</span>
+</div>
+<div class="absolute top-space-sm right-space-sm">
+<span class="inline-flex items-center gap-1 bg-secondary-container text-on-secondary-container text-[10px] font-mono px-2 py-0.5 rounded font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-secondary-container"></span> LOW STOCK (4)
+          </span>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start gap-2">
+<h3 class="font-label-lg text-label-lg font-bold uppercase text-on-surface tracking-wide group-hover:text-secondary transition-colors">
+              Vegetable-Tanned Leather Desk Mat
+            </h3>
+<span class="font-mono text-base font-bold text-on-surface">$110</span>
+</div>
+<p class="font-mono text-xs text-on-surface-variant">3.5mm Tuscan full-grain hide / 80x40cm / Unfinished patina surface</p>
+</div>
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="flex-1 bg-primary hover:bg-secondary text-on-primary hover:text-on-secondary px-space-sm py-2 rounded font-label-lg text-label-lg uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors" onclick="handleAddToCart('Vegetable-Tanned Leather Desk Mat')">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Add to Cart</span>
+</button>
+<button aria-label="Inspect Specs" class="p-2 rounded bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px] block">visibility</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Item 04 -->
+<article class="product-card group flex flex-col bg-surface-container-lowest rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden" data-category="desk" data-index="4" data-material="Iron" data-price="78">
+<div class="relative w-full aspect-[4/3] bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="Minimal product photograph of a brutalist raw black cast iron tape dispenser with hardened serrated blade, heavy textured industrial grain, resting against a muted off-white studio paper backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBifkff9kC3QSP-WVf4VGHxCKAZ6yYJmLezpgiUFshPKUTl3wrRKGwO8NbyzJs8NoL1c9OpC1uo30r8eIlFm5embv1vaYQApCDSsSiqYxmKsjt6HatGvPHDjFm-72vb-BcB2ELUYkTe_7tcAs-4bbLubIw6F8bC0HFbZfNuPuHoIOwpY8EaRXSBaksRhNl1hO8kHQC4ewP6409hI8JkyyYApkpRwMNMC6MvExm18_eRCEJBedHpsdho">
+<div class="absolute top-space-sm left-space-sm flex gap-1">
+<span class="bg-primary text-on-primary text-[10px] font-mono uppercase px-2 py-0.5 rounded tracking-widest font-bold">DESK</span>
+<span class="bg-surface-container/90 backdrop-blur-sm text-on-surface text-[10px] font-mono uppercase px-2 py-0.5 rounded">04 // IRON</span>
+</div>
+<div class="absolute top-space-sm right-space-sm">
+<span class="inline-flex items-center gap-1 bg-surface-container-lowest/90 backdrop-blur-sm text-secondary text-[10px] font-mono px-2 py-0.5 rounded font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> IN STOCK
+          </span>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start gap-2">
+<h3 class="font-label-lg text-label-lg font-bold uppercase text-on-surface tracking-wide group-hover:text-secondary transition-colors">
+              Cast Iron Tape Dispenser
+            </h3>
+<span class="font-mono text-base font-bold text-on-surface">$78</span>
+</div>
+<p class="font-mono text-xs text-on-surface-variant">Sand-cast iron / 1.4kg one-handed shear / Hardened steel cutter</p>
+</div>
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="flex-1 bg-primary hover:bg-secondary text-on-primary hover:text-on-secondary px-space-sm py-2 rounded font-label-lg text-label-lg uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors" onclick="handleAddToCart('Cast Iron Tape Dispenser')">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Add to Cart</span>
+</button>
+<button aria-label="Inspect Specs" class="p-2 rounded bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px] block">visibility</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Item 05 -->
+<article class="product-card group flex flex-col bg-surface-container-lowest rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden" data-category="carry" data-index="5" data-material="Canvas" data-price="145">
+<div class="relative w-full aspect-[4/3] bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="Tactile studio view of a weathered charcoal 14oz waxed canvas document folio 13-inch sleeve with gunmetal snaps, sharp fold lines and water-resistant matte texture on a pale surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD351-M9f9EKyIGrdCYY6GxWB6YyTi7DKCIs7cr0W-X_7QAHBVQhq-5pQzffciRDupWRgbtgdqyTcM0aEGvIVqye8r3sT1C4daLdLiZixAlOL97XwuH2tMpqRp6mIDF-4BoOkuiXi10RaflvIGokpNCwSwRTFNI8p8LWsqRAV_F-Lq7wIK_K6wnnDv2egq6RyS_6WaWKe-TgAKElARFp7P8wCfiMtytg5_oW3CUiCyotHbmwEe8TkOe">
+<div class="absolute top-space-sm left-space-sm flex gap-1">
+<span class="bg-primary text-on-primary text-[10px] font-mono uppercase px-2 py-0.5 rounded tracking-widest font-bold">CARRY</span>
+<span class="bg-surface-container/90 backdrop-blur-sm text-on-surface text-[10px] font-mono uppercase px-2 py-0.5 rounded">05 // CANVAS</span>
+</div>
+<div class="absolute top-space-sm right-space-sm">
+<span class="inline-flex items-center gap-1 bg-surface-container-lowest/90 backdrop-blur-sm text-secondary text-[10px] font-mono px-2 py-0.5 rounded font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> IN STOCK
+          </span>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start gap-2">
+<h3 class="font-label-lg text-label-lg font-bold uppercase text-on-surface tracking-wide group-hover:text-secondary transition-colors">
+              Waxed Canvas Folio 13"
+            </h3>
+<span class="font-mono text-base font-bold text-on-surface">$145</span>
+</div>
+<p class="font-mono text-xs text-on-surface-variant">14oz Scottish beeswax canvas / Merino wool felt interior / YKK Excella</p>
+</div>
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="flex-1 bg-primary hover:bg-secondary text-on-primary hover:text-on-secondary px-space-sm py-2 rounded font-label-lg text-label-lg uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors" onclick="handleAddToCart('Waxed Canvas Folio 13&quot;')">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Add to Cart</span>
+</button>
+<button aria-label="Inspect Specs" class="p-2 rounded bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px] block">visibility</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Item 06 -->
+<article class="product-card group flex flex-col bg-surface-container-lowest rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden" data-category="carry" data-index="6" data-material="Nylon" data-price="92">
+<div class="relative w-full aspect-[4/3] bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="Technical product overhead photo of a compact 1680D ballistic nylon electronics organizer pouch, open flat showing internal mesh dividers, braided elastic loops holding black charging cables and drive." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoEmYB-X-Ghin8i2oFNVWEAUuKkgz4Z62mF0HVVSvYBSOTg_DnXkPftHjk3kY3TXJ9xQAyXYGEvuiOmVhmFtxnTtIUdpMxEh5ixtXPZAT2TPSQ_W3nyJWe69qG7vJeHb3zk7lA7PwFteOdqgFN3D_jfL8OSKhnqFFN1XrI_xkr_MvZvxU5dVGlIL54nHtYQezWq7ftBIUQapFJGzpPzokGfIXdSpGRdexgf2eGioZno1NEviFD24Vy">
+<div class="absolute top-space-sm left-space-sm flex gap-1">
+<span class="bg-primary text-on-primary text-[10px] font-mono uppercase px-2 py-0.5 rounded tracking-widest font-bold">CARRY</span>
+<span class="bg-surface-container/90 backdrop-blur-sm text-on-surface text-[10px] font-mono uppercase px-2 py-0.5 rounded">06 // NYLON</span>
+</div>
+<div class="absolute top-space-sm right-space-sm">
+<span class="inline-flex items-center gap-1 bg-surface-container-lowest/90 backdrop-blur-sm text-secondary text-[10px] font-mono px-2 py-0.5 rounded font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> IN STOCK
+          </span>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start gap-2">
+<h3 class="font-label-lg text-label-lg font-bold uppercase text-on-surface tracking-wide group-hover:text-secondary transition-colors">
+              Ballistic Nylon Tech Organiser
+            </h3>
+<span class="font-mono text-base font-bold text-on-surface">$92</span>
+</div>
+<p class="font-mono text-xs text-on-surface-variant">1680D Cordura ballistic textile / Segmented elastic retention / Weatherproof</p>
+</div>
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="flex-1 bg-primary hover:bg-secondary text-on-primary hover:text-on-secondary px-space-sm py-2 rounded font-label-lg text-label-lg uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors" onclick="handleAddToCart('Ballistic Nylon Tech Organiser')">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Add to Cart</span>
+</button>
+<button aria-label="Inspect Specs" class="p-2 rounded bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px] block">visibility</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Item 07 -->
+<article class="product-card group flex flex-col bg-surface-container-lowest rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden" data-category="carry" data-index="7" data-material="Titanium" data-price="48">
+<div class="relative w-full aspect-[4/3] bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="Macro architectural photography of a Grade 5 titanium wiregate key carabiner with secondary quick-release shackle clip on neutral matte dark grey stone block, precise engineering tolerances." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAoGQOjwZVp8_XkQxWAFxdK6Xm0KgVDvTKXVjrG8e6QsApTO-MpnlE4-v8tB5MfyEBhWS1ELZx3MUR_dPrcKxA-uvQVu_HqkQk6_c45_M15-1lnFtXv4rsWI5GEpqWgLwsRLt8bxXTM-IJ5xtSTx3geOIvo7A1k47toX8z-Nb89hcWi-nNQwaqV7rAs6uhqXmicgRVLBwYy0yhe9_djDYixSDhQpIcH2M4lgviYmGtrGqnwiCO4jk-">
+<div class="absolute top-space-sm left-space-sm flex gap-1">
+<span class="bg-primary text-on-primary text-[10px] font-mono uppercase px-2 py-0.5 rounded tracking-widest font-bold">CARRY</span>
+<span class="bg-surface-container/90 backdrop-blur-sm text-on-surface text-[10px] font-mono uppercase px-2 py-0.5 rounded">07 // TITANIUM</span>
+</div>
+<div class="absolute top-space-sm right-space-sm">
+<span class="inline-flex items-center gap-1 bg-surface-container-lowest/90 backdrop-blur-sm text-secondary text-[10px] font-mono px-2 py-0.5 rounded font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> IN STOCK
+          </span>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start gap-2">
+<h3 class="font-label-lg text-label-lg font-bold uppercase text-on-surface tracking-wide group-hover:text-secondary transition-colors">
+              Modular Key Carabiner &amp; Clip
+            </h3>
+<span class="font-mono text-base font-bold text-on-surface">$48</span>
+</div>
+<p class="font-mono text-xs text-on-surface-variant">Grade 5 Titanium Ti-6Al-4V / Integrated bottle pry / Dual detent gate</p>
+</div>
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="flex-1 bg-primary hover:bg-secondary text-on-primary hover:text-on-secondary px-space-sm py-2 rounded font-label-lg text-label-lg uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors" onclick="handleAddToCart('Modular Key Carabiner &amp; Clip')">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Add to Cart</span>
+</button>
+<button aria-label="Inspect Specs" class="p-2 rounded bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px] block">visibility</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Item 08 -->
+<article class="product-card group flex flex-col bg-surface-container-lowest rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden" data-category="write" data-index="8" data-material="Steel" data-price="68">
+<div class="relative w-full aspect-[4/3] bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="High precision extreme macro photo of a knurled stainless steel 0.5mm drafting rollerball pen laying diagonal on a drafted architectural grid blueprint sheet, harsh editorial sidelight highlighting crosshatch grip." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAClQyJxJmuRoUZzKCRwDTbO_TcNQ5q-fCEcW2r_bsfLuQkZCAL3khhDosZm40c6LkMXSZruUnosuiKGzXSHuOSP0cqVNjdU1BCEtqujR-au35-ZQBnn4Gaxq4ZIj8sOHvYt0ui_gJDLNA5PZUQ-WjB7cDzufLSD7CCoYc55KFm6gmCN-b7J0Lzu6iBQL5S93nbBShikHGSPg7w9nCWGIkFXK6WS_D69U4MckK63k_eVbLpwK-fDzX1">
+<div class="absolute top-space-sm left-space-sm flex gap-1">
+<span class="bg-primary text-on-primary text-[10px] font-mono uppercase px-2 py-0.5 rounded tracking-widest font-bold">WRITE</span>
+<span class="bg-surface-container/90 backdrop-blur-sm text-on-surface text-[10px] font-mono uppercase px-2 py-0.5 rounded">08 // STEEL</span>
+</div>
+<div class="absolute top-space-sm right-space-sm">
+<span class="inline-flex items-center gap-1 bg-surface-container-lowest/90 backdrop-blur-sm text-secondary text-[10px] font-mono px-2 py-0.5 rounded font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> IN STOCK
+          </span>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start gap-2">
+<h3 class="font-label-lg text-label-lg font-bold uppercase text-on-surface tracking-wide group-hover:text-secondary transition-colors">
+              Precision Steel Drafting Pen 0.5mm
+            </h3>
+<span class="font-mono text-base font-bold text-on-surface">$68</span>
+</div>
+<p class="font-mono text-xs text-on-surface-variant">316L Surgical stainless / Diamond-knurled balance / Schmidt ceramic roller</p>
+</div>
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="flex-1 bg-primary hover:bg-secondary text-on-primary hover:text-on-secondary px-space-sm py-2 rounded font-label-lg text-label-lg uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors" onclick="handleAddToCart('Precision Steel Drafting Pen 0.5mm')">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Add to Cart</span>
+</button>
+<button aria-label="Inspect Specs" class="p-2 rounded bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px] block">visibility</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Item 09 -->
+<article class="product-card group flex flex-col bg-surface-container-lowest rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden" data-category="write" data-index="9" data-material="Brass" data-price="72">
+<div class="relative w-full aspect-[4/3] bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="Minimalist design photography of a hexagonal solid raw brass mechanical drafting pencil disassembled into three precision brass threaded parts beside its internal clutch mechanism, stark white clean studio setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCk0LvxGVf1DWblu210PFL86G-cA76TKPKO68Itfen5WkIrW5x4VunJuniagzfagbIGOd48E8MrGJDxfXnmvXJIIlbM5O-m5D_dNUtzdVRJW7jylBGZH9lsEnsso3tf7COBwrPmycsL3hFh79uR2_DUk39wKYCl6MI0RJxy_NP04A7ZCc2P2iLmJ0wjqtQ1JHyIKsBR8_22q_ZqHnrt26HDjC0a5iIFYnizh_L_kLyXJFHdebY-dG8">
+<div class="absolute top-space-sm left-space-sm flex gap-1">
+<span class="bg-primary text-on-primary text-[10px] font-mono uppercase px-2 py-0.5 rounded tracking-widest font-bold">WRITE</span>
+<span class="bg-surface-container/90 backdrop-blur-sm text-on-surface text-[10px] font-mono uppercase px-2 py-0.5 rounded">09 // BRASS</span>
+</div>
+<div class="absolute top-space-sm right-space-sm">
+<span class="inline-flex items-center gap-1 bg-secondary-container text-on-secondary-container text-[10px] font-mono px-2 py-0.5 rounded font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-on-secondary-container"></span> LOW STOCK (2)
+          </span>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start gap-2">
+<h3 class="font-label-lg text-label-lg font-bold uppercase text-on-surface tracking-wide group-hover:text-secondary transition-colors">
+              Refillable Brass Mechanical Pencil
+            </h3>
+<span class="font-mono text-base font-bold text-on-surface">$72</span>
+</div>
+<p class="font-mono text-xs text-on-surface-variant">Hexagonal raw brass profile / 0.7mm brass chuck mechanism / 42g weight</p>
+</div>
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="flex-1 bg-primary hover:bg-secondary text-on-primary hover:text-on-secondary px-space-sm py-2 rounded font-label-lg text-label-lg uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors" onclick="handleAddToCart('Refillable Brass Mechanical Pencil')">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Add to Cart</span>
+</button>
+<button aria-label="Inspect Specs" class="p-2 rounded bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px] block">visibility</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Item 10 -->
+<article class="product-card group flex flex-col bg-surface-container-lowest rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 relative overflow-hidden" data-category="write" data-index="10" data-material="Paper" data-price="32">
+<div class="relative w-full aspect-[4/3] bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="Sleek still life of an open A5 lay-flat dot-grid notebook showcasing ultra thin Japanese Tomoe River fountain-pen friendly paper, subtle grey 5mm dot grid, exposed spine stitch binding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAklPVNPPWDm91Eig1MqC3bkTktCzhf7QfbfvHIuZytrf5BZpHvX_aGXUfvGGPgKUJdr34t_xZyB2SdTd8QGEIhd3NJNlXBHmHrJA58nFsg25mjmpr9keraYm8seFV4Ky7M2HwScZbSKqQrzUUvdB9AcJ-KNDRuu-skntUaIkvm7A0R27QQHAfbfM_e8O_1wE5508oU5qS8xxf4mzQaQWz0urwkXGtcPZ469Ur8D2QJN9tKQ27imzx-">
+<div class="absolute top-space-sm left-space-sm flex gap-1">
+<span class="bg-primary text-on-primary text-[10px] font-mono uppercase px-2 py-0.5 rounded tracking-widest font-bold">WRITE</span>
+<span class="bg-surface-container/90 backdrop-blur-sm text-on-surface text-[10px] font-mono uppercase px-2 py-0.5 rounded">10 // PAPER</span>
+</div>
+<div class="absolute top-space-sm right-space-sm">
+<span class="inline-flex items-center gap-1 bg-surface-container-lowest/90 backdrop-blur-sm text-secondary text-[10px] font-mono px-2 py-0.5 rounded font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> IN STOCK
+          </span>
+</div>
+</div>
+<div class="p-space-md flex flex-col flex-1 justify-between gap-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start gap-2">
+<h3 class="font-label-lg text-label-lg font-bold uppercase text-on-surface tracking-wide group-hover:text-secondary transition-colors">
+              Gridded Dot-Grid Notebook
+            </h3>
+<span class="font-mono text-base font-bold text-on-surface">$32</span>
+</div>
+<p class="font-mono text-xs text-on-surface-variant">52gsm Japanese Tomoe River paper / 192 numbered pages / 180° lay-flat</p>
+</div>
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="flex-1 bg-primary hover:bg-secondary text-on-primary hover:text-on-secondary px-space-sm py-2 rounded font-label-lg text-label-lg uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors" onclick="handleAddToCart('Gridded Dot-Grid Notebook')">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span class="">Add to Cart</span>
+</button>
+<button aria-label="Inspect Specs" class="p-2 rounded bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px] block">visibility</span>
+</button>
+</div>
+</div>
+</article>
+</section>
+<!-- Interactive Stock Manifest & System Footer Strip -->
+<section class="mt-space-xl pt-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md bg-surface-container-low p-space-md rounded-lg shadow-sm">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded bg-primary text-secondary-container flex items-center justify-center font-mono font-bold text-sm">
+        KN
+      </div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface font-bold uppercase">CATALOG SUMMARY</span>
+<span class="font-mono text-xs text-on-surface-variant">DISPLAYING: <span id="visible-count" class="">10</span> OF 10 ARTIFACTS AVAILABLE NATIONWIDE</span>
+</div>
+</div>
+<!-- Inline Material Chart Indicator -->
+<div class="flex items-center gap-space-sm font-mono text-[11px] text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="">METALS (50%)</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<span class="">TEXTILE/LEATHER (30%)</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="w-2.5 h-2.5 rounded-full bg-outline"></span>
+<span class="">CELLULOSE (20%)</span>
+</div>
+</div>
+<button class="px-space-md py-space-xs rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg uppercase tracking-wider flex items-center gap-1 transition-colors" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+<span class="">TOP</span>
+<span class="material-symbols-outlined text-sm">arrow_upward</span>
+</button>
+</section>
+<!-- Toast Notification -->
+<div class="fixed bottom-space-lg right-space-lg z-50 transform translate-y-32 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-space-sm bg-primary text-on-primary px-space-md py-space-sm rounded-lg shadow-xl" id="cart-toast">
+<span class="w-2 h-2 rounded-full bg-secondary-container animate-ping"></span>
+<span class="font-mono text-xs uppercase tracking-wider" id="toast-message">Item committed to cart</span>
+</div>
+</div>
+<script>
+  // Filter Functionality
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const cards = Array.from(document.querySelectorAll('.product-card'));
+  const visibleCountEl = document.getElementById('visible-count');
+  const gridContainer = document.getElementById('product-grid');
+  const sortSelect = document.getElementById('sort-select');
+
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterButtons.forEach(b => {
+        b.classList.remove('bg-primary', 'text-on-primary');
+        b.classList.add('text-on-surface-variant');
+      });
+      btn.classList.add('bg-primary', 'text-on-primary');
+      btn.classList.remove('text-on-surface-variant');
+
+      const filter = btn.getAttribute('data-filter');
+      let visible = 0;
+
+      cards.forEach(card => {
+        const category = card.getAttribute('data-category');
+        if (filter === 'all' || category === filter) {
+          card.classList.remove('hidden');
+          visible++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      if (visibleCountEl) {
+        visibleCountEl.textContent = visible;
+      }
+    });
+  });
+
+  // Sorting Functionality
+  sortSelect.addEventListener('change', (e) => {
+    const value = e.target.value;
+    const sortedCards = [...cards];
+
+    if (value === 'price-asc') {
+      sortedCards.sort((a, b) => parseFloat(a.dataset.price) - parseFloat(b.dataset.price));
+    } else if (value === 'price-desc') {
+      sortedCards.sort((a, b) => parseFloat(b.dataset.price) - parseFloat(a.dataset.price));
+    } else if (value === 'material') {
+      sortedCards.sort((a, b) => a.dataset.material.localeCompare(b.dataset.material));
+    } else {
+      sortedCards.sort((a, b) => parseInt(a.dataset.index) - parseInt(b.dataset.index));
+    }
+
+    sortedCards.forEach(card => gridContainer.appendChild(card));
+  });
+
+  // Interactive Toast for Adding Item
+  function handleAddToCart(name) {
+    const toast = document.getElementById('cart-toast');
+    const msg = document.getElementById('toast-message');
+    
+    // Update Shell Nav Counter if present
+    const cartCounter = document.querySelector('aside [data-path="cart"] span:last-child');
+    if (cartCounter) {
+      const current = parseInt(cartCounter.textContent.trim()) || 0;
+      cartCounter.textContent = current + 1;
+    }
+
+    if (msg) msg.textContent = `ADDED [${name.toUpperCase()}] TO CART`;
+    if (toast) {
+      toast.classList.remove('translate-y-32', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.add('translate-y-32', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 2600);
+    }
+  }
+</script></main><footer class="w-full border-t-2 border-primary bg-surface-container-low px-gutter-desktop py-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm text-xs font-mono text-on-surface-variant"><div class="">KANSO ARCHIVE — TOKYO / BERLIN</div><div class="">FORM FOLLOWS COGNITION</div></footer></div>
+
+</body></html>

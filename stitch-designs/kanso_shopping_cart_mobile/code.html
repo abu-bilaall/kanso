@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Kanso — Shopping Cart (Mobile)</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&amp;family=Archivo:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        'surface': '#faf9f5',
+        'surface-dim': '#dbdad6',
+        'surface-bright': '#faf9f5',
+        'surface-container-lowest': '#ffffff',
+        'surface-container-low': '#f5f4f0',
+        'surface-container': '#efeeea',
+        'surface-container-high': '#e9e8e4',
+        'surface-container-highest': '#e3e2df',
+        'on-surface': '#1b1c1a',
+        'on-surface-variant': '#44474a',
+        'primary': '#121314',
+        'on-primary': '#ffffff',
+        'secondary-container': '#d4f024',
+        'on-secondary-fixed': '#191e00',
+        'secondary': '#576400'
+      },
+      fontFamily: {
+        'display-hero': ['"Archivo Black"', 'Archivo', 'sans-serif'],
+        'body-lg': ['Archivo', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
+<style>
+  body { background-color: #faf9f5; color: #1b1c1a; font-family: 'Archivo', sans-serif; }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+  .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+  ::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body class="bg-surface text-on-surface flex flex-col min-h-screen antialiased">
+<!-- Header -->
+<header class="sticky top-0 z-50 bg-surface/90 backdrop-blur-md border-b border-surface-container-highest pt-safe">
+<div class="h-14 px-4 flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded border border-primary flex items-center justify-center font-black text-xs">
+<span class="material-symbols-outlined text-[18px]">adjust</span>
+</div>
+<span class="font-display-hero text-base tracking-widest uppercase">KANSO</span>
+<span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">CART</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-secondary-container text-on-secondary-fixed font-bold">2 ITEMS ACTIVE</span>
+</div>
+</div>
+</header>
+<main class="flex-1 flex flex-col px-4 pt-4 pb-28">
+<div class="flex items-center justify-between mb-4">
+<h1 class="font-display-hero text-2xl uppercase tracking-tight text-primary">Your Cart</h1>
+<span class="text-xs font-mono text-on-surface-variant">[#KS-8902-DX]</span>
+</div>
+<!-- Complimentary Packaging Banner -->
+<div class="bg-surface-container-low rounded-xl p-3 border border-surface-container-highest mb-4 flex gap-2.5 items-start">
+<span class="material-symbols-outlined text-[20px] text-secondary shrink-0 mt-0.5">check_circle</span>
+<div class="text-xs">
+<div class="flex items-center gap-2">
+<span class="font-bold text-primary uppercase text-[10px]">COMPLIMENTARY PACKAGING</span>
+<span class="text-[9px] font-mono bg-primary text-on-primary px-1 rounded">INCLUDED</span>
+</div>
+<p class="text-on-surface-variant text-[11px] mt-0.5">Archival handmade paper wrapping with hot charcoal wax seal included by default on writing instruments and weights.</p>
+</div>
+</div>
+<!-- Cart Line Items -->
+<div class="flex flex-col gap-3 mb-5">
+<!-- Item 01 -->
+<div class="bg-surface-container-lowest rounded-xl border border-surface-container-highest p-3 flex gap-3 shadow-sm">
+<div class="w-20 h-20 rounded-lg bg-surface-container-low overflow-hidden relative shrink-0 border border-surface-container-highest">
+<img alt="Milled Brass Weight" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+</div>
+<div class="flex-1 min-w-0 flex flex-col justify-between">
+<div>
+<div class="flex items-start justify-between gap-1">
+<span class="text-[9px] font-mono uppercase text-on-surface-variant">#KB-019 // DESK</span>
+<span class="font-mono font-bold text-xs text-primary">$84.00</span>
+</div>
+<h2 class="font-bold text-xs uppercase tracking-tight text-primary truncate mt-0.5">Milled Brass Desk Weight</h2>
+<p class="text-[10px] text-on-surface-variant font-mono">Solid Brass (Uncoated) · 420g</p>
+</div>
+<div class="flex items-center justify-between mt-2 pt-2 border-t border-surface-container">
+<div class="flex items-center border border-primary rounded h-7 px-1">
+<button class="w-5 h-full flex items-center justify-center font-bold text-xs">-</button>
+<span class="w-6 text-center font-mono font-bold text-xs">1</span>
+<button class="w-5 h-full flex items-center justify-center font-bold text-xs">+</button>
+</div>
+<button class="text-[10px] font-mono uppercase tracking-wider text-red-600 hover:underline">Remove</button>
+</div>
+</div>
+</div>
+<!-- Item 02 -->
+<div class="bg-surface-container-lowest rounded-xl border border-surface-container-highest p-3 flex gap-3 shadow-sm">
+<div class="w-20 h-20 rounded-lg bg-surface-container-low overflow-hidden relative shrink-0 border border-surface-container-highest">
+<img alt="Drafting Pen" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+</div>
+<div class="flex-1 min-w-0 flex flex-col justify-between">
+<div>
+<div class="flex items-start justify-between gap-1">
+<span class="text-[9px] font-mono uppercase text-on-surface-variant">#KP-004 // WRITE</span>
+<span class="font-mono font-bold text-xs text-primary">$68.00</span>
+</div>
+<h2 class="font-bold text-xs uppercase tracking-tight text-primary truncate mt-0.5">Precision Drafting Pen</h2>
+<p class="text-[10px] text-on-surface-variant font-mono">Raw Stainless · 0.5mm Tungsten</p>
+</div>
+<div class="flex items-center justify-between mt-2 pt-2 border-t border-surface-container">
+<div class="flex items-center border border-primary rounded h-7 px-1">
+<button class="w-5 h-full flex items-center justify-center font-bold text-xs">-</button>
+<span class="w-6 text-center font-mono font-bold text-xs">1</span>
+<button class="w-5 h-full flex items-center justify-center font-bold text-xs">+</button>
+</div>
+<button class="text-[10px] font-mono uppercase tracking-wider text-red-600 hover:underline">Remove</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Voucher Code Input -->
+<div class="flex gap-2 mb-4">
+<input class="flex-1 h-10 px-3 rounded-lg border border-surface-container-highest bg-surface-container-lowest text-xs font-mono uppercase placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary" placeholder="DISCOUNT / VOUCHER CODE" type="text"/>
+<button class="px-4 h-10 rounded-lg bg-surface-container-high text-primary font-bold text-xs uppercase tracking-wider border border-surface-container-highest">Apply</button>
+</div>
+<!-- Order Breakdown Card -->
+<div class="bg-surface-container-low rounded-xl p-3.5 border border-surface-container-highest text-xs font-mono mb-4">
+<div class="flex justify-between py-1 border-b border-surface-container">
+<span class="text-on-surface-variant">SUBTOTAL:</span>
+<span class="font-bold text-primary">$152.00</span>
+</div>
+<div class="flex justify-between py-1 border-b border-surface-container">
+<span class="text-on-surface-variant">SHIPPING ESTIMATE:</span>
+<span class="font-bold text-secondary">COMPLIMENTARY ($0.00)</span>
+</div>
+<div class="flex justify-between py-1 border-b border-surface-container">
+<span class="text-on-surface-variant">ESTIMATED TAXES:</span>
+<span class="font-bold text-primary">$0.00</span>
+</div>
+<div class="flex justify-between pt-2 text-sm">
+<span class="font-bold text-primary uppercase">ESTIMATED TOTAL</span>
+<span class="font-bold text-primary font-mono text-base">$152.00</span>
+</div>
+</div>
+<!-- Guarantees Strip -->
+<div class="grid grid-cols-3 gap-2 text-center text-[9px] font-mono text-on-surface-variant mb-2">
+<div class="p-2 rounded bg-surface-container-low border border-surface-container-highest">
+<span class="block font-bold text-primary">24H CYCLE</span>
+      DISPATCH
+    </div>
+<div class="p-2 rounded bg-surface-container-low border border-surface-container-highest">
+<span class="block font-bold text-primary">100% OFFSET</span>
+      CARBON ACCORD
+    </div>
+<div class="p-2 rounded bg-surface-container-low border border-surface-container-highest">
+<span class="block font-bold text-primary">30-DAY</span>
+      RETURNS
+    </div>
+</div>
+</main>
+<!-- Bottom Checkout Action Bar -->
+<div class="fixed bottom-0 w-full z-50 bg-surface/95 backdrop-blur-xl border-t border-surface-container-highest p-3 pb-safe shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+<a class="w-full h-12 rounded-lg bg-primary text-on-primary font-bold text-xs uppercase tracking-wider flex items-center justify-between px-4 border-2 border-primary hover:bg-secondary-container hover:text-on-secondary-fixed transition-colors" href="#">
+<span>Proceed to Checkout</span>
+<span class="font-mono text-sm">$152.00 →</span>
+</a>
+</div>
+</body>
+</html>

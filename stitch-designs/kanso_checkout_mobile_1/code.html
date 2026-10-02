@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Kanso — Checkout (Mobile)</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        'surface': '#faf9f5',
+        'surface-dim': '#dbdad6',
+        'surface-bright': '#faf9f5',
+        'surface-container-lowest': '#ffffff',
+        'surface-container-low': '#f5f4f0',
+        'surface-container': '#efeeea',
+        'surface-container-high': '#e9e8e4',
+        'surface-container-highest': '#e3e2df',
+        'on-surface': '#1b1c1a',
+        'on-surface-variant': '#44474a',
+        'primary': '#121314',
+        'on-primary': '#ffffff',
+        'secondary-container': '#d4f024',
+        'on-secondary-fixed': '#191e00',
+        'secondary': '#576400'
+      },
+      fontFamily: {
+        'display-hero': ['"Archivo Black"', 'Archivo', 'sans-serif'],
+        'body-lg': ['Archivo', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
+<style>
+  body { background-color: #faf9f5; color: #1b1c1a; font-family: 'Archivo', sans-serif; }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+  .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+  ::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body class="bg-surface text-on-surface flex flex-col min-h-screen antialiased">
+
+<!-- Header with Back -->
+<header class="sticky top-0 z-50 bg-surface/90 backdrop-blur-md border-b border-surface-container-highest pt-safe">
+  <div class="h-14 px-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="#" class="w-9 h-9 rounded-lg border border-surface-container-highest flex items-center justify-center bg-surface hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+      </a>
+      <span class="font-display-hero text-sm uppercase tracking-wider text-primary">Checkout</span>
+    </div>
+    <div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-secondary-container text-on-secondary-fixed text-[10px] font-mono font-bold">
+      <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+      <span>SECURE</span>
+    </div>
+  </div>
+</header>
+
+<main class="flex-1 flex flex-col px-4 pt-4 pb-32">
+  <!-- Title & Session -->
+  <div class="mb-3">
+    <span class="text-[10px] font-mono uppercase tracking-widest text-on-surface-variant block">FULFILLMENT &amp; DISPATCH / V1</span>
+    <h1 class="font-display-hero text-xl uppercase tracking-tight text-primary mt-0.5">Order Dispatch</h1>
+  </div>
+
+  <!-- Authenticated Session Pill -->
+  <div class="bg-surface-container-low rounded-xl p-3 border border-surface-container-highest flex items-center justify-between mb-4">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-xs shrink-0">
+        MV
+      </div>
+      <div class="min-w-0">
+        <div class="text-xs font-bold text-primary truncate">marcus.v@example.com</div>
+        <div class="text-[10px] text-on-surface-variant font-mono">Google Auth Verified</div>
+      </div>
+    </div>
+    <button class="text-[10px] font-mono uppercase tracking-wider text-on-surface-variant hover:text-primary underline shrink-0">
+      Disconnect
+    </button>
+  </div>
+
+  <!-- Consignment Manifest Accordion -->
+  <details class="group bg-surface-container-lowest rounded-xl border border-surface-container-highest p-3 mb-4 shadow-sm" open>
+    <summary class="flex justify-between items-center cursor-pointer font-bold text-xs uppercase tracking-wider text-primary">
+      <div class="flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-[16px] text-secondary">inventory_2</span>
+        <span>Manifest [02 Items]</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="font-mono text-primary">$152.00</span>
+        <span class="material-symbols-outlined text-[16px] group-open:rotate-180 transition-transform">expand_more</span>
+      </div>
+    </summary>
+    <div class="pt-3 border-t border-surface-container mt-2.5 flex flex-col gap-2 text-xs">
+      <div class="flex justify-between items-center">
+        <div>
+          <div class="font-bold text-primary">Milled Brass Desk Weight</div>
+          <div class="text-[10px] text-on-surface-variant font-mono">Qty: 1 · Solid Alloy 260</div>
+        </div>
+        <span class="font-mono font-bold">$84.00</span>
+      </div>
+      <div class="flex justify-between items-center">
+        <div>
+          <div class="font-bold text-primary">Archival Drafting Pen</div>
+          <div class="text-[10px] text-on-surface-variant font-mono">Qty: 1 · 0.5mm Tungsten</div>
+        </div>
+        <span class="font-mono font-bold">$68.00</span>
+      </div>
+      <div class="flex justify-between items-center pt-2 border-t border-surface-container text-[11px] font-mono">
+        <span class="text-on-surface-variant">Courier Freight:</span>
+        <span class="text-secondary font-bold">Complimentary</span>
+      </div>
+    </div>
+  </details>
+
+  <!-- Step 01: Dispatch Contact -->
+  <section class="mb-4">
+    <div class="flex items-center gap-1.5 mb-2">
+      <span class="px-1.5 py-0.5 rounded bg-primary text-on-primary text-[10px] font-mono font-bold">01</span>
+      <h2 class="font-display-hero text-xs uppercase tracking-wider text-primary">Dispatch Contact</h2>
+    </div>
+    <div class="flex flex-col gap-2">
+      <div>
+        <label class="text-[10px] font-mono uppercase text-on-surface-variant block mb-1">Dispatch Email *</label>
+        <input type="email" value="marcus.v@example.com" class="w-full h-10 px-3 rounded-lg border border-surface-container-highest bg-surface-container-lowest text-xs font-mono text-primary focus:outline-none focus:border-primary"/>
+      </div>
+      <div>
+        <label class="text-[10px] font-mono uppercase text-on-surface-variant block mb-1">Phone (Courier Routing) *</label>
+        <input type="tel" value="+1 (555) 019-2834" class="w-full h-10 px-3 rounded-lg border border-surface-container-highest bg-surface-container-lowest text-xs font-mono text-primary focus:outline-none focus:border-primary"/>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step 02: Physical Coordinates -->
+  <section class="mb-4">
+    <div class="flex items-center gap-1.5 mb-2">
+      <span class="px-1.5 py-0.5 rounded bg-primary text-on-primary text-[10px] font-mono font-bold">02</span>
+      <h2 class="font-display-hero text-xs uppercase tracking-wider text-primary">Physical Coordinates</h2>
+    </div>
+    <div class="flex flex-col gap-2">
+      <div>
+        <label class="text-[10px] font-mono uppercase text-on-surface-variant block mb-1">Recipient Full Name *</label>
+        <input type="text" value="Marcus Vance" class="w-full h-10 px-3 rounded-lg border border-surface-container-highest bg-surface-container-lowest text-xs font-mono text-primary focus:outline-none focus:border-primary"/>
+      </div>
+      <div>
+        <label class="text-[10px] font-mono uppercase text-on-surface-variant block mb-1">Address Line 1 *</label>
+        <input type="text" value="1044 Industrial Way" class="w-full h-10 px-3 rounded-lg border border-surface-container-highest bg-surface-container-lowest text-xs font-mono text-primary focus:outline-none focus:border-primary"/>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="text-[10px] font-mono uppercase text-on-surface-variant block mb-1">Suite / Studio</label>
+          <input type="text" value="Studio 4B" class="w-full h-10 px-3 rounded-lg border border-surface-container-highest bg-surface-container-lowest text-xs font-mono text-primary focus:outline-none focus:border-primary"/>
+        </div>
+        <div>
+          <label class="text-[10px] font-mono uppercase text-on-surface-variant block mb-1">City *</label>
+          <input type="text" value="Portland" class="w-full h-10 px-3 rounded-lg border border-surface-container-highest bg-surface-container-lowest text-xs font-mono text-primary focus:outline-none focus:border-primary"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="text-[10px] font-mono uppercase text-on-surface-variant block mb-1">State / Region *</label>
+          <input type="text" value="OR" class="w-full h-10 px-3 rounded-lg border border-surface-container-highest bg-surface-container-lowest text-xs font-mono text-primary focus:outline-none focus:border-primary"/>
+        </div>
+        <div>
+          <label class="text-[10px] font-mono uppercase text-on-surface-variant block mb-1">Postal / ZIP *</label>
+          <input type="text" value="97209" class="w-full h-10 px-3 rounded-lg border border-surface-container-highest bg-surface-container-lowest text-xs font-mono text-primary focus:outline-none focus:border-primary"/>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step 03: Logistics Method -->
+  <section class="mb-4">
+    <div class="flex items-center gap-1.5 mb-2">
+      <span class="px-1.5 py-0.5 rounded bg-primary text-on-primary text-[10px] font-mono font-bold">03</span>
+      <h2 class="font-display-hero text-xs uppercase tracking-wider text-primary">Logistics Method</h2>
+    </div>
+    <div class="p-3 rounded-xl border-2 border-primary bg-surface-container-lowest flex items-start gap-2.5">
+      <input type="radio" checked class="mt-1 accent-primary"/>
+      <div class="flex-1">
+        <div class="flex justify-between items-center">
+          <span class="font-bold text-xs uppercase text-primary">Standard Archival Courier</span>
+          <span class="px-1.5 py-0.5 rounded bg-secondary-container text-on-secondary-fixed text-[9px] font-mono font-bold">FREE</span>
+        </div>
+        <p class="text-[11px] text-on-surface-variant mt-0.5">3–5 business days dispatch. Climate-controlled transit packaging, end-to-end telemetry and parcel signature required.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Phase 1 Notice -->
+  <div class="bg-surface-container-low rounded-xl p-3 border border-surface-container-highest text-xs mb-3">
+    <div class="flex items-center gap-1.5 font-bold uppercase text-[10px] text-primary mb-1">
+      <span class="material-symbols-outlined text-[16px] text-secondary">info</span>
+      <span>PHASE 1 NOTICE</span>
+    </div>
+    <p class="text-[11px] text-on-surface-variant leading-relaxed">
+      Payment processing begins in V2. Submitting creates a verified test order with automated Mailgun confirmation and logs an entry in our fulfillment pipeline.
+    </p>
+  </div>
+</main>
+
+<!-- Bottom Place Order CTA -->
+<div class="fixed bottom-0 w-full z-50 bg-surface/95 backdrop-blur-xl border-t border-surface-container-highest p-3 pb-safe shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
+  <button class="w-full h-12 rounded-lg bg-primary text-on-primary font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 border-2 border-primary hover:bg-secondary-container hover:text-on-secondary-fixed transition-colors">
+    <span>Confirm and Place Order</span>
+    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+  </button>
+  <div class="flex items-center justify-center gap-3 mt-2 text-[9px] font-mono text-on-surface-variant">
+    <span>🛡 Row-Level Encrypted</span>
+    <span>✉ Mailgun Dispatched</span>
+    <span>✓ Kanso Verified</span>
+  </div>
+</div>
+
+</body>
+</html>
