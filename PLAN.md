@@ -490,16 +490,19 @@ jobs:
       - uses: supabase/setup-action@v1
       - run: supabase start
       - run: supabase db reset   # migrations + seed, identical to local
-      - run: supabase status -o env >> $GITHUB_ENV
       - run: npm ci
       - run: npm run ci:check
       - run: npm run test:func
 ```
 
 `supabase db reset` is the load-bearing line: CI applies migrations the same way
-your machine does, so the two cannot drift. `supabase status -o env` exports
-`API_URL`, `ANON_KEY` and `SERVICE_ROLE_KEY` as job environment variables, which
-is where functional tests read them from — no secret store involved.
+your machine does, so the two cannot drift. The runner behind
+`npm run test:func` is what makes the rest agree: it uses the connection values
+already in the environment when there are any, and otherwise asks the CLI for
+them and refuses to run if the stack is not answering. A developer and a CI job
+therefore get the same behaviour from the same command, and neither has to know
+an `eval` incantation. No secret store involved; the values are local dev
+credentials.
 
 **Edge Function deploys stay manual**, on purpose, so CI never needs the Mailgun
 credentials:
