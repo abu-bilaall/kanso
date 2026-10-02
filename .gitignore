@@ -26,3 +26,12 @@ product-images/_masters/*
 .DS_Store
 .idea/
 *.swp
+
+# Test output
+coverage/
+
+# Edge Function local secrets — see the "NOT IN THIS FILE" block in .env.example.
+supabase/functions/.env
+
+# Logs
+*.log

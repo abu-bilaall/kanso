@@ -1,0 +1,642 @@
+# Kanso — Contracts
+
+**Frozen contract surface. Phase 1 (Foundation) owns everything in this document.**
+
+Six agents build the rest of Kanso in parallel, each on its own branch, none able
+to see the others' work. These files are what they code against. They are
+written down here precisely so nobody has to *wait* for anybody, and precisely so
+a change to one of them is a visible, deliberate event rather than a surprise in
+a merge.
+
+If any of this does not fit what you are building: **do not edit it.** Write what
+you need in [`CONTRACT-REQUESTS.md`](./CONTRACT-REQUESTS.md) and keep building
+against what exists. Requests are reviewed and applied once, centrally, during
+integration — see [How to ask for a change](#how-to-ask-for-a-change).
+
+---
+
+## Contents
+
+1. [The rule about frozen files](#the-rule-about-frozen-files)
+2. [Placeholder pages](#placeholder-pages--read-this-before-you-ship)
+3. [Design tokens](#design-tokens)
+4. [Component vocabulary](#component-vocabulary)
+5. [Page shell and the responsive switch](#page-shell-and-the-responsive-switch)
+6. [Routes](#routes)
+7. [Hooks](#hooks) ← *the important one*
+8. [Money](#money)
+9. [Errors](#errors)
+10. [Logging](#logging)
+11. [Schemas](#schemas)
+12. [Supabase client and types](#supabase-client-and-types)
+13. [Commands](#commands)
+
+---
+
+## The rule about frozen files
+
+Foundation owns, and only Foundation edits:
+
+```
+package.json          package-lock.json      tsconfig*.json
+biome.json            vite.config.ts        vitest.config.ts
+supabase/config.toml  .env.example         .gitignore
+src/routes.ts         src/styles/**         src/lib/**
+src/hooks/**          src/components/**     src/schemas/**
+src/pages/_placeholder/**
+docs/CONTRACTS.md     docs/LOGGING.md       docs/CONTRACT-REQUESTS.md
+```
+
+Everything else belongs to a downstream agent by path (PLAN §5). Touching another
+agent's path is a review rejection.
+
+**Why package.json is frozen too.** PLAN §4 rule 4: a new dependency added
+unilaterally is "a merge magnet". If you need one, it goes through
+`CONTRACT-REQUESTS.md`.
+
+## How to ask for a change
+
+Append to `docs/CONTRACT-REQUESTS.md`, with:
+
+- **What you are building** — one line.
+- **The exact change** — a diff, or the signature you need added.
+- **Why the existing surface cannot do it** — the honest reason, not a preference.
+- **Who else depends on it** — if the change is observable, say so.
+
+Then carry on. Do not wait. Do not edit the frozen file in your branch "just to
+unblock yourself" — that is how two agents end up with two `Button` components.
+
+---
+
+## Placeholder pages — read this before you ship
+
+Every route currently renders a **placeholder**. A placeholder is not a partially
+finished page; it is a module that says so.
+
+```
+src/pages/_placeholder/Placeholder.tsx     the shared component
+src/pages/home/HomePage.tsx                <Placeholder path="/" owner="A4 — Storefront" … />
+src/pages/catalog/CatalogPage.tsx
+src/pages/product/ProductPage.tsx
+src/pages/cart/CartPage.tsx
+src/pages/checkout/CheckoutPage.tsx
+src/pages/order-confirmation/OrderConfirmationPage.tsx
+src/pages/account/AccountPage.tsx
+src/pages/auth/AuthCallbackPage.tsx
+```
+
+**Your page replaces its module wholesale.** You own that path from Phase 2
+onward. Delete the `<Placeholder>` call; do not keep it in a branch, do not import
+it alongside real markup, do not feature-flag around it. When your surface exists,
+`Placeholder` should have one fewer importer.
+
+`npm run build` and `npm run dev` are green with all of them in place. That is the
+point of the convention: nobody mistakes a placeholder for finished work.
+
+---
+
+## Design tokens
+
+`src/styles/tokens.css`. Two layers, and the distinction matters:
+
+| Layer | Where | Who touches it |
+| --- | --- | --- |
+| `--k-*` primitives | top of the file, raw Stitch values | Foundation only |
+| `@theme inline` | middle of the file, semantic → primitive | Foundation only |
+
+Tailwind v4 is CSS-first: the `@theme` block *is* the design system. Anything
+declared under `--color-*`, `--font-*`, `--radius-*`, `--spacing-*` becomes a
+utility automatically.
+
+**Rule: no component ever contains a hex value.** Everything resolves from these
+tokens.
+
+### Colours
+
+| Token | Value | Use it for |
+| --- | --- | --- |
+| `paper` | `#faf9f5` | the page ground. `bg-paper` |
+| `ink` | `#1b1c1a` | primary text, the hard edge. `text-ink`, `border-ink` |
+| `graphite` | `#1b1c1d` | pressed/hover state of an ink surface |
+| `ink-muted` | `#44474a` | secondary text, labels |
+| `ink-subtle` | `#75777a` | tertiary text, meta copy |
+| `ink-on-primary` | `#ffffff` | text on a solid ink button |
+| `ink-on-accent` | `#191e00` | text on chartreuse |
+| `accent` | `#d4f024` | chartreuse. One use per view |
+| `accent-deep` | `#576400` | chartreuse text *on paper*, when you need it readable |
+| `hairline` | `#c5c6c9` | the 1px structural rule. `border-hairline` |
+| `danger` | `#ba1a1a` | destructive |
+| `danger-surface` / `danger-ink` | `#ffdad6` / `#93000a` | the error panel |
+| `inverse` / `inverse-text` | `#30312e` / `#f2f1ed` | the one dark panel |
+
+### Surface ramp
+
+`surface-lowest` `#ffffff` (raised cards — the only pure white in the system) ·
+`surface-low` `#f5f4f0` · `paper` `#faf9f5` · `surface-container` `#efeeea` ·
+`surface-high` `#e9e8e4` · `surface-highest` `#e3e2df` · `surface-dim` `#dbdad6`
+
+### Typography
+
+| Token | Face | Use |
+| --- | --- | --- |
+| `font-sans` | Archivo 400/500/600/700 | **everything functional** — labels, body, product names |
+| `font-display` | Archivo Black | **hero and section headings only** |
+| `font-editorial` | system monospace | the reserved secondary face |
+
+`font-editorial` is the secondary face PLAN §3 asks you to reserve. Every
+technical/meta string in the Stitch prototypes — `FULFILLMENT & DISPATCH / V1`,
+`#KS-8902-DX`, spec rows — is set in the prototype's mono voice, so that is what
+the token is. **Editorial moments only. Never body copy.**
+
+Type scale: `text-meta` 11px · `text-body` 16px · `text-body-lg` 18px ·
+`text-label` 14px/0.06em · `text-heading` 30px · `text-hero` 48px.
+
+### Geometry and motion
+
+| Token | Value |
+| --- | --- |
+| `rounded-component` | 8px — the component radius |
+| `rounded-tight` | 4px — chips, badges |
+| `rounded-panel` | 12px — large media panels only |
+| `border-hard` | a utility: `border-hard` = 2px solid. **Always 2px on primary interactive elements** |
+| `tap-target` | a utility: min 44×44. PLAN §3 minimum |
+| `transition-kanso` | a utility: 180ms on colour/edge/transform |
+| `--k-rail-width` | 160px |
+| `--k-tabbar-height` | 56px |
+| `--k-gutter` / `--k-gutter-desktop` | 16px / 24px |
+| `--breakpoint-md` | **768px** — Tailwind's `md`. The switch |
+
+`prefers-reduced-motion: reduce` is honoured globally in `tokens.css`: every
+transition and animation collapses. Do not re-enable motion in a component.
+
+---
+
+## Component vocabulary
+
+`src/components/ui` — DESIGN.md's list and nothing more. Import from
+`@/components/ui`.
+
+| Component | Notes |
+| --- | --- |
+| `Button` | `variant`: `primary` (ink, hard 2px) · `accent` (chartreuse) · `outline` · `surface` · `ghost` · `danger`. `size`: `sm`/`md`/`lg`. `loading`, `fullWidth`, `icon` |
+| `buttonClasses(opts)` | the same styling as a class string, for a `<Link>` or `<a>`. **Use this instead of a polymorphic `as` prop** |
+| `Input` | `label` required. `error` wires `aria-invalid` + `aria-describedby`. `hint`, `trailing`, `required`. forwardRef |
+| `Select` | native `<select>`, same a11y contract. `options: {value,label,disabled?}[]`, `placeholder` |
+| `QuantityControl` | clamped, not corrected. `onChange` only fires inside `[min, max]`. **Pass `max={product.inventory}`** |
+| `Badge` | `children` required — DESIGN.md forbids colour-only status |
+| `EmptyState` | loaded successfully, nothing here. Needs `title` + `action` |
+| `ErrorState` | the request failed. Offers "Try again" only when `error.retryable` |
+| `Skeleton` | `aria-hidden` by default; the owning region carries the label |
+| `Alert` | inline non-blocking message. `tone`: `info`/`success`/`warning`/`danger`. `role="alert"` for danger and warning |
+
+Icons: `src/components/icons.tsx` — twelve outline SVGs on one grid. No icon
+package is a dependency; **add to that file rather than importing another family.**
+
+Adding a tenth-and-a-half primitive is a contract change. Two agents with two
+variants of `Button` is how a shop stops looking like one shop.
+
+## Page shell and the responsive switch
+
+`src/components/layout`:
+
+| Component | Visibility |
+| --- | --- |
+| `DesktopRail` | `hidden` below 768px. Fixed 160px left column |
+| `MobileHeader` | below 768px. Sticky. Wordmark + cart, or back + context label |
+| `MobileTabBar` | below 768px. Fixed, 5 items, safe-area padded |
+| `PageShell` | the frame. **Owns the switch** |
+
+Every page renders inside `PageShell`:
+
+```tsx
+export function CatalogPage() {
+  return (
+    <PageShell title="Catalogue — Kanso" width="wide">
+      {/* your content */}
+    </PageShell>
+  );
+}
+```
+
+| Prop | Meaning |
+| --- | --- |
+| `title` | sets `document.title`. Just the page name; the shell appends nothing |
+| `header` | replaces the mobile header — product detail and checkout want a back control |
+| `width` | `narrow` (2xl, checkout) · `default` (5xl) · `wide` (7xl, catalogue) |
+
+Do not build your own header, footer, gutter or safe-area padding. If you think
+the shell is missing something, that is a `CONTRACT-REQUESTS.md` entry.
+
+### Mobile rules (PLAN §3, decided in Phase 1)
+
+- Breakpoint **768px**. Below it: sticky header + 5-item tab bar.
+- Tab bar items: **Store, Catalog, About, Cart, Account.**
+- Single column, 16px gutters, full-width hard 2px buttons, 44px minimum targets.
+- **Override Stitch where it is bad UX.** The mobile catalogue's row layout
+  (88px thumbnail + a full-width ADD TO CART per row) is a regression. Use a
+  thumbnail of **at least 120px** and a compact cart-icon action; the primary
+  add-to-cart lives on the product detail page. Flag it if you disagree.
+- Visible focus rings, semantic HTML, labelled inputs, alt text from the manifest.
+
+## Routes
+
+`src/routes.ts` is frozen. Import `routes`, or the `ROUTE_PATHS` helpers.
+
+| Path | Module | Agent |
+| --- | --- | --- |
+| `/` | `src/pages/home/HomePage` | A4 |
+| `/shop` · `/shop?category=` | `src/pages/catalog/CatalogPage` | A4 |
+| `/product/:slug` | `src/pages/product/ProductPage` | A4 |
+| `/cart` | `src/pages/cart/CartPage` | A5 |
+| `/checkout` | `src/pages/checkout/CheckoutPage` | A5 |
+| `/order/:id` | `src/pages/order-confirmation/OrderConfirmationPage` | A5 |
+| `/account` | `src/pages/account/AccountPage` | A6 |
+| `/auth/callback` | `src/pages/auth/AuthCallbackPage` | A6 |
+| `*` | inline `NotFound` in `routes.ts` | Foundation |
+
+Two decisions that will bite if you miss them:
+
+- **Category is a query param, not a path segment.** `/shop?category=desk` keeps
+  one component, makes a filtered view shareable, and makes the back button
+  correct. Read it with `CATEGORY_PARAM` from `@/routes`.
+- **There is no `/about` route.** The rail and the tab bar both point ABOUT at
+  `/#about`. **If you build the home page, give the brand-statement section
+  `id="about"`** and both nav entries work for free.
+
+---
+
+## Hooks
+
+Import from `@/hooks`. All of them are backed by real Supabase queries, and all of
+them share one return shape.
+
+> **The database has no tables yet.** The data agent writes migrations in Phase 2.
+> Until then every hook here degrades into a clean `error` state — it never
+> throws, never hangs, never returns a rejected promise. That is deliberate, and
+> it is tested.
+
+### The shared shape
+
+```ts
+type AsyncStatus = 'idle' | 'loading' | 'success' | 'error';
+
+interface AsyncState {
+  data: <the neutral empty value> | <T>;  // never null-shaped surprises
+  status: AsyncStatus;
+  error: AppError | null;                 // non-null iff status === 'error'
+  isLoading: boolean;                     // true while in flight, incl. the first
+  refresh: () => Promise<void>;           // re-run; keeps the last value on screen
+}
+```
+
+`refresh()` retains the previous `data` while it runs, so a re-fetch never blanks
+the UI. `idle` means "not started" (signed out, disabled, or no id) — never a
+failure.
+
+### `useAuth()`
+
+The single source of truth for the session. Mount `<AuthProvider>` once — it is
+already in `src/main.tsx`. Every other hook reads from it rather than touching
+`supabase.auth`.
+
+```ts
+interface AuthState {
+  status: 'loading' | 'authenticated' | 'anonymous' | 'error';
+  user: User | null;
+  session: Session | null;
+  error: AppError | null;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  signInWithGoogle: (options?: { redirectTo?: string }) => Promise<void>;
+  signOut: () => Promise<void>;
+  refresh: () => Promise<void>;
+}
+```
+
+- `status` stays `'loading'` until the first read settles. **Render a spinner,
+  not "signed out", during that window** — flashing a sign-in button at a
+  signed-in user is the classic OAuth bug.
+- `'anonymous'` means genuinely no session. `'error'` means the read failed. The
+  two are never conflated.
+- `signInWithGoogle` defaults `redirectTo` to `<origin>/auth/callback`. It
+  resolves once the browser has been redirected and **rejects** with an
+  `AppError` if sign-in could not start — show that inline, do not crash.
+- Also exported: `useUserId()` → `string | null`, for the common guard.
+
+### `useProducts(options?)`
+
+```ts
+interface UseProductsOptions { category?: ProductCategory | 'all'; enabled?: boolean }
+
+interface ProductsState {
+  products: Product[];          // [] while loading, on error, and when empty
+  status: AsyncStatus;
+  error: AppError | null;
+  isLoading: boolean;
+  refresh: () => Promise<void>;
+}
+```
+
+One publicly-readable select, ordered `created_at` then `name`. `category` is
+filtered **in the database**, not in JS. Sorting and the featured selection are
+the catalogue page's business (A4) — do that over the array this returns. There
+is no `is_active` column in V1.
+
+Also exported: `CATEGORIES` (render your filter from it) and `categoryLabel()`,
+which falls back to a title-cased slug rather than throwing on an unknown
+division.
+
+### `useProduct(slug, options?)`
+
+```ts
+interface ProductState {
+  product: Product | null;
+  status: AsyncStatus;
+  error: AppError | null;
+  isLoading: boolean;
+  refresh: () => Promise<void>;
+}
+```
+
+`maybeSingle()` on `slug`. **A miss is `not_found`, not `null`** — render a 404
+panel, and note `retryable: false`, so `ErrorState` will not offer a retry that
+cannot change anything. Passing `undefined` issues no query and stays `idle`.
+
+### `useCart()`
+
+The signed-in user's active cart, with every mutation the UI needs.
+
+```ts
+interface CartState {
+  cart: Cart | null;
+  items: CartItemWithProduct[];  // `product` is joined in; may be null if deleted
+  itemCount: number;             // the rail badge
+  subtotalKobo: number;          // integer kobo, from server prices
+  status: AsyncStatus;
+  error: AppError | null;
+  isLoading: boolean;
+  isMutating: boolean;           // disable a button during a mutation
+  refresh: () => Promise<void>;
+  addItem: (productId: string, quantity?: number) => Promise<void>;
+  setItemQuantity: (productId: string, quantity: number) => Promise<void>;
+  removeItem: (productId: string) => Promise<void>;
+  clear: () => Promise<void>;
+}
+```
+
+- **Anonymous visitors get an empty cart and no prompt.** They are asked to sign
+  in at checkout, which is the journey DESIGN.md describes.
+- **One active cart per user.** `useCart` resolves it lazily and creates one on
+  first use if the user has none.
+- `addItem` upserts onto `(cart_id, product_id)`, so a product never appears
+  twice. `setItemQuantity(p, 0)` deletes the line.
+- Mutations re-read live `inventory` and reject with `InsufficientInventoryError`
+  (`code: 'insufficient_inventory'`, `productId`, `available`). That check is a
+  courtesy — `create-order` enforces it again server-side, and that one counts.
+- **Mutations reject.** They also set `error`, so you can either `await` them
+  (`try/catch` for inline feedback) or watch `isMutating`.
+- `subtotalKobo` is a **display convenience, not an authority.** The order total
+  is recalculated by `create-order`, which never trusts this value.
+- While the session is still loading, `status` is `'loading'`, not `'idle'` —
+  otherwise a signed-in user sees an empty cart flash on every page load.
+
+### `useOrder(id, options?)`
+
+```ts
+interface OrderState {
+  order: Order | null;
+  items: OrderItemWithProduct[];  // price snapshots, with a slug/name join
+  status: AsyncStatus;
+  error: AppError | null;
+  isLoading: boolean;
+  refresh: () => Promise<void>;
+}
+```
+
+`:id` is the order **uuid**, not the human-facing reference. The query filters on
+`user_id` as well as `id` — defence in depth behind RLS, and a test asserts it.
+A miss is `not_found`, never `forbidden`, so the UI cannot be used to probe which
+ids exist. Totals come from the snapshots; never recompute them.
+
+### `useOrders()`
+
+```ts
+interface OrderSummary extends Order { itemCount: number }
+interface OrdersState {
+  orders: OrderSummary[];  // newest first; [] while loading, signed out, or empty
+  status: AsyncStatus;
+  error: AppError | null;
+  isLoading: boolean;
+  refresh: () => Promise<void>;
+}
+```
+
+Signed out: `status: 'idle'`, `orders: []`, **no error** — the account page shows
+a sign-in prompt, not an error panel. One query with `order_items(count)`, so
+there is no N+1.
+
+---
+
+## Money
+
+`src/lib/money.ts`. **Integer kobo everywhere.** 1 naira = 100 kobo. No floats
+in application code — not `price * 0.9`, not a `reduce` that can drift.
+
+```ts
+const KOBO_PER_NAIRA = 100;
+const CURRENCY = 'NGN';   // ISO 4217
+const LOCALE = 'en-NG';
+
+formatMoney(kobo: number, options?: { compact?: boolean }): string
+//   1850000 -> '₦18,500.00'      compact -> '₦18,500'
+//   Non-finite input renders '—', never '₦NaN' on a price.
+
+toNaira(kobo: number): number          // 1850000 -> 18500
+fromNaira(naira: number): number       // 18500  -> 1850000
+
+parseMoneyToKobo(input: string): number | null
+//   Round-trips: parseMoneyToKobo(formatMoney(k)) === k.
+//   The input is NAIRA, because naira is what people see and type.
+//   '.' is always the decimal point; ',' groups thousands; ',NN' is a decimal.
+//   Accounting parentheses mean negative. 2dp max, truncated not rounded.
+//   Returns null rather than guessing.
+
+formatMoneyDelta(kobo: number): string  // '+₦1,200.00' / '—' at zero
+
+sumLineTotals(lines: ReadonlyArray<{ quantity: number; unitPriceKobo: number }>): number
+//   Use this instead of writing your own reduce over money.
+```
+
+**Round a price for display and you have a bug.** `create-order` recomputes the
+authoritative total server-side; your subtotal is a courtesy.
+
+## Errors
+
+`src/lib/errors.ts`. Every error crossing a service boundary is normalised to
+`AppError`, so UI code decides on `error.code` and never string-matches a
+message.
+
+```ts
+const APP_ERROR_CODES = [
+  'configuration', 'unauthenticated', 'forbidden', 'not_found', 'validation',
+  'insufficient_inventory', 'rate_limited', 'network', 'server', 'cancelled', 'unknown',
+] as const;
+
+class AppError extends Error {
+  readonly code: AppErrorCode;
+  readonly status?: number;
+  readonly details?: Record<string, unknown>;
+  readonly retryable: boolean;   // can the user usefully try again?
+  toLogFields(): { code; message; status?; details? }   // safe to log
+}
+
+class InsufficientInventoryError extends AppError {
+  readonly productId?: string;
+  readonly available?: number;
+}
+
+class ConfigurationError extends AppError {}
+class ForbiddenCredentialError extends ConfigurationError {}
+
+toAppError(error: unknown, context?: string): AppError
+```
+
+`context` is a short noun phrase — `'Could not load the catalogue'` beats
+`TypeError: Failed to fetch`. `retryable` is what `ErrorState` reads, so a 404
+does not offer "Try again".
+
+`AppError.message` is written for a human and is safe to render. `details` is
+machine-readable context — **never credentials, never a full payload.**
+
+## Logging
+
+Full conventions in [`LOGGING.md`](./LOGGING.md). The API:
+
+```ts
+logger.info(event: LogEvent): void
+logger.error(event: LogEvent): void     // adds outcome: 'failure'
+logger.setContext(fields: LogFields): void
+logger.child(fields: LogFields): Logger
+logger.setLevel('info' | 'error' | 'silent'): void
+```
+
+```ts
+logger.info({
+  event: 'cart_item_added',   // canonical snake_case name, past tense
+  outcome: 'success',
+  durationMs: 12,
+  cartId, userId,             // high-cardinality identifiers
+  itemCount, subtotalKobo,    // business context
+});
+```
+
+Two rules that carry the most weight:
+
+1. **One wide event per operation**, not a scatter of one-line logs. If you find
+   yourself logging at three points inside one function, you want one event at
+   the end with the results.
+2. **Never log a credential, a token, a full address, or a request body.**
+   `scrub()` redacts known-sensitive keys as a backstop, but it is not a licence
+   to be careless.
+
+## Schemas
+
+`@/schemas`. **The Edge Function validates the same shapes against the same
+source of truth.** If A2 needs a schema that is not here, it gets added here
+first — never duplicated.
+
+```ts
+addressSchema / checkoutSchema   // the seven fulfilment fields, in form order
+ADDRESS_FIELDS                    // ['fullName','email','phone','addressLine1',
+                                  //  'addressLine2','city','state','country']
+createOrderPayloadSchema          // { shipping: <address> } — nothing else
+createOrderResultSchema           // { orderId, reference, totalKobo, emailSent }
+normalisePhone(value: string)     // any accepted input -> '+2348030000000'
+
+type FieldErrors = Record<string, string | undefined>;
+const FORM_ERROR_KEY = 'form';
+
+checkoutFieldErrors(error: ZodError): FieldErrors  // issues -> first message per path
+fieldErrorsFrom(error: unknown): FieldErrors       // ZodError | Error | unknown
+hasFieldError(errors: FieldErrors, field: string): boolean
+```
+
+Wire names are camelCase (`addressLine1`) because the payload is JSON posted to an
+Edge Function.
+
+```tsx
+const result = checkoutSchema.safeParse(values);
+if (!result.success) setErrors(checkoutFieldErrors(result.error));
+<Input label="City" error={errors.city} value={values.city} onChange={…} />
+```
+
+`createOrderPayloadSchema` **strips** unknown keys, so a hostile client adding
+`totalKobo` or `userId` gets a payload that does not contain them. That is the
+security property: the server has nowhere to be fooled.
+
+`emailSent: false` means the order **exists** and the email may not arrive. Word
+the confirmation that way; never imply the order failed.
+
+## Supabase client and types
+
+```ts
+// src/lib/supabase.ts
+getSupabaseClient(): Supabase        // memoised; throws ConfigurationError if unset
+getSession(): Promise<Session | null>
+assertNoSecretCredentials(): void    // runs at module load; throws if a secret is present
+```
+
+**Only publishable credentials, ever.** A `VITE_`-prefixed service-role key or a
+service-role JWT throws at module evaluation — fail-fast, because a leaked key is
+a production incident and the cheapest place to catch it is before the app
+renders.
+
+The client is created **lazily**. Importing the module never throws for a
+*missing* configuration, only for a *forbidden* one — so the shell renders and
+each hook reports a clean error state.
+
+`src/lib/supabase.types.ts` is hand-written from SPEC.md. The data agent
+regenerates it with `supabase gen types typescript --local`. **If that changes
+anything, that is a contract change** → `CONTRACT-REQUESTS.md`, not a silent
+patch. Domain aliases (`Product`, `Cart`, `Order`, …) live at the bottom of the
+file; import those, not the `*Row` names.
+
+## Commands
+
+```bash
+npm run dev          # Vite dev server
+npm run build        # typecheck + production build
+npm run typecheck    # tsc -b
+npm run check        # Biome lint + format check
+npm run check:fix    # Biome, writing fixes
+npm run ci:check     # typecheck + check + test:unit   ← run before you push
+npm test             # everything
+npm run test:unit    # jsdom, no Docker needed
+npm run test:func    # needs the local stack
+```
+
+Local database — **never type a raw `supabase` command**:
+
+```bash
+npm run db:start     # boot the shared stack
+npm run db:reset     # migrations + seed from scratch  (Foundation / A1 / A7 ONLY)
+npm run db:stop
+npm run db:status
+npm run db:functions # serve create-order with supabase/.env.local
+```
+
+> **One stack, many worktrees.** `supabase/config.toml` pins `project_id = "kanso"`,
+> so every worktree attaches to the same containers. Do not change it. And do not
+> run `db:reset` casually — it wipes every other agent's test data mid-run.
+
+Functional tests read connection values from the **environment**, never from
+`.env.local` (which points at the remote project):
+
+```bash
+eval "$(supabase status -o env)"
+npm run test:func
+```
+
+`.env.local` needs only `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`.
+The Edge Function secrets (`SUPABASE_SERVICE_ROLE_KEY`, `MAILGUN_*`, `APP_URL`)
+belong in Supabase — see `.env.example`.

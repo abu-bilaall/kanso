@@ -1,0 +1,295 @@
+/* ===========================================================================
+   Kanso design tokens
+   ---------------------------------------------------------------------------
+   Frozen contract surface. Phase 1 (Foundation) owns this file.
+
+   Values are lifted verbatim from the Stitch prototypes in
+   `stitch-designs/kanso_storefront/code.html` (all five desktop screens share one
+   identical `tailwind.config` block, so there is a single source of truth) and
+   renamed into a Kanso vocabulary. The Stitch key/value pairs are noted beside
+   each token so a reviewer can diff the prototype against this file.
+
+   Three rules:
+     1. Components NEVER hardcode a hex value. They use the semantic utilities
+        below (`bg-paper`, `text-ink`, `border-hairline`, ...).
+     2. The primitives (`--k-*`) are the raw Stitch palette. The Tailwind theme
+        (`@theme`) maps semantic names onto those primitives. Rename here, not
+        in 60 components.
+     3. Hard-edged means 2px, always. `border-2 border-ink`, never a shadow.
+   =========================================================================== */
+
+:root {
+  /* --- Core palette ------------------------------------------------------
+     paper    #faf9f5  Stitch: background / surface / surface-bright
+     ink      #1b1c1a  Stitch: on-surface / on-background
+     accent   #d4f024  Stitch: secondary-container / secondary-fixed  (chartreuse)
+  */
+  --k-paper: #faf9f5;
+  --k-ink: #1b1c1a;
+  --k-accent: #d4f024;
+
+  /* --- Surface ramp ------------------------------------------------------
+     Stitch's Material-3 surface ramp, lightest first. `lowest` is the only
+     pure white in the system and is reserved for raised cards.
+  */
+  --k-surface-lowest: #ffffff; /* Stitch: surface-container-lowest */
+  --k-surface-low: #f5f4f0; /* Stitch: surface-container-low */
+  --k-surface: #faf9f5; /* Stitch: surface / surface-bright */
+  --k-surface-container: #efeeea; /* Stitch: surface-container */
+  --k-surface-high: #e9e8e4; /* Stitch: surface-container-high */
+  --k-surface-highest: #e3e2df; /* Stitch: surface-container-highest / surface-variant */
+  --k-surface-dim: #dbdad6; /* Stitch: surface-dim */
+
+  /* --- Ink ramp ----------------------------------------------------------
+     `--k-ink` itself is declared in the core palette above. */
+  --k-ink-muted: #44474a; /* Stitch: on-surface-variant — secondary text */
+  --k-ink-subtle: #75777a; /* Stitch: outline — tertiary text, meta labels */
+  --k-ink-on-accent: #191e00; /* Stitch: on-secondary-fixed — text on chartreuse */
+  --k-ink-on-primary: #ffffff; /* Stitch: on-primary — text on a solid ink button */
+  --k-graphite: #1b1c1d; /* Stitch: primary-container — the "pressed" ink surface */
+
+  /* --- Accent ramp -------------------------------------------------------
+     `--k-accent` itself is declared in the core palette above. */
+  --k-accent-deep: #576400; /* Stitch: secondary — readable chartreuse on paper */
+  --k-accent-deep-dim: #414c00; /* Stitch: on-secondary-fixed-variant */
+
+  /* --- Rules and borders ------------------------------------------------- */
+  --k-hairline: #c5c6c9; /* Stitch: outline-variant — 1px structural rule */
+  --k-rule: #1b1c1a; /* Stitch: primary — the hard 2px edge */
+
+  /* --- Status ------------------------------------------------------------ */
+  --k-danger: #ba1a1a; /* Stitch: error */
+  --k-danger-surface: #ffdad6; /* Stitch: error-container */
+  --k-danger-ink: #93000a; /* Stitch: on-error-container */
+  --k-success-surface: #d4f024; /* Kanso has no green; stock states use the accent */
+  --k-inverse: #30312e; /* Stitch: inverse-surface */
+  --k-inverse-text: #f2f1ed; /* Stitch: inverse-on-surface */
+
+  /* --- Geometry ---------------------------------------------------------- */
+  --k-radius-tight: 4px; /* Stitch: borderRadius.DEFAULT */
+  --k-radius-component: 8px; /* Stitch: borderRadius.lg — DESIGN.md's component radius */
+  --k-radius-panel: 12px; /* Stitch: borderRadius.xl — large media panels only */
+  --k-border-hard: 2px; /* DESIGN.md "hard 2px borders" */
+
+  /* --- Layout ------------------------------------------------------------ */
+  --k-rail-width: 160px; /* DESIGN.md: persistent left rail, ~160px */
+  --k-header-height: 64px; /* Stitch: desktop header h-16 */
+  --k-mobile-header-height: 56px; /* Stitch: mobile header h-14 */
+  --k-tabbar-height: 56px; /* Stitch: mobile tab bar h-14 */
+  --k-gutter: 16px; /* Stitch: `gutter` */
+  --k-gutter-desktop: 24px; /* Stitch: `gutter-desktop` */
+  --k-space-xs: 4px; /* Stitch: `space-xs` */
+  --k-space-sm: 8px; /* Stitch: `space-sm` */
+  --k-space-md: 16px; /* Stitch: `space-md` / `margin` */
+  --k-space-lg: 24px; /* Stitch: `space-lg` / `margin-tablet` */
+  --k-space-xl: 40px; /* Stitch: `space-xl` / `margin-desktop` */
+
+  /* --- Motion ------------------------------------------------------------
+     DESIGN.md: "motion should communicate state, not decorate". One duration
+     and one easing, used everywhere, disabled under prefers-reduced-motion.
+  */
+  --k-motion-fast: 120ms;
+  --k-motion-base: 180ms;
+  --k-ease: cubic-bezier(0.2, 0, 0, 1);
+  --k-hover-lift: -4px; /* DESIGN.md: subtle hover lift */
+
+  /* --- Accessibility ------------------------------------------------------ */
+  --k-tap-target: 44px; /* DESIGN.md / PLAN 3: minimum interactive target */
+  --k-focus-ring: var(--k-accent);
+  --k-focus-ring-offset: 2px;
+}
+
+/* ===========================================================================
+   Tailwind theme
+   ---------------------------------------------------------------------------
+   Tailwind v4 is CSS-first: this `@theme` block *is* the design system. Anything
+   declared under a `--color-*` / `--font-*` / `--radius-*` / `--spacing-*`
+   namespace becomes a utility class automatically:
+
+     --color-paper   ->  bg-paper  text-paper  border-paper  ring-paper
+     --color-ink     ->  bg-ink    text-ink    border-ink
+     --color-hairline->  border-hairline
+     --font-display ->  font-display
+     --radius-component -> rounded-component
+     --spacing-gutter   ->  p-gutter
+
+   These map to the `--k-*` primitives above, so there is exactly one place where
+   a Stitch hex value is written.
+   =========================================================================== */
+
+@theme inline {
+  /* Semantic colour ------------------------------------------------------------ */
+  --color-paper: var(--k-paper);
+  --color-ink: var(--k-ink);
+  --color-ink-muted: var(--k-ink-muted);
+  --color-ink-subtle: var(--k-ink-subtle);
+  --color-ink-on-accent: var(--k-ink-on-accent);
+  --color-ink-on-primary: var(--k-ink-on-primary);
+  --color-graphite: var(--k-graphite);
+  --color-accent: var(--k-accent);
+  --color-accent-deep: var(--k-accent-deep);
+  --color-accent-deep-dim: var(--k-accent-deep-dim);
+  --color-hairline: var(--k-hairline);
+  --color-danger: var(--k-danger);
+  --color-danger-surface: var(--k-danger-surface);
+  --color-danger-ink: var(--k-danger-ink);
+  --color-inverse: var(--k-inverse);
+  --color-inverse-text: var(--k-inverse-text);
+
+  /* Surface ramp ---------------------------------------------------------------- */
+  --color-surface-lowest: var(--k-surface-lowest);
+  --color-surface-low: var(--k-surface-low);
+  --color-surface-container: var(--k-surface-container);
+  --color-surface-high: var(--k-surface-high);
+  --color-surface-highest: var(--k-surface-highest);
+  --color-surface-dim: var(--k-surface-dim);
+
+  /* Typography -----------------------------------------------------------------
+     `--font-sans`      Archivo — every functional label, body copy and product name.
+     `--font-display`   Archivo Black — hero and section headings only.
+     `--font-editorial` the reserved secondary face. Every Stitch technical/meta
+                        string ("FULFILLMENT & DISPATCH / V1", "#KS-8902-DX", spec
+                        rows) is set in the prototype's mono voice, so that is what
+                        this token is. Editorial moments only — never body copy.
+  */
+  --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Archivo Black", "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-editorial: ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
+
+  /* Type scale (Stitch: body-lg / label-lg / display-hero) ---------------------- */
+  --text-meta: 0.6875rem; /* 11px  — the mono meta strip */
+  --text-meta--line-height: 1rem;
+  --text-body: 1rem; /* 16px */
+  --text-body--line-height: 1.5rem;
+  --text-body-lg: 1.125rem; /* 18px / 28px — Stitch body-lg */
+  --text-body-lg--line-height: 1.75rem;
+  --text-label: 0.875rem; /* 14px / 18px / 0.06em — Stitch label-lg */
+  --text-label--line-height: 1.125rem;
+  --text-label--letter-spacing: 0.06em;
+  --text-heading: 1.875rem; /* 30px — section headings */
+  --text-heading--line-height: 2.25rem;
+  --text-hero: 3rem; /* 48px — Stitch display-hero, clamped down on mobile */
+  --text-hero--line-height: 3.25rem;
+  --text-hero--letter-spacing: -0.03em;
+
+  /* Geometry ------------------------------------------------------------------- */
+  --radius-tight: var(--k-radius-tight);
+  --radius-component: var(--k-radius-component);
+  --radius-panel: var(--k-radius-panel);
+
+  /* Spacing aliases mirroring the Stitch scale ------------------------------- */
+  --spacing-xs: var(--k-space-xs);
+  --spacing-sm: var(--k-space-sm);
+  --spacing-gutter: var(--k-gutter);
+  --spacing-gutter-desktop: var(--k-gutter-desktop);
+  --spacing-rail: var(--k-rail-width);
+
+  /* Motion -------------------------------------------------------------------- */
+  --ease-kanso: var(--k-ease);
+
+  /* Breakpoint ----------------------------------------------------------------
+     PLAN 3 fixes the switch at 768px. It is Tailwind's `md`, restated here so the
+     number appears in exactly one place and `md:` never drifts.
+  */
+  --breakpoint-md: 768px;
+}
+
+/* ===========================================================================
+   Base layer
+   =========================================================================== */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    /* Kanso has no soft shadows on interactive edges; a stray one is a bug. */
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--k-paper);
+    color: var(--k-ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Chartreuse is used as a text/background accent, never as a selection colour
+     over a photo. */
+  ::selection {
+    background-color: var(--k-accent);
+    color: var(--k-ink-on-accent);
+  }
+
+  /*
+   * Focus. DESIGN.md requires a visible keyboard focus ring everywhere, and
+   * PLAN 3 requires it to survive on mobile. A 2px ink ring with a chartreuse
+   * halo reads on both paper and chartreuse backgrounds; removing outlines in
+   * :focus-visible is never acceptable.
+   */
+  :focus-visible {
+    outline: 2px solid var(--k-ink);
+    outline-offset: 2px;
+    border-radius: var(--k-radius-tight);
+  }
+
+  /*
+   * Reduced motion. DESIGN.md: motion must communicate state, never decorate —
+   * so when the user asks for less, we remove it entirely rather than shortening
+   * it. Components additionally gate their transitions on this same media query.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ===========================================================================
+   Small utilities used by more than one component. Anything that appears twice
+   lives here; anything that appears once stays inline at its call site.
+   =========================================================================== */
+
+@layer utilities {
+  /* The single place the "hard edge" rule is expressed. */
+  .border-hard {
+    border-width: var(--k-border-hard);
+    border-style: solid;
+  }
+
+  /* 44px minimum tap target — PLAN 3. Use on anything a thumb has to hit. */
+  .tap-target {
+    min-height: var(--k-tap-target);
+    min-width: var(--k-tap-target);
+  }
+
+  /* Motion that communicates a state change. Opt-in, never decorative. */
+  .transition-kanso {
+    transition-property: color, background-color, border-color, transform, opacity;
+    transition-duration: var(--k-motion-base);
+    transition-timing-function: var(--k-ease);
+  }
+}
+
+/* One-shot shimmer for `Skeleton`. Runs once, never loops; killed outright
+   under prefers-reduced-motion by the base-layer override above. */
+@keyframes kanso-skeleton {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}

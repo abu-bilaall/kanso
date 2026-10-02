@@ -1,0 +1,26 @@
+/* ===========================================================================
+   Global stylesheet. This is the only file `src/main.tsx` imports for styling.
+
+   Import order matters:
+     1. Fonts  — self-hosted via @fontsource, no Google Fonts request at runtime.
+     2. Tailwind — the preflight + utility engine.
+     3. Tokens — the `:root` primitives and the `@theme` mapping (see tokens.css).
+
+   Every colour, radius, font and spacing value in the app resolves through
+   tokens.css. If you find yourself typing a hex value in a component, stop.
+   =========================================================================== */
+
+/* 1. Fonts ------------------------------------------------------------------
+   Archivo carries every functional label, body string and product name.
+   Archivo Black is display-only (hero and section headings).
+   Self-hosted so the storefront makes no third-party request and works offline.
+   `latin` subsets only — the catalogue is English; this is most of the payload. */
+@import "@fontsource/archivo/latin-400.css";
+@import "@fontsource/archivo/latin-500.css";
+@import "@fontsource/archivo/latin-600.css";
+@import "@fontsource/archivo/latin-700.css";
+@import "@fontsource/archivo-black/latin-400.css";
+
+/* 2 + 3. Tailwind and the design system ------------------------------------- */
+@import "tailwindcss";
+@import "./tokens.css";
