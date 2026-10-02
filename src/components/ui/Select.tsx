@@ -33,7 +33,7 @@ const CONTROL_CLASSES = [
   'border-hard border-hairline text-ink',
   'transition-kanso',
   'hover:border-ink-subtle',
-  'focus:border-ink focus:bg-surface-container-high focus:outline-none',
+  'focus:border-ink focus:bg-surface-high focus:outline-none',
   'aria-[invalid=true]:border-danger aria-[invalid=true]:bg-danger-surface/40',
   'disabled:cursor-not-allowed disabled:opacity-50',
 ].join(' ');

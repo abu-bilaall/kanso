@@ -4,10 +4,22 @@
  * ## What it owns
  *
  * A Kanso user has at most one *active* cart (PLAN 4, A1's partial unique index).
- * This hook resolves it lazily: on first load for an authenticated user it reads
- * the active cart and, if none exists, creates one. Anonymous visitors get an
- * empty cart in memory and are not asked to sign in until checkout — which is
- * the journey DESIGN.md describes.
+ * The hook resolves it lazily: for an authenticated user it reads the active
+ * cart and, if none exists, creates one. Anonymous visitors get an empty cart
+ * in memory and are not asked to sign in until checkout — which is the journey
+ * DESIGN.md describes.
+ *
+ * ## One cart, not one per call site
+ *
+ * The rail, the mobile header, the tab bar and the page under them all call this
+ * hook. They used to get a private copy each — four fetches, four badges, and a
+ * badge that kept showing the pre-checkout count on the confirmation screen.
+ * They now share one store (`internal/cartStore`): one fetch however many
+ * consumers are mounted, and a mutation in any of them is visible in all of
+ * them on the next paint, with no manual refresh.
+ *
+ * The public shape below is unchanged by that, and is the contract in
+ * `docs/CONTRACTS.md`.
  *
  * ## Money
  *
@@ -28,25 +40,29 @@
  * - Signed out: `status: 'idle'`, `cart: null`, `items: []`. No error, no query.
  *   Mutating methods reject with an `unauthenticated` AppError rather than
  *   silently doing nothing.
- * - Every other failure is `status: 'error'` with a normalised {@link AppError}.
- *   Mutations reject with the same error and also set `error`, so a caller can
- *   either await them or watch the state.
+ * - A failed read is `status: 'error'` with a normalised {@link AppError}.
+ * - A failed mutation rejects with the same error and leaves the read state
+ *   alone, so a caller can either await it or watch `isMutating`; the caller
+ *   surfaces the rejection on the row that caused it.
  */
 
-import { useCallback, useMemo, useState } from 'react';
-import { AppError, InsufficientInventoryError, toAppError } from '@/lib/errors';
-import { logger } from '@/lib/logger';
+import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
+import type { AppError } from '@/lib/errors';
 import { sumLineTotals } from '@/lib/money';
-import { getSupabaseClient } from '@/lib/supabase';
-import type { Cart, CartItemWithProduct, Product } from '@/lib/supabase.types';
-import { type AsyncStatus, useAsyncResource } from './internal/useAsyncResource';
+import type { Cart, CartItemWithProduct } from '@/lib/supabase.types';
+import {
+  addCartItem,
+  type CartSnapshot,
+  clearCart,
+  getCartStoreState,
+  refreshCart,
+  removeCartItem,
+  selectCart,
+  setCartItemQuantity,
+  subscribeToCartStore,
+} from './internal/cartStore';
+import type { AsyncStatus } from './internal/useAsyncResource';
 import { useAuth } from './useAuth';
-
-/** Cart plus its joined items — the shape one fetch returns. */
-interface CartSnapshot {
-  cart: Cart;
-  items: CartItemWithProduct[];
-}
 
 export interface CartState {
   /** The active cart row, or `null` when signed out or on error. */
@@ -77,224 +93,57 @@ export interface CartState {
   clear: () => Promise<void>;
 }
 
-/** Resolve the active cart, creating it when the user has none. */
-async function loadOrCreateActiveCart(userId: string): Promise<CartSnapshot> {
-  const client = getSupabaseClient();
-
-  const { data: existing, error: findError } = await client
-    .from('carts')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('status', 'active')
-    .maybeSingle();
-
-  if (findError) throw toAppError(findError, 'Could not load your cart');
-
-  let cart = existing;
-
-  if (cart === null) {
-    const { data: created, error: createError } = await client
-      .from('carts')
-      .insert({ user_id: userId, status: 'active' })
-      .select('*')
-      .single();
-
-    if (createError) throw toAppError(createError, 'Could not start a cart for you');
-    cart = created;
-    logger.info({ event: 'cart_created', scope: 'cart', outcome: 'success', userId });
-  }
-
-  const { data: items, error: itemsError } = await client
-    .from('cart_items')
-    .select('*, product:products(*)')
-    .eq('cart_id', cart.id)
-    .order('created_at', { ascending: true });
-
-  if (itemsError) throw toAppError(itemsError, 'Could not load your cart');
-  return { cart, items: items ?? [] };
-}
-
 export function useCart(): CartState {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const userId = user?.id ?? null;
 
-  const [isMutating, setIsMutating] = useState(false);
+  const store = useSyncExternalStore(subscribeToCartStore, getCartStoreState);
 
-  const resource = useAsyncResource<CartSnapshot>(
-    async () => {
-      if (userId === null) {
-        throw new AppError('unauthenticated', 'You need to sign in to use a cart.');
-      }
-      return loadOrCreateActiveCart(userId);
-    },
-    {
-      enabled: isAuthenticated && userId !== null,
-      logEvent: 'cart_loaded',
-      logFields: { userId },
-    },
-  );
+  // Idempotent, and shared: the second and third consumer to mount join the
+  // first one's request rather than starting another.
+  useEffect(() => {
+    if (userId === null) return;
+    void selectCart(userId);
+  }, [userId]);
 
-  /**
-   * Read the product's live price and inventory. Every mutation re-reads it —
-   * a cart line's inventory is a moving target, and a stale value from the join
-   * would let an oversell through to the server.
-   */
-  const readProduct = useCallback(async (productId: string): Promise<Product> => {
-    const { data, error } = await getSupabaseClient()
-      .from('products')
-      .select('*')
-      .eq('id', productId)
-      .maybeSingle();
-
-    if (error) throw toAppError(error, 'Could not check that item');
-    if (data === null) {
-      throw new AppError('not_found', 'That product is no longer available.', {
-        details: { productId },
-      });
-    }
-    return data;
-  }, []);
-
-  /**
-   * Run a mutation with a consistent envelope: mark busy, surface failures on
-   * `error` as well as by rejecting, refresh, and always clear busy.
-   */
-  const mutate = useCallback(
-    async (event: string, run: (context: { cartId: string }) => Promise<void>): Promise<void> => {
-      const currentCart = resource.data?.cart;
-      if (currentCart === null || currentCart === undefined) {
-        throw new AppError('unauthenticated', 'You need to sign in to change your cart.');
-      }
-
-      setIsMutating(true);
-      const startedAt = Date.now();
-      try {
-        await run({ cartId: currentCart.id });
-        await resource.refresh();
-        logger.info({
-          event,
-          scope: 'cart',
-          outcome: 'success',
-          durationMs: Date.now() - startedAt,
-          cartId: currentCart.id,
-          userId,
-        });
-      } catch (thrown) {
-        const error =
-          thrown instanceof AppError ? thrown : toAppError(thrown, 'Could not update your cart');
-        logger.error({
-          event,
-          scope: 'cart',
-          durationMs: Date.now() - startedAt,
-          cartId: currentCart.id,
-          userId,
-          error,
-        });
-        throw error;
-      } finally {
-        setIsMutating(false);
-      }
-    },
-    [resource, userId],
-  );
-
+  const refresh = useCallback(() => refreshCart(), []);
   const addItem = useCallback(
-    async (productId: string, quantity = 1): Promise<void> => {
-      if (!Number.isInteger(quantity) || quantity < 1) {
-        throw new AppError('validation', 'Choose a quantity of at least one.');
-      }
-
-      await mutate('cart_item_added', async ({ cartId }) => {
-        const existingLine = resource.data?.items.find((item) => item.product_id === productId);
-        const nextQuantity = (existingLine?.quantity ?? 0) + quantity;
-
-        const product = await readProduct(productId);
-
-        if (nextQuantity > product.inventory) {
-          throw new InsufficientInventoryError(
-            product.inventory === 0
-              ? `${product.name} is out of stock.`
-              : `Only ${product.inventory} of ${product.name} left.`,
-            { productId, available: product.inventory },
-          );
-        }
-
-        const { error } = await getSupabaseClient()
-          .from('cart_items')
-          .upsert(
-            { cart_id: cartId, product_id: productId, quantity: nextQuantity },
-            { onConflict: 'cart_id,product_id' },
-          );
-
-        if (error) throw toAppError(error, 'Could not add that to your cart');
-      });
-    },
-    [mutate, readProduct, resource.data],
+    (productId: string, quantity = 1) => addCartItem(userId, productId, quantity),
+    [userId],
   );
-
   const setItemQuantity = useCallback(
-    async (productId: string, quantity: number): Promise<void> => {
-      await mutate('cart_item_updated', async ({ cartId }) => {
-        if (!Number.isInteger(quantity) || quantity < 0) {
-          throw new AppError('validation', 'Quantity must be a whole number of zero or more.');
-        }
-
-        // Zero means "remove". Deleting is the honest implementation of an empty
-        // line, and it keeps the unique (cart_id, product_id) index satisfied.
-        if (quantity === 0) {
-          const { error } = await getSupabaseClient()
-            .from('cart_items')
-            .delete()
-            .eq('cart_id', cartId)
-            .eq('product_id', productId);
-          if (error) throw toAppError(error, 'Could not remove that item');
-          return;
-        }
-
-        const product = await readProduct(productId);
-        if (quantity > product.inventory) {
-          throw new InsufficientInventoryError(
-            `Only ${product.inventory} of ${product.name} left.`,
-            { productId, available: product.inventory },
-          );
-        }
-
-        const { error } = await getSupabaseClient()
-          .from('cart_items')
-          .update({ quantity })
-          .eq('cart_id', cartId)
-          .eq('product_id', productId);
-        if (error) throw toAppError(error, 'Could not update that item');
-      });
-    },
-    [mutate, readProduct],
+    (productId: string, quantity: number) => setCartItemQuantity(userId, productId, quantity),
+    [userId],
   );
-
   const removeItem = useCallback(
-    async (productId: string): Promise<void> => {
-      await mutate('cart_item_removed', async ({ cartId }) => {
-        const { error } = await getSupabaseClient()
-          .from('cart_items')
-          .delete()
-          .eq('cart_id', cartId)
-          .eq('product_id', productId);
-        if (error) throw toAppError(error, 'Could not remove that item');
-      });
-    },
-    [mutate],
+    (productId: string) => removeCartItem(userId, productId),
+    [userId],
   );
-
-  const clear = useCallback(async (): Promise<void> => {
-    await mutate('cart_cleared', async ({ cartId }) => {
-      const { error } = await getSupabaseClient().from('cart_items').delete().eq('cart_id', cartId);
-      if (error) throw toAppError(error, 'Could not empty your cart');
-    });
-  }, [mutate]);
+  const clear = useCallback(() => clearCart(userId), [userId]);
 
   return useMemo<CartState>(() => {
-    const items = resource.data?.items ?? [];
+    const signedIn = isAuthenticated && userId !== null;
+
+    // Signed out, the store's contents are not this visitor's to read. The
+    // contract's promise — an empty cart and no prompt — is kept by ignoring
+    // them rather than by trusting them to be gone.
+    const snapshot: CartSnapshot | null = signedIn ? store.data : null;
+    const items = snapshot?.items ?? [];
+
+    // While the session is still being read, the cart is loading — not empty,
+    // not broken. Collapsing those two states is what makes signed-in users see
+    // an empty cart flash on every page load. The same holds in the frame
+    // between auth settling and the store being pointed at this user.
+    const status: AsyncStatus = !signedIn
+      ? authLoading
+        ? 'loading'
+        : 'idle'
+      : store.userId === userId
+        ? store.status
+        : 'loading';
+
     return {
-      cart: resource.data?.cart ?? null,
+      cart: snapshot?.cart ?? null,
       items,
       itemCount: items.reduce((total, item) => total + item.quantity, 0),
       subtotalKobo: sumLineTotals(
@@ -304,24 +153,22 @@ export function useCart(): CartState {
             : [{ quantity: item.quantity, unitPriceKobo: item.product.price_kobo }],
         ),
       ),
-      // While the session is still being read, the cart is loading — not empty,
-      // not broken. Collapsing those two states is what makes signed-in users see
-      // an empty cart flash on every page load.
-      status: authLoading && !isAuthenticated ? 'loading' : resource.status,
-      error: resource.error,
-      isLoading: authLoading || resource.isLoading,
-      isMutating,
-      refresh: resource.refresh,
+      status,
+      error: signedIn ? store.error : null,
+      isLoading: status === 'loading',
+      isMutating: signedIn && store.isMutating,
+      refresh,
       addItem,
       setItemQuantity,
       removeItem,
       clear,
     };
   }, [
-    resource,
-    authLoading,
+    store,
     isAuthenticated,
-    isMutating,
+    userId,
+    authLoading,
+    refresh,
     addItem,
     setItemQuantity,
     removeItem,
