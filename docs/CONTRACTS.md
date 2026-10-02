@@ -372,6 +372,12 @@ cannot change anything. Passing `undefined` issues no query and stays `idle`.
 
 The signed-in user's active cart, with every mutation the UI needs.
 
+**One store, many readers.** Cart state lives in a single external store, so the
+rail badge, the mobile header badge, the tab bar and the page all read the same
+value. Mount it anywhere, in any order: a concurrent first read is shared, a
+mutation from one consumer is visible to all of them without a refresh, and a
+superseded read cannot overwrite a newer one.
+
 ```ts
 interface CartState {
   cart: Cart | null;
@@ -399,8 +405,11 @@ interface CartState {
 - Mutations re-read live `inventory` and reject with `InsufficientInventoryError`
   (`code: 'insufficient_inventory'`, `productId`, `available`). That check is a
   courtesy — `create-order` enforces it again server-side, and that one counts.
-- **Mutations reject.** They also set `error`, so you can either `await` them
-  (`try/catch` for inline feedback) or watch `isMutating`.
+- **Mutations reject.** A failure throws and leaves `status` alone, so the caller
+  surfaces the message itself — `try/catch` for inline feedback on the row that
+  caused it, or watch `isMutating` to disable the control. Setting `error` on a
+  failed mutation is deliberately *not* done: it would flip `status` to `'error'`
+  and replace the whole cart with an error state, losing the basket.
 - `subtotalKobo` is a **display convenience, not an authority.** The order total
   is recalculated by `create-order`, which never trusts this value.
 - While the session is still loading, `status` is `'loading'`, not `'idle'` —
