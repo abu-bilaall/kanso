@@ -17,10 +17,18 @@
  *      as a backstop; callers are still expected to pass structured, minimal
  *      fields rather than raw payloads.
  *
- * There is exactly one logger instance in the codebase. Import it.
+ * There are two instances, not two implementations: the browser's `logger` and
+ * the Edge Function's `logger` in `supabase/functions/_shared/logger.ts` are
+ * both built by {@link createLogger} and therefore share one copy of
+ * {@link scrub}. The redaction pattern is the security backstop that keeps
+ * credentials out of the log stream, and a second copy of it would drift.
+ *
+ * The module loads under Vite, under Deno and under Node, so it carries no
+ * bundler-only syntax and reaches `./errors` with an explicit `.ts` extension
+ * (`allowImportingTsExtensions` in `tsconfig.app.json`).
  */
 
-import { AppError } from './errors';
+import { AppError } from './errors.ts';
 
 /** The only two levels. Anything more precise belongs in a field. */
 export type LogLevel = 'info' | 'error';
@@ -122,7 +130,7 @@ export function scrub(value: unknown, depth = 0): unknown {
  * point: a line without them cannot be tied to a build or a browser.
  */
 function environmentContext(): LogFields {
-  const importMeta = import.meta.env as Record<string, unknown> | undefined;
+  const importMeta = bundlerEnv();
   return {
     app: 'kanso-web',
     runtime: 'browser',
@@ -132,11 +140,37 @@ function environmentContext(): LogFields {
   };
 }
 
-function createLogger(base: LogFields, level: LogLevelGate): Logger {
+/**
+ * `import.meta.env` is a Vite convention: it is absent outside a bundler, and
+ * Deno's `ImportMeta` does not declare it. Read it through a widened cast
+ * rather than a direct property access so this module is loadable in both
+ * runtimes.
+ */
+function bundlerEnv(): Record<string, unknown> | undefined {
+  return (import.meta as { env?: Record<string, unknown> }).env;
+}
+
+/** Where a finished log line goes. Production writes to the console. */
+export type LogSink = (level: LogLevel, line: string) => void;
+
+function consoleSink(level: LogLevel, line: string): void {
+  if (level === 'error') {
+    console.error(line);
+  } else {
+    console.info(line);
+  }
+}
+
+export function createLogger(
+  base: LogFields,
+  level: LogLevelGate,
+  sink: LogSink = consoleSink,
+): Logger {
   const write = (logLevel: LogLevel, event: LogEvent): void => {
+    // A minimum-severity gate, not an exact match: `error` means errors only,
+    // `info` (the default) means everything, `silent` means nothing.
     if (level === 'silent') return;
     if (level === 'error' && logLevel === 'info') return;
-    if (level === 'info' && logLevel === 'error') return;
 
     const { error, ...rest } = event;
     const flattened = scrub({
@@ -148,19 +182,14 @@ function createLogger(base: LogFields, level: LogLevelGate): Logger {
     });
 
     // One JSON object per line. Never a stringified sentence.
-    const line = JSON.stringify(flattened);
-    if (logLevel === 'error') {
-      console.error(line);
-    } else {
-      console.info(line);
-    }
+    sink(logLevel, JSON.stringify(flattened));
   };
 
   return {
     info: (event) => write('info', event),
     error: (event) => write('error', { outcome: 'failure', ...event }),
     setContext: (fields) => Object.assign(base, scrub(fields) as LogFields),
-    child: (fields) => createLogger({ ...base, ...(scrub(fields) as LogFields) }, level),
+    child: (fields) => createLogger({ ...base, ...(scrub(fields) as LogFields) }, level, sink),
     setLevel: (next) => {
       level = next;
     },
