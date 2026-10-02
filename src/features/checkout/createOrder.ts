@@ -7,19 +7,43 @@
  * total, a user id or an inventory count even by accident. The authoritative
  * total comes back in the response and is never computed here.
  *
- * ## Error mapping
+ * ## The wire contract
  *
- * `create-order` is being written in parallel with this UI and its error envelope
- * is not yet a frozen contract, so {@link toCreateOrderError} reads a small
- * family of shapes rather than one: `{ error: { code, message } }` and a flat
- * `{ code, message }` are both accepted, and the code is trusted only when it is
- * one of `APP_ERROR_CODES`. Everything else degrades to a readable `AppError` —
- * never a stack trace, never silence.
+ * Both halves are documented in `supabase/functions/create-order/README.md`, and
+ * this file is written to that document rather than to a guess:
+ *
+ * ```jsonc
+ * // 200 — `createOrderResultSchema`. `order` and `items` also come back; the
+ * // frozen schema strips them, and `useOrder` reads the durable record anyway.
+ * { "orderId": "…", "reference": "KS-8902-DX", "totalKobo": 1990000, "emailSent": true }
+ *
+ * // failure — the shape `AppError` serialises to: FLAT, not nested.
+ * { "code": "insufficient_inventory",
+ *   "message": "Only 2 of Oak Pen Cup left in stock.",
+ *   "retryable": false,
+ *   "details": { "product": "oak-pen-cup", "productId": "…", "productName": "Oak Pen Cup",
+ *                "requested": 3, "available": 2, "shortfallCount": 1 } }
+ * ```
+ *
+ * ## Why the mapping is careful
+ *
+ * - `code` is trusted only when it is in `APP_ERROR_CODES`. An unknown code
+ *   degrades to a readable `AppError` rather than being passed through.
+ * - `details.available` and `details.productId` are read from `details`, which is
+ *   where the function puts them — reading them off the top level would silently
+ *   produce `undefined` and lose the count the customer needs.
+ * - `retryable` comes from the server when it is present, so a 409 is not
+ *   offered a "Try again" that will fail identically and a 500 is not left
+ *   unretryable.
+ * - `details.fieldErrors` (a `422`) is carried through so the form can render
+ *   the server's own per-field messages.
+ * - A `{ error: { … } }` envelope is still accepted, because the cost of being
+ *   wrong is a generic message and the cost of not accepting it is worse.
  *
  * `insufficient_inventory` is the case that matters. SPEC requires the server to
  * name the product and the available count, and this layer is forbidden from
- * flattening that into "something went wrong": the server's own sentence is
- * passed through verbatim.
+ * flattening that into "something went wrong" — the server's own sentence reaches
+ * the customer verbatim.
  */
 
 import {
@@ -34,6 +58,7 @@ import {
   type CreateOrderResult,
   createOrderPayloadSchema,
   createOrderResultSchema,
+  type FieldErrors,
 } from '@/schemas';
 
 /** The Edge Function's name, in one place. */
@@ -84,6 +109,23 @@ function readCode(value: unknown): AppErrorCode | null {
 }
 
 /**
+ * Per-field messages from a `422`, in the `field -> message` shape
+ * {@link CheckoutForm} renders. Anything that is not a string→string map is
+ * ignored, so a malformed `details` cannot put `[object Object]` on a screen.
+ */
+function readFieldErrors(details: Record<string, unknown> | null): FieldErrors | undefined {
+  if (details === null) return undefined;
+  const raw = asRecord(details.fieldErrors);
+  if (raw === null) return undefined;
+
+  const errors: FieldErrors = {};
+  for (const [field, message] of Object.entries(raw)) {
+    if (typeof message === 'string' && message.length > 0) errors[field] = message;
+  }
+  return Object.keys(errors).length === 0 ? undefined : errors;
+}
+
+/**
  * Turn a `create-order` failure into the {@link AppError} the UI renders.
  *
  * Exported for the unit suite: the mapping from a server envelope to a customer
@@ -95,32 +137,48 @@ function readCode(value: unknown): AppErrorCode | null {
  */
 export function toCreateOrderError(body: unknown, status?: number): AppError {
   const envelope = asRecord(body);
-  // A2 sends `{ error: { … } }`; a bare `{ code, message }` is accepted too, so a
-  // future envelope change degrades to a readable message rather than a generic one.
-  const inner = asRecord(envelope?.error) ?? envelope;
+  // The documented envelope is flat. A nested `{ error: { … } }` is accepted as
+  // a fallback so an envelope change costs a generic message rather than a crash.
+  const inner =
+    (envelope !== null && readCode(envelope.code) !== null ? envelope : null) ??
+    asRecord(envelope?.error) ??
+    envelope;
+  const details = asRecord(inner?.details);
+
   const code = readCode(inner?.code);
   const message = typeof inner?.message === 'string' ? inner.message : undefined;
+  const retryable = typeof inner?.retryable === 'boolean' ? inner.retryable : undefined;
+  const fieldErrors = readFieldErrors(details);
+  const carried: Record<string, unknown> = {
+    ...(details === null ? {} : { details }),
+    ...(fieldErrors === undefined ? {} : { fieldErrors }),
+  };
+  const options = {
+    status,
+    ...(retryable === undefined ? {} : { retryable }),
+    ...(Object.keys(carried).length === 0 ? {} : { details: carried }),
+  };
 
   if (code === 'insufficient_inventory') {
-    const productId = inner?.productId ?? inner?.product_id;
-    const available = inner?.available;
+    const productId = details?.productId ?? inner?.productId;
+    const available = details?.available ?? inner?.available;
     return new InsufficientInventoryError(
       message ?? 'Some of those quantities are no longer available.',
       {
-        status,
+        ...options,
         productId: typeof productId === 'string' ? productId : undefined,
         available: typeof available === 'number' ? available : undefined,
       },
     );
   }
 
-  if (code !== null) return new AppError(code, message, { status });
+  if (code !== null) return new AppError(code, message, options);
 
   if (status === 401 || status === 403) {
     return new AppError(
       'unauthenticated',
       message ?? 'Your session has ended. Sign in again to place your order.',
-      { status },
+      options,
     );
   }
 
@@ -128,9 +186,7 @@ export function toCreateOrderError(body: unknown, status?: number): AppError {
     return new AppError(
       'rate_limited',
       message ?? 'Too many attempts. Wait a moment and try again.',
-      {
-        status,
-      },
+      options,
     );
   }
 
@@ -138,18 +194,14 @@ export function toCreateOrderError(body: unknown, status?: number): AppError {
     return new AppError(
       'server',
       message ?? 'Kanso could not reach the order service. Try again shortly.',
-      {
-        status,
-      },
+      options,
     );
   }
 
   return new AppError(
     'unknown',
     message ?? 'The order could not be placed. Nothing has been charged.',
-    {
-      status,
-    },
+    options,
   );
 }
 
@@ -162,7 +214,9 @@ export async function toCreateOrderErrorFrom(error: unknown): Promise<AppError> 
  * Place an order for the signed-in user's active cart.
  *
  * @throws {AppError} every failure, normalised. `InsufficientInventoryError` when
- *         the server reports a stock shortfall, carrying its message and count.
+ *         the server reports a stock shortfall, carrying its message, product and
+ *         available count; a `validation` error carries `fieldErrors` when the
+ *         server sent per-field messages.
  */
 export async function createOrder(shipping: Address): Promise<CreateOrderResult> {
   // The schema is the wire contract. Parsing rather than spreading the object is
@@ -183,7 +237,6 @@ export async function createOrder(shipping: Address): Promise<CreateOrderResult>
     throw new AppError('server', 'The order service replied in a format we cannot read.', {
       status: 200,
       retryable: true,
-      details: { fieldCount: Object.keys(asRecord(data) ?? {}).length },
     });
   }
 

@@ -30,6 +30,19 @@ export interface CheckoutFormProps {
   onSubmit: (shipping: Address) => void;
   /** A message that belongs to the form rather than a control, e.g. from the server. */
   formError?: string | null;
+  /**
+   * Per-field messages from the server (`create-order`'s `422`, which carries
+   * `details.fieldErrors`). Shown under the control they name, and cleared as
+   * soon as the customer edits that control, exactly like the local ones.
+   */
+  fieldErrors?: FieldErrors;
+  /**
+   * Called when the customer edits a field, so the owner of `fieldErrors` can
+   * drop that field's server message. Without it a `422` message would sit under
+   * a control the customer has already corrected — the one way a form starts
+   * lying to the person filling it in.
+   */
+  onFieldEdited?: (field: AddressField) => void;
   isSubmitting?: boolean;
   /** Pre-fills from the signed-in session. Overridden by anything the user types. */
   defaults?: Partial<Record<AddressField, string>>;
@@ -60,6 +73,8 @@ const INITIAL: Draft = {
 export function CheckoutForm({
   onSubmit,
   formError = null,
+  fieldErrors,
+  onFieldEdited,
   isSubmitting = false,
   defaults,
   action,
@@ -71,9 +86,12 @@ export function CheckoutForm({
 
   const setField = (field: AddressField, value: string): void => {
     setValues((previous) => ({ ...previous, [field]: value }));
+    onFieldEdited?.(field);
     // Clear this control's message as soon as it is touched. Leaving a stale
     // error under a field the customer has just corrected is how a form starts
     // lying to the person filling it in.
+    // The control's message is cleared whether it came from the schema or from
+    // the server: either way it is about a value the customer has now changed.
     setErrors((previous) => {
       if (previous[field] === undefined) return previous;
       const next = { ...previous };
@@ -148,7 +166,7 @@ export function CheckoutForm({
                   required={field.required}
                   placeholder={field.placeholder}
                   hint={field.hint}
-                  error={errors[field.name]}
+                  error={errors[field.name] ?? fieldErrors?.[field.name]}
                   value={values[field.name]}
                   disabled={isSubmitting}
                   onChange={(event) => setField(field.name, event.target.value)}

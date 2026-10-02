@@ -59,7 +59,7 @@ import { useAuth, useCart } from '@/hooks';
 import { AppError, InsufficientInventoryError } from '@/lib/errors';
 import { logger } from '@/lib/logger';
 import { ROUTE_PATHS } from '@/routes';
-import type { Address } from '@/schemas';
+import type { Address, AddressField, FieldErrors } from '@/schemas';
 
 export function CheckoutPage() {
   const auth = useAuth();
@@ -67,6 +67,7 @@ export function CheckoutPage() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [serverFieldErrors, setServerFieldErrors] = useState<FieldErrors | undefined>(undefined);
 
   // The return intent is one-shot. Reaching checkout at all means the round trip
   // finished, so the marker is spent whether or not the callback page read it —
@@ -90,6 +91,7 @@ export function CheckoutPage() {
     async (shipping: Address): Promise<void> => {
       setIsSubmitting(true);
       setFormError(null);
+      setServerFieldErrors(undefined);
       const startedAt = Date.now();
       logger.info({
         event: 'cart_checkout_started',
@@ -128,6 +130,12 @@ export function CheckoutPage() {
               ? thrown.message
               : 'The order could not be placed. Nothing has been charged.';
         setFormError(message);
+        // A `422` names the offending fields; the form renders each one under its
+        // own control rather than collapsing the whole thing into one banner.
+        const fieldErrors = thrown instanceof AppError ? thrown.details?.fieldErrors : undefined;
+        if (typeof fieldErrors === 'object' && fieldErrors !== null) {
+          setServerFieldErrors(fieldErrors as FieldErrors);
+        }
         setIsSubmitting(false);
         logger.error({
           event: 'cart_checkout_failed',
@@ -229,6 +237,15 @@ export function CheckoutPage() {
 
             <CheckoutForm
               formError={formError}
+              fieldErrors={serverFieldErrors}
+              onFieldEdited={(field: AddressField) => {
+                setServerFieldErrors((previous) => {
+                  if (previous === undefined || previous[field] === undefined) return previous;
+                  const next = { ...previous };
+                  delete next[field];
+                  return next;
+                });
+              }}
               isSubmitting={isSubmitting}
               defaults={{
                 ...(auth.user?.email === undefined ? {} : { email: auth.user.email }),

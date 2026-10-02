@@ -197,6 +197,36 @@ describe('checkout submission', () => {
     expect(onSubmit.mock.calls[0]?.[0]?.addressLine2).toBeUndefined();
   });
 
+  it("renders the server's own per-field messages under the controls they name", () => {
+    renderForm({
+      onSubmit: vi.fn(),
+      fieldErrors: {
+        city: 'That city cannot be delivered to.',
+        phone: 'That number is unreachable.',
+      },
+    });
+
+    expect(screen.getByText('That city cannot be delivered to.')).toBeInTheDocument();
+    expect(screen.getByText('That number is unreachable.')).toBeInTheDocument();
+    expect(control('city')).toHaveAttribute('aria-invalid', 'true');
+    expect(control('email')).not.toHaveAttribute('aria-invalid');
+  });
+
+  it("drops a server's field message as soon as the customer edits that field", () => {
+    const onFieldEdited = vi.fn();
+    renderForm({
+      onSubmit: vi.fn(),
+      onFieldEdited,
+      fieldErrors: { city: 'That city cannot be delivered to.' },
+    });
+
+    expect(screen.getByText('That city cannot be delivered to.')).toBeInTheDocument();
+
+    fireEvent.change(control('city'), { target: { value: 'Lagos' } });
+
+    expect(onFieldEdited).toHaveBeenCalledWith('city');
+  });
+
   it('surfaces a form-level failure from the server without marking the fields invalid', () => {
     renderForm({ onSubmit: vi.fn(), formError: 'Only 2 of Milled Brass Desk Weight left.' });
 
