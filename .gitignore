@@ -35,3 +35,7 @@ supabase/functions/.env
 
 # Logs
 *.log
+
+# Compiled Edge Function output. `deno check` emits .js next to the .ts sources;
+# only the TypeScript belongs in version control.
+supabase/functions/**/*.js
