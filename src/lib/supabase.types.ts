@@ -135,9 +135,40 @@ export interface Relationship {
   referencedColumns: string[];
 }
 
-/** Every user-owned table points at `auth.users` through `user_id`. */
-type UserFk = {
-  foreignKeyName: 'profiles_id_fkey';
+/**
+ * The callable surface the migrations added. Both are `revoke execute ... from
+ * public, anon, authenticated` in SQL, so no browser client can reach them —
+ * a `Database` entry here is a *typing* fact, never an authorisation fact.
+ *
+ * Recorded from `supabase gen types typescript --local` in
+ * `docs/CONTRACT-REQUESTS.md` §1. `decrement_inventory` and
+ * `create_order_atomic` are the only two functions in the public schema.
+ */
+type DatabaseFunctions = {
+  /** Returns 1 when the stock was taken, 0 when there was not enough. */
+  decrement_inventory: {
+    Args: { p_product_id: string; p_quantity: number };
+    Returns: number;
+  };
+  /**
+   * Order, items, cart close and inventory in one transaction. Returns
+   * `{ ok: true, order, items }` or `{ ok: false, code, …facts }`.
+   */
+  create_order_atomic: {
+    Args: { p_user_id: string; p_cart_id: string; p_shipping: Json };
+    Returns: Json;
+  };
+};
+
+/**
+ * Every user-owned table points at `auth.users` through `user_id`.
+ *
+ * The constraint name is per-table: the generator emits `Relationships: []`
+ * here because `auth` is not one of the schemas it generates, but the
+ * constraints really do exist and the name below is the one in the database.
+ */
+type UserFk<Constraint extends string> = {
+  foreignKeyName: Constraint;
   columns: ['user_id'];
   isOneToOne: false;
   referencedRelation: 'users';
@@ -210,7 +241,7 @@ export interface Database {
           closed_at?: string | null;
         };
         Update: Partial<CartRow>;
-        Relationships: [UserFk];
+        Relationships: [UserFk<'carts_user_id_fkey'>];
       };
       cart_items: {
         Row: CartItemRow;
@@ -231,7 +262,7 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<OrderRow>;
-        Relationships: [UserFk];
+        Relationships: [UserFk<'orders_user_id_fkey'>];
       };
       order_items: {
         Row: OrderItemRow;
@@ -244,7 +275,7 @@ export interface Database {
       };
     };
     Views: Record<never, never>;
-    Functions: Record<never, never>;
+    Functions: DatabaseFunctions;
     Enums: {
       product_category: ProductCategory;
       cart_status: CartStatus;

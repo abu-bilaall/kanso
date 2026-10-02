@@ -829,12 +829,21 @@ npm run db:functions # serve create-order with supabase/.env.local
 > run `db:reset` casually — it wipes every other agent's test data mid-run.
 
 Functional tests read connection values from the **environment**, never from
-`.env.local` (which points at the remote project):
+`.env.local` (which points at the remote project). `npm run test:func` obtains
+them itself — from the environment if they are already there (the CI path), or
+by parsing `supabase status -o env` — checks the stack is actually answering,
+and then runs Vitest:
 
 ```bash
-eval "$(supabase status -o env)"
+npm run db:start     # once per machine
 npm run test:func
 ```
+
+> Do not write `eval "$(supabase status -o env)" && npm run test:func`. The CLI
+> prints bare `KEY="value"` lines with no `export`, so that `eval` sets shell
+> variables `npm run` does not pass to its child — the suite found no connection,
+> skipped every test, and reported `1 passed | 28 skipped`. The suite now fails
+> loudly instead, but the runner is what makes the incantation unnecessary.
 
 `.env.local` needs only `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`.
 The Edge Function secrets (`SUPABASE_SERVICE_ROLE_KEY`, `MAILGUN_*`, `APP_URL`)
