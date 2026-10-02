@@ -11,8 +11,8 @@
  * production.
  */
 
-import { OrderError } from './order-error.js';
-import type { CartEvaluation, CartLine, InventoryShortfall } from './types.js';
+import { OrderError } from './order-error.ts';
+import type { CartEvaluation, CartLine, InventoryShortfall } from './types.ts';
 
 /**
  * Price a cart and say which lines the catalogue cannot supply.

@@ -24,7 +24,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
-import { OrderError } from './order-error.js';
+import { OrderError } from './order-error.ts';
 import type {
   ActiveCart,
   CartLine,
@@ -32,7 +32,7 @@ import type {
   CommittedOrderItem,
   CommitOrderInput,
   OrderStore,
-} from './types.js';
+} from './types.ts';
 
 export interface SupabaseStoreConfig {
   url: string;

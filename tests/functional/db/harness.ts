@@ -26,7 +26,7 @@
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/lib/supabase.types';
-import { connection, skipReason } from '../../setup/functional';
+import { connection } from '../../setup/functional';
 
 export type TestClient = SupabaseClient<Database>;
 export type TableInsert<T extends keyof Database['public']['Tables']> =
@@ -49,14 +49,6 @@ export function testEmail(label: string): string {
   return `kanso-a1-${RUN_ID}-${label}@example.com`;
 }
 
-/** The connection, or a thrown explanation of why there isn't one. */
-function requireConnection(): NonNullable<typeof connection> {
-  if (connection === null) {
-    throw new Error(skipReason() ?? 'The functional suite is not configured.');
-  }
-  return connection;
-}
-
 const CLIENT_OPTIONS = {
   auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
 };
@@ -67,13 +59,13 @@ const CLIENT_OPTIONS = {
  * order that exists but that the caller must not be able to see.
  */
 export function adminClient(): TestClient {
-  const { url, secretKey } = requireConnection();
+  const { url, secretKey } = connection;
   return createClient<Database>(url, secretKey, CLIENT_OPTIONS);
 }
 
 /** The publishable key with no session: an unauthenticated storefront visitor. */
 export function anonymousClient(): TestClient {
-  const { url, publishableKey } = requireConnection();
+  const { url, publishableKey } = connection;
   return createClient<Database>(url, publishableKey, CLIENT_OPTIONS);
 }
 

@@ -114,10 +114,12 @@ Creating an order is four writes — the order, its items, closing the cart,
 decrementing stock — and they have to be one transaction or a failure leaves a
 half-order behind. A PostgREST client cannot open a transaction across requests,
 so the only atomic mechanism available is a Postgres function,
-`create_order_atomic`. Its exact signature and body are in
-[`docs/CONTRACT-REQUESTS.md`](../../../docs/CONTRACT-REQUESTS.md), which is the
-contract this store is written against and which has been executed and verified
-against a real Postgres.
+`create_order_atomic`. It is applied by
+[`supabase/migrations/20261002090500_create_order_atomic.sql`](../../../supabase/migrations/20261002090500_create_order_atomic.sql),
+so a `supabase db reset` — which is what CI runs — produces a database this
+function can actually work against. It is executable by `service_role` only:
+`anon` and `authenticated` are revoked, so a browser cannot place an order
+directly and cannot bypass RLS through it.
 
 That is also why the port in `../_shared/types.ts` has exactly one mutating
 method. Anything else would be an invitation to write half an order.

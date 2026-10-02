@@ -23,12 +23,12 @@
  * exactly one outcome event is logged per request.
  */
 
-import { validatePayload, type CreateOrderPayloadSchema } from './checkout.js';
-import { jsonResponse, preflightResponse, readBearerToken, readRequestId } from './http.js';
-import { logger as defaultLogger, type Logger } from './logger.js';
-import type { Mailer, SendResult } from './mailgun.js';
-import { OrderError, toOrderError } from './order-error.js';
-import { evaluateCart } from './pricing.js';
+import { validatePayload, type CreateOrderPayloadSchema } from './checkout.ts';
+import { jsonResponse, preflightResponse, readBearerToken, readRequestId } from './http.ts';
+import { logger as defaultLogger, type Logger } from './logger.ts';
+import type { Mailer, SendResult } from './mailgun.ts';
+import { OrderError, toOrderError } from './order-error.ts';
+import { evaluateCart } from './pricing.ts';
 import type {
   CartEvaluation,
   CheckoutShipping,
@@ -36,7 +36,7 @@ import type {
   CreateOrderResult,
   InventoryShortfall,
   OrderStore,
-} from './types.js';
+} from './types.ts';
 
 export interface CreateOrderDeps {
   store: OrderStore;

@@ -16,7 +16,7 @@
     "ci:check": "npm run typecheck && npm run check && npm run test:unit",
     "test": "vitest run",
     "test:unit": "vitest run --project unit",
-    "test:func": "vitest run --project functional",
+    "test:func": "node scripts/functional-env.mjs",
     "db:start": "supabase start",
     "db:reset": "supabase db reset",
     "db:stop": "supabase stop",

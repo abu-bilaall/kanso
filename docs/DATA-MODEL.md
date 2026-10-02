@@ -360,29 +360,25 @@ npm run db:status    # connection values
 ```
 
 Migrations, in order:
-
-| File | What it does |
-| --- | --- |
 | `20261002090000_core_schema.sql` | Enums, tables, constraints, indexes, `updated_at` triggers, the order-reference default. |
 | `20261002090100_row_level_security.sql` | RLS on every table, grants, and the thirteen policies. |
 | `20261002090200_handle_new_user.sql` | The signup trigger. |
 | `20261002090300_product_image_bucket.sql` | The public `product-images` bucket. |
 | `20261002090400_inventory_decrement.sql` | The conditional decrement, callable only by the service role. |
+| `20261002090500_create_order_atomic.sql` | Order, items, cart close and stock decrement in one transaction. Service role only. |
 
 `supabase/seed.sql` runs after them on every reset. Both migrations and seed are
 idempotent, so `db:reset` is always safe and always converges.
 
-## Testing it
-
 ```bash
-set -a; eval "$(supabase status -o env)"; set +a
 npm run test:func
 ```
 
-> The `set -a` matters. `supabase status -o env` prints bare `KEY="value"` lines
-> with no `export`, so a plain `eval` sets shell variables that `npm run` does not
-> pass to its child. Without it the functional suite skips itself with a message
-> rather than failing loudly.
+> The runner behind that script finds the connection values itself — from the
+> environment, or by parsing `supabase status -o env` — and refuses to start the
+> suite if the stack is not answering. It does not skip. A run that verifies
+> nothing must not report success, and an earlier version of this suite did
+> exactly that whenever the values were missing.
 
 `tests/functional/db/**` runs against the real stack with real JWTs: users are
 created through the admin API with a unique email per run, fixtures are written

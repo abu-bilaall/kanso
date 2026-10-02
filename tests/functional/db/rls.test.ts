@@ -17,7 +17,6 @@
  */
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { skipReason } from '../../setup/functional';
 import {
   adminClient,
   anonymousClient,
@@ -34,8 +33,6 @@ import {
   type TestUser,
   testEmail,
 } from './harness';
-
-const reason = skipReason();
 
 /** Every table whose rows belong to a user. Anonymous sees none of them. */
 const USER_OWNED_TABLES = ['profiles', 'carts', 'cart_items', 'orders', 'order_items'] as const;
@@ -54,7 +51,7 @@ const SEEDED_SLUGS = [
   'technical-fountain-pen',
 ] as const;
 
-describe.skipIf(reason !== null)('row level security', () => {
+describe('row level security', () => {
   let alice: TestUser;
   let bob: TestUser;
   let product: TestProduct;
@@ -466,7 +463,7 @@ describe.skipIf(reason !== null)('row level security', () => {
   });
 });
 
-describe.skipIf(reason !== null)('handle_new_user', () => {
+describe('handle_new_user', () => {
   it('creates the profile row on signup', async () => {
     const user = await createTestUser('signup');
 

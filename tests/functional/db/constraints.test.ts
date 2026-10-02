@@ -14,7 +14,6 @@
  */
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { skipReason } from '../../setup/functional';
 import {
   adminClient,
   createTestProduct,
@@ -28,15 +27,13 @@ import {
   type TestUser,
 } from './harness';
 
-const reason = skipReason();
-
 /** A brief, readable failure beats a bare PostgREST message. */
 function expectError(error: { code?: string } | null, sqlState: string, what: string): void {
   expect(error, `${what} should have been refused`).not.toBeNull();
   expect(error?.code, `${what} should have failed with ${sqlState}`).toBe(sqlState);
 }
 
-describe.skipIf(reason !== null)('cart and order constraints', () => {
+describe('cart and order constraints', () => {
   let user: TestUser;
   let product: TestProduct;
   let cart: string;
@@ -165,7 +162,7 @@ describe.skipIf(reason !== null)('cart and order constraints', () => {
   });
 });
 
-describe.skipIf(reason !== null)('the order snapshot', () => {
+describe('the order snapshot', () => {
   it('keeps the price the customer was charged after the catalogue is repriced', async () => {
     const product = await createTestProduct({ name: 'Snapshot Fixture', price_kobo: 400_000 });
     const user = await createTestUser('snapshot');

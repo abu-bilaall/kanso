@@ -1,5 +1,33 @@
 # Contract requests
 
+---
+
+## Resolutions
+
+**Closed on `chore/integration`.** Each of the nine requests below, and what was
+actually done. The original text is left untouched so the requester can see
+their own reasoning; this is the answer.
+
+| § | Request | Resolution |
+| --- | --- | --- |
+| 1 | Add `decrement_inventory` (and `create_order_atomic`) to `Functions` | **Applied.** Both, in one edit, matching `supabase gen types typescript --local` exactly. The local casts in `tests/functional/db/inventory.test.ts` and the `InventoryService` interface are gone — `client.rpc(...)` is typed now. |
+| 2 | `carts` / `orders` `Relationships` | **Left as written, with one correction.** `Relationships: [UserFk]` stays: it is inert and harmless. But `UserFk` named the constraint `profiles_id_fkey` for two tables that do not have it, so the type is now `UserFk<'carts_user_id_fkey'>` / `UserFk<'orders_user_id_fkey'>` — a widening, so nothing that compiled before stops compiling, and the file no longer states a constraint name that is not in the database. |
+| 3 | `Insert` marks nullable columns optional | **Left as written.** The hand-written shape is stricter than the generator's, and the difference only ever widens the database relative to the contract. Changing it would touch five agents' insert calls for no behavioural gain. |
+| 4 | Extra `graphql_public` schema key | **Left as written.** Cosmetic, and only appears if the file is regenerated wholesale. |
+| 5 | `eval "$(supabase status -o env)"` does not export | **Applied, and then some.** `npm run test:func` now runs `scripts/functional-env.mjs`, which takes the values from the environment when they are there (the CI path), otherwise parses `supabase status -o env` itself, and refuses to start if the stack is not answering. `tests/setup/functional.ts` **throws** instead of skipping, so there is no longer a code path that reports success without asserting anything. `tests/unit/functional-suite-guard.test.ts` pins both halves, including a subprocess run that must exit non-zero. |
+| 6 | `products.image_path` is null in the seed | **Not actioned — blocked on the media agent, deliberately.** No product images exist yet, so there is no Storage object to point at. The storefront renders from the committed `product-images/manifest.json`, which §6 itself records, so the column being null breaks nothing today. It becomes a one-line `update` in `supabase/seed.sql` when the media agent names the paths; the convention to follow is in §6. |
+| 7 | `create_order_atomic` | **Landed** as `supabase/migrations/20261002090500_create_order_atomic.sql`, after `decrement_inventory` which it calls. `revoke execute … from public, anon, authenticated` and `grant … to service_role` are in the migration, not applied by hand. The one deviation from the SQL in §7: `set search_path = ''` rather than `public`, matching the other migrations. Every table and function the body touches is schema-qualified, so nothing resolves differently. `tests/functional/db/order-commit.test.ts` proves a signed-in browser gets `42501` while the service role still commits, and that a `PGRST202` (function deleted) would fail the test too. |
+| 8 | `allowImportingTsExtensions` | **Applied** in `tsconfig.app.json`, together with the change it makes unnecessary: `supabase/functions/**` now imports its own modules with `.ts` specifiers, and the ten `supabase/functions/_shared/*.js` resolver bridges are deleted. `deno check create-order/index.ts` is clean. |
+| 9 | Export `createLogger` from `src/lib/logger.ts` | **Applied.** `createLogger` and `LogSink` are exported, `import.meta.env` is read through a widened cast, and `./errors` is imported as `./errors.ts` so the module loads under Deno. `supabase/functions/_shared/logger.ts` is now a re-export plus the edge environment context. |
+
+Merging the two loggers surfaced a real defect in the browser copy: its level
+gate was `if (level === 'info' && logLevel === 'error') return`, so the default
+`info` gate silently discarded **every** error line. `LogLevelGate` is documented
+in `docs/LOGGING.md` as a minimum severity, and the Edge Function's copy already
+implemented that. The line is removed; the gate is now a threshold.
+
+---
+
 **What you are building:** the data layer — `supabase/migrations/**`,
 `supabase/seed.sql`, `docs/DATA-MODEL.md`, `tests/functional/db/**` on
 `feat/data-layer`.

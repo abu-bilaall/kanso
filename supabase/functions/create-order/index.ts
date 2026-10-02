@@ -13,11 +13,11 @@
  */
 
 import { createOrderPayloadSchema } from '../../../src/schemas/checkout.ts';
-import { handleCreateOrder, type CreateOrderDeps } from '../_shared/create-order.js';
-import { logger } from '../_shared/logger.js';
-import { createMailgunMailer, type Mailer } from '../_shared/mailgun.js';
-import { OrderError } from '../_shared/order-error.js';
-import { createSupabaseOrderStore } from '../_shared/supabase-store.js';
+import { handleCreateOrder, type CreateOrderDeps } from '../_shared/create-order.ts';
+import { logger } from '../_shared/logger.ts';
+import { createMailgunMailer, type Mailer } from '../_shared/mailgun.ts';
+import { OrderError } from '../_shared/order-error.ts';
+import { createSupabaseOrderStore } from '../_shared/supabase-store.ts';
 
 /** Mailgun's US root. EU accounts are served by `https://api.eu.mailgun.net/v3`. */
 const MAILGUN_API_BASE = 'https://api.mailgun.net/v3';

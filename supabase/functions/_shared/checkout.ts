@@ -13,7 +13,7 @@
  * them. There is nowhere on the wire to be fooled.
  */
 
-import type { CreateOrderPayload } from './types.js';
+import type { CreateOrderPayload } from './types.ts';
 
 /**
  * The frozen `createOrderPayloadSchema`, passed in by the entrypoint. Declared
