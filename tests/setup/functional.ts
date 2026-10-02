@@ -1,63 +1,25 @@
 /**
  * Functional test setup.
  *
- * Functional tests hit the **local** Supabase stack. Connection values are read
- * from the process environment, never from `.env.local` — the primary
- * checkout's `.env.local` points at the *remote* project, and a functional suite
- * that silently connected there would create test users and junk orders in
- * production.
+ * This file either produces a usable connection or aborts the run. It never
+ * leaves the suite in a state where it reports success without having asserted
+ * anything — see `tests/functional/connection.ts` for the decision and
+ * `scripts/functional-env.mjs` for the runner that fills the environment in.
  *
- * Export them first:
- *
- *   eval "$(supabase status -o env)" && npm run test:func
- *
- * or the CI equivalent, `supabase status -o env >> $GITHUB_ENV`.
- *
- * When they are absent, every functional suite skips itself with a message
- * rather than failing with a connection error that looks like an application bug.
+ * `npm run test:func` obtains the values itself (from the environment, or by
+ * parsing `supabase status -o env`, or by failing with an explanation), so a
+ * developer does not need to know the `eval` incantation and CI does not need
+ * any at all. Running `vitest run --project functional` directly still works as
+ * long as the values are in the environment.
  */
+
+import { requireConnection } from '../functional/connection';
 
 /**
- * The only Node global this file needs. Declared locally rather than pulling in
- * `@types/node` for one property: the browser app has no legitimate use for the
- * Node type surface, and `@types/node` is not a pre-approved dependency.
+ * `process` is declared in `tests/types/node-shim.d.ts` rather than by adding
+ * `@types/node`: the browser app has no legitimate use for the Node type
+ * surface, and `@types/node` is not a pre-approved dependency.
  */
-declare const process: { env: Record<string, string | undefined> };
 
-export interface FunctionalConnection {
-  url: string;
-  publishableKey: string;
-  secretKey: string;
-}
-
-function readConnection(): FunctionalConnection | null {
-  const url = process.env.API_URL ?? process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;
-  const publishableKey = process.env.PUBLISHABLE_KEY ?? process.env.ANON_KEY;
-  const secretKey = process.env.SECRET_KEY ?? process.env.SERVICE_ROLE_KEY;
-
-  if (!url || !publishableKey || !secretKey) return null;
-  return { url, publishableKey, secretKey };
-}
-
-/** The live connection, or `null` when the local stack is not configured. */
-export const connection: FunctionalConnection | null = readConnection();
-
-/** True when the stack is the local one rather than a remote project. */
-export function isLocalStack(): boolean {
-  const url = connection?.url ?? '';
-  return url.includes('127.0.0.1') || url.includes('localhost');
-}
-
-/**
- * Why the functional suite is not running, or `null` when it can. Suites call
- * this from `describe.skipIf(...)` with a human-readable reason.
- */
-export function skipReason(): string | null {
-  if (connection === null) {
-    return 'Local Supabase connection values are not exported. Run: eval "$(supabase status -o env)"';
-  }
-  if (!isLocalStack()) {
-    return `API_URL (${connection.url}) is not the local stack. Refusing to run functional tests against a remote project.`;
-  }
-  return null;
-}
+/** Throws, and so fails the whole functional run, when this is not configured. */
+export const connection = requireConnection(process.env);

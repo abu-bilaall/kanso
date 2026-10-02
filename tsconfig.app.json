@@ -24,6 +24,13 @@
     "resolveJsonModule": true,
     "noEmit": true,
 
+    /* Deno 2 requires an explicit file extension on relative imports, so the
+       Edge Function reaches into `src/**` with `.ts` specifiers — and
+       `supabase/functions/_shared` imports its own modules the same way, which
+       is why there are no `./x.js` resolver bridges beside them any more.
+       `noEmit` above is the other precondition. */
+    "allowImportingTsExtensions": true,
+
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
