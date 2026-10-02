@@ -29,7 +29,8 @@ integration — see [How to ask for a change](#how-to-ask-for-a-change).
 10. [Logging](#logging)
 11. [Schemas](#schemas)
 12. [Supabase client and types](#supabase-client-and-types)
-13. [Commands](#commands)
+13. [Product images](#product-images) ← *read this before rendering a photo*
+14. [Commands](#commands)
 
 ---
 
@@ -45,6 +46,7 @@ src/routes.ts         src/styles/**         src/lib/**
 src/hooks/**          src/components/**     src/schemas/**
 src/pages/_placeholder/**
 docs/CONTRACTS.md     docs/LOGGING.md       docs/CONTRACT-REQUESTS.md
+product-images/manifest.json   (the media agent fills it; nobody changes its shape)
 ```
 
 Everything else belongs to a downstream agent by path (PLAN §5). Touching another
@@ -191,6 +193,10 @@ transition and animation collapses. Do not re-enable motion in a component.
 
 Icons: `src/components/icons.tsx` — twelve outline SVGs on one grid. No icon
 package is a dependency; **add to that file rather than importing another family.**
+
+Product imagery is separate, because it is a different kind of component: one
+product, one component. `src/components/media/ProductImage.tsx` renders every
+photo in the app — see [Product images](#product-images).
 
 Adding a tenth-and-a-half primitive is a contract change. Two agents with two
 variants of `Button` is how a shop stops looking like one shop.
@@ -600,6 +606,199 @@ regenerates it with `supabase gen types typescript --local`. **If that changes
 anything, that is a contract change** → `CONTRACT-REQUESTS.md`, not a silent
 patch. Domain aliases (`Product`, `Cart`, `Order`, …) live at the bottom of the
 file; import those, not the `*Row` names.
+
+## Product images
+
+**Three agents render product photography and none of them should be inventing
+how.** `src/lib/images.ts` and `src/components/media/ProductImage.tsx` are
+frozen contract surface. The media agent owns `product-images/**` (except the
+manifest *shape*), `scripts/**`, and `docs/IMAGES.md`.
+
+### Ownership, precisely
+
+| Path | Owner |
+| --- | --- |
+| `src/lib/images.ts` | **frozen.** Nobody edits. |
+| `src/components/media/ProductImage.tsx` | **frozen.** Nobody edits. |
+| `product-images/manifest.json` — the **shape** | **frozen.** This section is the schema. |
+| `product-images/manifest.json` — the **contents** | the media agent fills it |
+| `product-images/**` (derivatives) | the media agent generates them |
+| `scripts/**` | the media agent |
+| `docs/IMAGES.md` | the media agent |
+
+**If your photo does not fit this schema, that is a `CONTRACT-REQUESTS.md`
+entry, not a schema edit.** Adding a field, renaming one, or loosening a rule
+breaks every renderer.
+
+### Why a manifest rather than Storage
+
+PLAN §4 commits the derived derivatives, so the browser reads the manifest at
+**build time** and gets real URLs immediately: no Storage round trip, no spinner
+before the first image can even start, and no dependency on the data layer.
+`products.image_path` still records the Storage object for the record; the
+storefront renders from the manifest.
+
+### The manifest
+
+`product-images/manifest.json` is committed. It currently holds
+`{ "version": 1, "products": {} }` and every lookup returns `null` — which
+renders a neutral placeholder, never a broken image. The media agent fills
+`products` as the photographs land.
+
+```jsonc
+{
+  "version": 1,                    // exactly 1. A new version is a schema change.
+  "products": {
+    "<slug>": {                    // keyed by slug, matching products.slug
+      "slug": "<slug>",            // must equal the key
+      "alt": "Milled steel rule resting on raw concrete, hard light from the left.",
+      "attribution": {
+        "sourceUrl": "https://unsplash.com/photos/…",   // a real URL
+        "photographer": "A. Photographer",
+        "license": "Unsplash License"
+      },
+      "images": [                  // at least one
+        {
+          "ratio": "4x3",          // '4x3' | '1x1'
+          "role": "main",          // 'main' | 'thumb'. Informational.
+          "width": 640,            // px, integer
+          "height": 480,           // px, integer, must match `ratio`
+          "webp": "product-images/desk/steel-rule-4x3-640.webp",   // repo-relative
+          "jpeg": "product-images/desk/steel-rule-4x3-640.jpg",    // same crop
+          "bytes": 61000
+        }
+      ]
+    }
+  }
+}
+```
+
+Equivalent TypeScript — these are the names the code uses:
+
+```ts
+type ImageRatio = '4x3' | '1x1';
+type ImageRole = 'main' | 'thumb';
+
+interface ProductImageVariant {
+  ratio: ImageRatio;
+  role: ImageRole;
+  width: number;
+  height: number;
+  webp: string;   // repo-relative
+  jpeg: string;   // repo-relative
+  bytes: number;
+}
+
+interface ProductImage {
+  slug: string;
+  alt: string;
+  attribution: { sourceUrl: string; photographer: string; license: string };
+  images: ProductImageVariant[];
+}
+
+interface ProductImageManifest {
+  version: 1;
+  products: Record<string, ProductImage>;
+}
+```
+
+Four rules the validator enforces, because each one is a bug that would otherwise
+ship silently:
+
+1. `slug` must equal its key — otherwise one product's photo renders under
+   another product's name.
+2. `width`/`height` must match the declared `ratio` — otherwise the box the
+   browser reserves is not the box the image fills.
+3. No two variants at the same ratio **and** width — `srcSet` would be ambiguous.
+4. `alt` is required and non-empty. "No alt text" is `decorative` on the
+   component, not an empty string in the manifest.
+
+A manifest that breaks any of these **throws when `@/lib/images` is first
+imported**, with a message naming the product and the field. That is deliberate
+and different from the data hooks: the database may legitimately be missing
+mid-build, but a malformed committed file is a merge mistake, and it should stop
+the work rather than ship broken images.
+
+In practice it stops two things, both automatic:
+
+- **`npm run ci:check` fails**, which is what PLAN §7's CI job runs.
+   `tests/unit/images.test.ts` validates the committed file, so a bad manifest is
+   a red build before it can be merged.
+- **The app fails loudly at import** rather than rendering broken photographs.
+
+It does not stop `npm run build` on its own: until a page imports
+`<ProductImage>`, the module is tree-shaken out of the entry bundle and the
+bundler never evaluates it. That is fine — the unit suite is the gate, and it
+has no such blind spot.
+
+### The lookup API — `@/lib/images`
+
+```ts
+getProductImage(slug: string): ProductImage | null
+getImageUrls(slug: string, ratio: ImageRatio): ImageUrls | null
+
+interface ImageUrls {
+  src: string;       // largest committed WebP for this ratio
+  srcSet: string;    // every committed WebP for this ratio, ascending: "a.webp 320w, b.webp 640w"
+  jpeg: string;      // JPEG fallback — this is what a <picture>'s <img> uses
+  width: number;     // intrinsic width of `src`, px
+  height: number;    // intrinsic height of `src`, px
+  alt: string;       // verbatim from the manifest
+}
+```
+
+- `getImageUrls` returns `null` for an **unknown slug** and for a **known slug
+  with no image at that ratio**. Callers get `null`, not a broken image, and draw
+  their own placeholder.
+- `srcSet` carries every width **committed for that ratio**, ascending —
+  irrespective of the order they appear in the manifest.
+- `src` is the largest committed width, so a client that ignores `srcSet` still
+  gets the good image.
+- **Alt text is never invented here.** It comes from the manifest or it is not
+  there.
+- No React in this module. It is a pure lookup.
+
+Also exported, for tooling and for the media agent: `productImageManifestSchema`,
+`parseProductImageManifest(input)`, `loadProductImageManifest()`,
+`createImageLookup(manifest)`, `productImages`, `IMAGE_RATIOS`, `IMAGE_ROLES`.
+
+### `<ProductImage />` — `@/components/media/ProductImage`
+
+Use this instead of your own `<img>`. It renders the `<picture>`, reserves the
+box, and owns the missing-image state.
+
+```tsx
+<ProductImage slug={product.slug} ratio="4x3" sizes="(min-width: 768px) 33vw, 100vw" />
+```
+
+| Prop | Type | Default | Notes |
+| --- | --- | --- | --- |
+| `slug` | `string` | — | required. The product's slug |
+| `ratio` | `'4x3' \| '1x1'` | `'4x3'` | 4:3 is the catalogue's main grid ratio |
+| `sizes` | `string` | — | passed to the WebP `<source>`. **Set it on a grid**, or the browser picks a larger variant than it needs |
+| `alt` | `string` | manifest `alt` | prefer `decorative` over overriding this |
+| `decorative` | `boolean` | `false` | opt-in: empty alt **and** `aria-hidden` |
+| `lazy` | `boolean` | `true` | native `loading`. Overridden by `priority` |
+| `priority` | `boolean` | `false` | above-the-fold hero: `loading="eager"` **and** `fetchPriority="high"` |
+| `className` | `string` | `''` | on the wrapper: grid placement, border treatment |
+| `imgProps` | `ImgHTMLAttributes` | — | forwarded to the `<img>` for `data-*` and test hooks |
+
+Three guarantees, all tested:
+
+1. **Explicit `width`/`height` on the `<img>` plus `aspect-ratio` on the
+   wrapper.** Non-negotiable: that pair is what stops the grid jumping while
+   the photograph loads.
+2. **Inside `<picture>`, the `<img>` `src` is the JPEG**, because that is the
+   fallback for browsers that skipped the WebP `<source>`. Reach for `src`
+   yourself only when you are *not* using `<picture>` — a bare `<img>`, an Open
+   Graph tag, a CSS background.
+3. **A missing image is a neutral panel of the same size** — token surface, a
+   hairline edge, a small mono `No image`. No broken-image glyph, no layout
+   jump, nothing for a screen reader to read out.
+
+`decorative` is opt-in, not the default. Almost every product photo here carries
+information; reach for it only when the image genuinely repeats adjacent text —
+a cart thumbnail beside a product name that is already in the row.
 
 ## Commands
 
