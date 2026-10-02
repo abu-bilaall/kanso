@@ -19,7 +19,6 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { skipReason } from '../../setup/functional';
 import {
   adminClient,
   anonymousClient,
@@ -30,27 +29,13 @@ import {
   type TestProduct,
 } from './harness';
 
-const reason = skipReason();
-
 /**
- * The frozen `Database` contract declares `Functions: Record<never, never>`.
- * `decrement_inventory` is the one callable surface the migrations added, and
- * the request to add it to `src/lib/supabase.types.ts` is written up in
- * `docs/CONTRACT-REQUESTS.md`. This narrow signature is exactly what the
- * regenerated types will say, so the test compiles today and keeps compiling
- * afterwards — without an `any` anywhere.
+ * One decrement, through the database's own arithmetic. Throws rather than
+ * returning an error, so a failing assertion is about the row count and not
+ * about plumbing.
  */
-interface InventoryService {
-  rpc(
-    fn: 'decrement_inventory',
-    args: { p_product_id: string; p_quantity: number },
-  ): PromiseLike<{ data: number | null; error: { message: string; code?: string } | null }>;
-}
-
-/** One decrement, through the database's own arithmetic. Throws rather than returning an error. */
 async function takeStock(productId: string, quantity: number): Promise<number | null> {
-  const service = adminClient() as unknown as InventoryService;
-  const { data, error } = await service.rpc('decrement_inventory', {
+  const { data, error } = await adminClient().rpc('decrement_inventory', {
     p_product_id: productId,
     p_quantity: quantity,
   });
@@ -68,7 +53,7 @@ async function inventoryOf(productId: string): Promise<number | null> {
   return data.inventory;
 }
 
-describe.skipIf(reason !== null)('conditional inventory decrement', () => {
+describe('conditional inventory decrement', () => {
   it('takes stock and reports that it did', async () => {
     const product = await createTestProduct({ inventory: 5 });
     try {
@@ -102,8 +87,7 @@ describe.skipIf(reason !== null)('conditional inventory decrement', () => {
     const product = await createTestProduct({ inventory: 4 });
     try {
       for (const quantity of [0, -5]) {
-        const service = adminClient() as unknown as InventoryService;
-        const { error } = await service.rpc('decrement_inventory', {
+        const { error } = await adminClient().rpc('decrement_inventory', {
           p_product_id: product.id,
           p_quantity: quantity,
         });
@@ -173,8 +157,7 @@ describe.skipIf(reason !== null)('conditional inventory decrement', () => {
       const callers = [anonymousClient(), user.client] as const;
 
       for (const caller of callers) {
-        const service = caller as unknown as InventoryService;
-        const { data, error } = await service.rpc('decrement_inventory', {
+        const { data, error } = await caller.rpc('decrement_inventory', {
           p_product_id: product.id,
           p_quantity: 1,
         });
