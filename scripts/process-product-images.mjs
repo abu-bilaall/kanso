@@ -250,17 +250,25 @@ async function staleness(targets, masterMtime, signature) {
    =========================================================================== */
 
 /**
- * The schema requires `attribution.sourceUrl`, `photographer` and `license` to
- * be present and non-empty, and that provenance was recorded by hand during the
- * downloads — it is not in this repository. Fabricating a photographer or a
- * source URL would be worse than admitting the gap, so every field carries an
- * obviously unfilled placeholder: `example.invalid` is reserved by RFC 2606 and
- * can never resolve, so it cannot be mistaken for a real citation.
+ * Provenance for these photographs was recorded by hand during the downloads
+ * and is not in this repository. The human has ruled that it will not be
+ * supplied: this is not a commercial product, so there is nothing to attribute.
+ *
+ * The frozen schema still requires `sourceUrl`, `photographer` and `license` to
+ * be present and non-empty, so the three fields say what is actually true
+ * instead of inventing something. Fabricating a photographer or a source page
+ * would be the one genuinely harmful option here, and asserting a licence we
+ * cannot confirm would be a second.
+ *
+ * `sourceUrl` is the one field that cannot be a sentence, because the schema
+ * validates it as a URL. It points at this document — a real, resolvable page
+ * that records the decision — rather than at a fabricated citation, and it is
+ * deliberately **not** a claim about where the photograph came from.
  */
 const ATTRIBUTION = {
-  sourceUrl: 'https://example.invalid/attribution/TODO',
-  photographer: 'TODO — photographer not recorded',
-  license: 'TODO — licence not recorded',
+  sourceUrl: 'https://github.com/abu-bilaall/kanso/blob/feat/media/docs/IMAGES.md',
+  photographer: 'unrecorded',
+  license: 'unverified — unsourced stock, no licence recorded',
 };
 
 /* ===========================================================================

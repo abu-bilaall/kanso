@@ -1,13 +1,42 @@
 {
   "version": 1,
   "products": {
+    "canvas-messenger-bag": {
+      "slug": "canvas-messenger-bag",
+      "alt": "A blue and tan canvas rucksack standing upright on gravel, its leather straps and buckles facing the camera.",
+      "attribution": {
+        "sourceUrl": "https://github.com/abu-bilaall/kanso/blob/feat/media/docs/IMAGES.md",
+        "photographer": "unrecorded",
+        "license": "unverified — unsourced stock, no licence recorded"
+      },
+      "images": [
+        {
+          "ratio": "4x3",
+          "role": "main",
+          "width": 640,
+          "height": 480,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/canvas-messenger-bag-4x3-640.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/canvas-messenger-bag-4x3-640.jpg",
+          "bytes": 29586
+        },
+        {
+          "ratio": "1x1",
+          "role": "thumb",
+          "width": 320,
+          "height": 320,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/canvas-messenger-bag-1x1-320.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/canvas-messenger-bag-1x1-320.jpg",
+          "bytes": 14786
+        }
+      ]
+    },
     "dot-grid-notebook": {
       "slug": "dot-grid-notebook",
       "alt": "Three notebooks fanned across a pale desk — a pink dot-grid, a kraft grid pad and an open white lined notebook — with two slim pens laid alongside.",
       "attribution": {
-        "sourceUrl": "https://example.invalid/attribution/TODO",
-        "photographer": "TODO — photographer not recorded",
-        "license": "TODO — licence not recorded"
+        "sourceUrl": "https://github.com/abu-bilaall/kanso/blob/feat/media/docs/IMAGES.md",
+        "photographer": "unrecorded",
+        "license": "unverified — unsourced stock, no licence recorded"
       },
       "images": [
         {
@@ -30,13 +59,42 @@
         }
       ]
     },
+    "graphite-desk-pad": {
+      "slug": "graphite-desk-pad",
+      "alt": "Two black pencils and a steel rule lying on a dark grey felt desk pad, raking light catching the rule's engraved scale.",
+      "attribution": {
+        "sourceUrl": "https://github.com/abu-bilaall/kanso/blob/feat/media/docs/IMAGES.md",
+        "photographer": "unrecorded",
+        "license": "unverified — unsourced stock, no licence recorded"
+      },
+      "images": [
+        {
+          "ratio": "4x3",
+          "role": "main",
+          "width": 640,
+          "height": 480,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/graphite-desk-pad-4x3-640.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/graphite-desk-pad-4x3-640.jpg",
+          "bytes": 6550
+        },
+        {
+          "ratio": "1x1",
+          "role": "thumb",
+          "width": 320,
+          "height": 320,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/graphite-desk-pad-1x1-320.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/graphite-desk-pad-1x1-320.jpg",
+          "bytes": 2974
+        }
+      ]
+    },
     "milled-desk-weight": {
       "slug": "milled-desk-weight",
       "alt": "Knurled cast iron desk weight standing on pale concrete, lit hard from the left so its shadow falls sharply to the right.",
       "attribution": {
-        "sourceUrl": "https://example.invalid/attribution/TODO",
-        "photographer": "TODO — photographer not recorded",
-        "license": "TODO — licence not recorded"
+        "sourceUrl": "https://github.com/abu-bilaall/kanso/blob/feat/media/docs/IMAGES.md",
+        "photographer": "unrecorded",
+        "license": "unverified — unsourced stock, no licence recorded"
       },
       "images": [
         {
@@ -59,13 +117,42 @@
         }
       ]
     },
+    "oak-pen-cup": {
+      "slug": "oak-pen-cup",
+      "alt": "A printed paper takeaway cup used as a pen holder, standing in hard window light that throws a grid shadow across it, with pens and pencils in the cup.",
+      "attribution": {
+        "sourceUrl": "https://github.com/abu-bilaall/kanso/blob/feat/media/docs/IMAGES.md",
+        "photographer": "unrecorded",
+        "license": "unverified — unsourced stock, no licence recorded"
+      },
+      "images": [
+        {
+          "ratio": "4x3",
+          "role": "main",
+          "width": 640,
+          "height": 480,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/oak-pen-cup-4x3-640.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/oak-pen-cup-4x3-640.jpg",
+          "bytes": 14806
+        },
+        {
+          "ratio": "1x1",
+          "role": "thumb",
+          "width": 320,
+          "height": 320,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/oak-pen-cup-1x1-320.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/oak-pen-cup-1x1-320.jpg",
+          "bytes": 6482
+        }
+      ]
+    },
     "steel-rule": {
       "slug": "steel-rule",
       "alt": "Engraved stainless steel rule lying across a white desk, its graduated scale and stamped numerals running corner to corner.",
       "attribution": {
-        "sourceUrl": "https://example.invalid/attribution/TODO",
-        "photographer": "TODO — photographer not recorded",
-        "license": "TODO — licence not recorded"
+        "sourceUrl": "https://github.com/abu-bilaall/kanso/blob/feat/media/docs/IMAGES.md",
+        "photographer": "unrecorded",
+        "license": "unverified — unsourced stock, no licence recorded"
       },
       "images": [
         {
@@ -88,13 +175,42 @@
         }
       ]
     },
+    "technical-fountain-pen": {
+      "slug": "technical-fountain-pen",
+      "alt": "A steel fountain pen nib in close-up, its engraved name and breather hole catching the light against a pale background.",
+      "attribution": {
+        "sourceUrl": "https://github.com/abu-bilaall/kanso/blob/feat/media/docs/IMAGES.md",
+        "photographer": "unrecorded",
+        "license": "unverified — unsourced stock, no licence recorded"
+      },
+      "images": [
+        {
+          "ratio": "4x3",
+          "role": "main",
+          "width": 640,
+          "height": 480,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/technical-fountain-pen-4x3-640.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/technical-fountain-pen-4x3-640.jpg",
+          "bytes": 15662
+        },
+        {
+          "ratio": "1x1",
+          "role": "thumb",
+          "width": 320,
+          "height": 320,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/technical-fountain-pen-1x1-320.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/technical-fountain-pen-1x1-320.jpg",
+          "bytes": 6816
+        }
+      ]
+    },
     "titanium-pencil": {
       "slug": "titanium-pencil",
       "alt": "Close crop of a mechanical pencil's dark barrel and brass-toned knurled end cap lying on a pale desk, a hard band of sunlight across the metal.",
       "attribution": {
-        "sourceUrl": "https://example.invalid/attribution/TODO",
-        "photographer": "TODO — photographer not recorded",
-        "license": "TODO — licence not recorded"
+        "sourceUrl": "https://github.com/abu-bilaall/kanso/blob/feat/media/docs/IMAGES.md",
+        "photographer": "unrecorded",
+        "license": "unverified — unsourced stock, no licence recorded"
       },
       "images": [
         {
@@ -121,9 +237,9 @@
       "slug": "travel-tech-pouch",
       "alt": "Two cotton drawstring pouches on pale marble, a natural one in front and a slate-blue one behind it.",
       "attribution": {
-        "sourceUrl": "https://example.invalid/attribution/TODO",
-        "photographer": "TODO — photographer not recorded",
-        "license": "TODO — licence not recorded"
+        "sourceUrl": "https://github.com/abu-bilaall/kanso/blob/feat/media/docs/IMAGES.md",
+        "photographer": "unrecorded",
+        "license": "unverified — unsourced stock, no licence recorded"
       },
       "images": [
         {
@@ -150,9 +266,9 @@
       "slug": "waxed-canvas-folio",
       "alt": "Plain cream canvas tote standing upright on a flat grey ground, its two handles arched above the body.",
       "attribution": {
-        "sourceUrl": "https://example.invalid/attribution/TODO",
-        "photographer": "TODO — photographer not recorded",
-        "license": "TODO — licence not recorded"
+        "sourceUrl": "https://github.com/abu-bilaall/kanso/blob/feat/media/docs/IMAGES.md",
+        "photographer": "unrecorded",
+        "license": "unverified — unsourced stock, no licence recorded"
       },
       "images": [
         {
