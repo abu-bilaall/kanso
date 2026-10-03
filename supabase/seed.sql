@@ -5,9 +5,10 @@
 -- plan verbatim; only `description` is written here, as a plain restatement of
 -- the spec line rather than a claim the plan does not make.
 --
--- `image_path` is left null on purpose. The derived photographs are the media
--- agent's to produce, and the storefront renders from
--- `product-images/manifest.json` rather than from this column — see
+-- `image_path` is derived from the media pipeline's naming convention rather
+-- than listed per row, so a fresh `npm run db:reset` produces products that
+-- reference stored photographs. The storefront still renders from
+-- `product-images/manifest.json`, which carries the absolute URLs — see
 -- docs/DATA-MODEL.md and docs/CONTRACT-REQUESTS.md.
 --
 -- Idempotent: re-running converges on the plan's catalogue, including
@@ -136,6 +137,7 @@ insert into public.products (
   description,
   price_kobo,
   inventory,
+  image_path,
   created_at
 )
 select
@@ -146,6 +148,12 @@ select
   description,
   price_kobo,
   inventory,
+  -- Derived, not hardcoded per row: the media pipeline writes every product's
+  -- main derivative to `product-images/<category>/<slug>-4x3-640.webp`, and
+  -- `scripts/upload-images.ts` prints the same path back. Deriving it here keeps
+  -- this seed in step with that convention instead of restating ten literals
+  -- that would silently rot the next time a category directory is renamed.
+  'product-images/' || lower(category::text) || '/' || slug || '-4x3-640.webp',
   now() - (11 - ordinal) * interval '1 minute'
 from catalogue
 order by ordinal

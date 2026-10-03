@@ -15,8 +15,8 @@
           "role": "main",
           "width": 640,
           "height": 480,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/canvas-messenger-bag-4x3-640.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/canvas-messenger-bag-4x3-640.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/carry/canvas-messenger-bag-4x3-640.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/carry/canvas-messenger-bag-4x3-640.jpg",
           "bytes": 29586
         },
         {
@@ -24,8 +24,8 @@
           "role": "thumb",
           "width": 320,
           "height": 320,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/canvas-messenger-bag-1x1-320.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/canvas-messenger-bag-1x1-320.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/carry/canvas-messenger-bag-1x1-320.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/carry/canvas-messenger-bag-1x1-320.jpg",
           "bytes": 14786
         }
       ]
@@ -44,8 +44,8 @@
           "role": "main",
           "width": 640,
           "height": 480,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/dot-grid-notebook-4x3-640.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/dot-grid-notebook-4x3-640.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/write/dot-grid-notebook-4x3-640.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/write/dot-grid-notebook-4x3-640.jpg",
           "bytes": 20560
         },
         {
@@ -53,8 +53,8 @@
           "role": "thumb",
           "width": 320,
           "height": 320,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/dot-grid-notebook-1x1-320.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/dot-grid-notebook-1x1-320.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/write/dot-grid-notebook-1x1-320.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/write/dot-grid-notebook-1x1-320.jpg",
           "bytes": 8432
         }
       ]
@@ -73,8 +73,8 @@
           "role": "main",
           "width": 640,
           "height": 480,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/graphite-desk-pad-4x3-640.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/graphite-desk-pad-4x3-640.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/graphite-desk-pad-4x3-640.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/graphite-desk-pad-4x3-640.jpg",
           "bytes": 6550
         },
         {
@@ -82,8 +82,8 @@
           "role": "thumb",
           "width": 320,
           "height": 320,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/graphite-desk-pad-1x1-320.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/graphite-desk-pad-1x1-320.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/graphite-desk-pad-1x1-320.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/graphite-desk-pad-1x1-320.jpg",
           "bytes": 2974
         }
       ]
@@ -102,8 +102,8 @@
           "role": "main",
           "width": 640,
           "height": 480,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/milled-desk-weight-4x3-640.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/milled-desk-weight-4x3-640.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/milled-desk-weight-4x3-640.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/milled-desk-weight-4x3-640.jpg",
           "bytes": 14128
         },
         {
@@ -111,8 +111,8 @@
           "role": "thumb",
           "width": 320,
           "height": 320,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/milled-desk-weight-1x1-320.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/milled-desk-weight-1x1-320.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/milled-desk-weight-1x1-320.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/milled-desk-weight-1x1-320.jpg",
           "bytes": 7032
         }
       ]
@@ -131,8 +131,8 @@
           "role": "main",
           "width": 640,
           "height": 480,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/oak-pen-cup-4x3-640.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/oak-pen-cup-4x3-640.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/oak-pen-cup-4x3-640.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/oak-pen-cup-4x3-640.jpg",
           "bytes": 14806
         },
         {
@@ -140,8 +140,8 @@
           "role": "thumb",
           "width": 320,
           "height": 320,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/oak-pen-cup-1x1-320.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/oak-pen-cup-1x1-320.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/oak-pen-cup-1x1-320.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/oak-pen-cup-1x1-320.jpg",
           "bytes": 6482
         }
       ]
@@ -160,8 +160,8 @@
           "role": "main",
           "width": 640,
           "height": 480,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/steel-rule-4x3-640.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/steel-rule-4x3-640.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/steel-rule-4x3-640.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/steel-rule-4x3-640.jpg",
           "bytes": 34090
         },
         {
@@ -169,8 +169,8 @@
           "role": "thumb",
           "width": 320,
           "height": 320,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/steel-rule-1x1-320.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/steel-rule-1x1-320.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/steel-rule-1x1-320.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/desk/steel-rule-1x1-320.jpg",
           "bytes": 16472
         }
       ]
@@ -189,8 +189,8 @@
           "role": "main",
           "width": 640,
           "height": 480,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/technical-fountain-pen-4x3-640.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/technical-fountain-pen-4x3-640.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/write/technical-fountain-pen-4x3-640.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/write/technical-fountain-pen-4x3-640.jpg",
           "bytes": 15662
         },
         {
@@ -198,8 +198,8 @@
           "role": "thumb",
           "width": 320,
           "height": 320,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/technical-fountain-pen-1x1-320.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/technical-fountain-pen-1x1-320.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/write/technical-fountain-pen-1x1-320.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/write/technical-fountain-pen-1x1-320.jpg",
           "bytes": 6816
         }
       ]
@@ -218,8 +218,8 @@
           "role": "main",
           "width": 640,
           "height": 480,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/titanium-pencil-4x3-640.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/titanium-pencil-4x3-640.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/write/titanium-pencil-4x3-640.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/write/titanium-pencil-4x3-640.jpg",
           "bytes": 10474
         },
         {
@@ -227,8 +227,8 @@
           "role": "thumb",
           "width": 320,
           "height": 320,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/titanium-pencil-1x1-320.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/titanium-pencil-1x1-320.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/write/titanium-pencil-1x1-320.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/write/titanium-pencil-1x1-320.jpg",
           "bytes": 3792
         }
       ]
@@ -247,8 +247,8 @@
           "role": "main",
           "width": 640,
           "height": 480,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/travel-tech-pouch-4x3-640.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/travel-tech-pouch-4x3-640.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/carry/travel-tech-pouch-4x3-640.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/carry/travel-tech-pouch-4x3-640.jpg",
           "bytes": 27914
         },
         {
@@ -256,8 +256,8 @@
           "role": "thumb",
           "width": 320,
           "height": 320,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/travel-tech-pouch-1x1-320.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/travel-tech-pouch-1x1-320.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/carry/travel-tech-pouch-1x1-320.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/carry/travel-tech-pouch-1x1-320.jpg",
           "bytes": 12960
         }
       ]
@@ -276,8 +276,8 @@
           "role": "main",
           "width": 640,
           "height": 480,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/waxed-canvas-folio-4x3-640.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/waxed-canvas-folio-4x3-640.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/carry/waxed-canvas-folio-4x3-640.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/carry/waxed-canvas-folio-4x3-640.jpg",
           "bytes": 6714
         },
         {
@@ -285,8 +285,8 @@
           "role": "thumb",
           "width": 320,
           "height": 320,
-          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/waxed-canvas-folio-1x1-320.webp",
-          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/waxed-canvas-folio-1x1-320.jpg",
+          "webp": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/carry/waxed-canvas-folio-1x1-320.webp",
+          "jpeg": "https://rmjsaaowczgezpupamcz.supabase.co/storage/v1/object/public/product-images/carry/waxed-canvas-folio-1x1-320.jpg",
           "bytes": 3830
         }
       ]
