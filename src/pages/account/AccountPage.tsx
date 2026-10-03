@@ -111,7 +111,7 @@ export function AccountPage() {
       ) : null}
 
       {isAuthenticated ? (
-        <div className="flex flex-col gap-lg">
+        <div className="flex flex-col gap-k-lg">
           <header className="flex flex-col gap-1">
             <span className="font-editorial text-meta uppercase tracking-wider text-ink-subtle">
               Account
@@ -124,7 +124,7 @@ export function AccountPage() {
           <ProfileCard profile={profile} />
           <OrderHistory orders={orders} />
 
-          <div className="flex flex-col gap-3 border-t border-hairline pt-lg sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 border-t border-hairline pt-k-lg sm:flex-row sm:items-center sm:justify-between">
             <p className="max-w-prose text-sm leading-6 text-ink-muted">
               Signing out keeps your cart. Sign in again whenever you need it.
             </p>
@@ -153,7 +153,7 @@ export function AccountPage() {
 
 function AccountSkeleton() {
   return (
-    <section aria-busy className="flex flex-col gap-lg">
+    <section aria-busy className="flex flex-col gap-k-lg">
       <span className="sr-only" role="status">
         Loading your account
       </span>
