@@ -112,10 +112,32 @@ async function stackAnswers(url, apikey) {
   }
 }
 
+/**
+ * Strip one layer of surrounding quotes from a value that came from the
+ * environment.
+ *
+ * `supabase status -o env` prints `API_URL="http://127.0.0.1:54321"`, and CI
+ * hands those lines to the next steps with `supabase status -o env >> $GITHUB_ENV`.
+ * GitHub takes everything after the first `=` verbatim, so the job inherits
+ * `API_URL` *with the double quotes still attached*. The result is a URL that
+ * looks like `"http://127.0.0.1:54321"` and fails to parse the moment it is
+ * concatenated with a path.
+ *
+ * The local path never hit this, because `harvestFromCli` matches the quotes as
+ * part of its own regex and never keeps them. The two routes therefore have to
+ * converge here rather than each normalising its own way.
+ */
+function unquote(value) {
+  const trimmed = value.trim();
+  const match = /^"([^"]*)"$/.exec(trimmed) ?? /^'([^']*)'$/.exec(trimmed);
+  return match === null ? trimmed : match[1];
+}
+
 async function main() {
-  const fromEnvironment = haveAllStackKeys(process.env)
-    ? { ...process.env }
-    : harvestFromCli(process.env);
+  const source = haveAllStackKeys(process.env) ? { ...process.env } : harvestFromCli(process.env);
+
+  const fromEnvironment = { ...source };
+  for (const key of stackKeys) fromEnvironment[key] = unquote(source[key]);
 
   const url = fromEnvironment.API_URL;
   const probe = await stackAnswers(url, fromEnvironment.PUBLISHABLE_KEY);

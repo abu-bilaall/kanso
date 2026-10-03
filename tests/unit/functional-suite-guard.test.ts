@@ -97,4 +97,23 @@ describe('the test:func runner', () => {
     expect(result.stderr).toContain('Cannot run the functional suite');
     expect(result.stderr).toContain('supabase status -o env');
   });
+
+  /**
+   * CI hands these values over with `supabase status -o env >> $GITHUB_ENV`,
+   * and GitHub keeps the double quotes as part of the value. That produced
+   * `Tried "http://127.0.0.1:9"/auth/v1/health` and failed the whole run — a
+   * defect visible only in CI, because the local route parses the same lines
+   * through its own regex and never keeps the quotes. Both routes must converge.
+   */
+  it('strips the quotes GITHUB_ENV carries, instead of building an unparseable URL', () => {
+    const result = runRunner({
+      API_URL: `"${DEAD_STACK}"`,
+      PUBLISHABLE_KEY: '"sb_publishable_x"',
+      SECRET_KEY: '"sb_secret_x"',
+    });
+
+    expect(result.stderr).toContain(`Tried ${DEAD_STACK} and got:`);
+    // The bug's exact signature: the quotes carried into string concatenation.
+    expect(result.stderr).not.toContain('Failed to parse URL');
+  });
 });
