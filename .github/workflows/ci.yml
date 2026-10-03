@@ -1,0 +1,65 @@
+name: ci
+
+# One workflow, no secrets, no environment, nothing to click through.
+#
+# The load-bearing step is `supabase db reset`. CI applies the migrations and the
+# seed exactly the way a developer's machine does, through the same CLI and the
+# same `supabase/config.toml`, so the database CI exercises cannot drift from the
+# database a human runs against. Everything downstream — the functional suite in
+# particular — assumes a database built that way.
+#
+# There is deliberately no Edge Function deploy step. Deploying `create-order`
+# would require the Mailgun credentials as GitHub Actions secrets, and the whole
+# point of this workflow is that it needs none. The function is deployed by hand;
+# see README.md → "Deploy".
+
+on: [push, pull_request]
+
+# Nothing in this job writes to the repository, needs the GitHub API, or needs
+# any token at all. Read-only is the whole privilege set.
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    # A hung `supabase start` would otherwise occupy a runner for the full six
+    # hours. The job takes a couple of minutes when it is working.
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      # Same Node as `netlify.toml`, so the toolchain that builds the bundle and
+      # the toolchain that checks it are the same one. Not in the shape sketched
+      # in PLAN §7, but the runner's default `node` drifts with the image and
+      # `package.json` asks for `>= 22`.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - uses: supabase/setup-action@v1
+
+      # Docker is preinstalled on ubuntu-latest; the CLI boots the local stack.
+      - run: supabase start
+
+      # Migrations + seed, identical to local. This is the step that makes the
+      # two environments agree.
+      - run: supabase db reset
+
+      # Local development credentials only — this stack was created two steps
+      # ago in this job. `scripts/functional-env.mjs` reads them from the
+      # environment, which is the documented CI path; the script would fall back
+      # to asking the CLI itself, so this line is belt and braces rather than
+      # the mechanism. The old `eval "$(supabase status -o env)"` form set shell
+      # variables that never reached the test process, and the suite skipped
+      # itself and reported green.
+      - run: supabase status -o env >> $GITHUB_ENV
+
+      - run: npm ci
+
+      # typecheck + biome + unit tests. No Docker, no network, no stack.
+      - run: npm run ci:check
+
+      # Needs the stack the two steps above brought up. 35 tests, 0 skipped.
+      - run: npm run test:func
