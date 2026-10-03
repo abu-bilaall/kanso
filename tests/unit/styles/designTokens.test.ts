@@ -16,37 +16,37 @@
  * is meant to extend fails here too, because two spacing systems that agree by
  * luck are two spacing systems.
  *
+ * The scale entries are `k-` namespaced (`gap-k-md`, `pt-k-md`) since the
+ * integration-3 pass; that decision is pinned by `containerWidths.test.ts`,
+ * which is where the reason for it lives.
+ *
  * `npm run check:classes` is the wider sweep: every class name in `src/`, not
  * only the ones named here.
  */
 
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { compile } from 'tailwindcss';
 import { beforeAll, describe, expect, it } from 'vitest';
-
-const ROOT = process.cwd();
+import { compileTheme, type ThemeCss } from '../helpers/themeCss';
 
 /** Every class name the app composes from a design token, by hand. */
 const TOKEN_CLASSES = [
   // Spacing. `md`/`lg`/`xl` were the three that were missing.
-  'p-xs',
-  'p-sm',
-  'p-md',
-  'p-lg',
-  'p-xl',
-  'p-gutter',
-  'p-gutter-desktop',
-  'p-rail',
-  'gap-xs',
-  'gap-sm',
-  'gap-md',
-  'gap-lg',
-  'gap-xl',
-  'pt-md',
-  'pt-xs',
-  'pb-xl',
-  'w-rail',
+  'p-k-xs',
+  'p-k-sm',
+  'p-k-md',
+  'p-k-lg',
+  'p-k-xl',
+  'p-k-gutter',
+  'p-k-gutter-desktop',
+  'p-k-rail',
+  'gap-k-xs',
+  'gap-k-sm',
+  'gap-k-md',
+  'gap-k-lg',
+  'gap-k-xl',
+  'pt-k-md',
+  'pt-k-xs',
+  'pb-k-xl',
+  'w-k-rail',
 
   // Colour.
   'bg-paper',
@@ -111,103 +111,23 @@ const COMPARED = [
   'p-10',
   'gap-4',
   'gap-6',
-  'md:pt-lg',
-  'md:pb-xl',
-  'md:p-md',
-  'md:pl-rail',
+  'md:pt-k-lg',
+  'md:pb-k-xl',
+  'md:p-k-md',
+  'md:pl-k-rail',
   'focus:border-hard',
   'focus:font-label',
   'focus:bg-surface-high',
 ];
 
-let css: string;
-
-/** Every custom property the compiled stylesheet emits, e.g. `--k-space-lg`. */
-let customProperties: Record<string, string> = {};
+let theme: ThemeCss;
 
 beforeAll(async () => {
-  // The real entry stylesheet, minus the @fontsource imports. Those ship woff2
-  // files and have nothing to say about which utilities exist.
-  const entry = readFileSync(join(ROOT, 'src/styles/index.css'), 'utf8')
-    .split('\n')
-    .filter((line) => !line.startsWith('@import "@fontsource'))
-    .join('\n');
-
-  const readCss = (file: string) => ({
-    path: file,
-    base: join(file, '..'),
-    content: readFileSync(file, 'utf8'),
-  });
-
-  const compiler = await compile(entry, {
-    base: join(ROOT, 'src/styles'),
-    loadStylesheet: async (id, base) =>
-      id === 'tailwindcss' || id.startsWith('tailwindcss/')
-        ? readCss(
-            join(
-              ROOT,
-              'node_modules/tailwindcss',
-              id === 'tailwindcss' ? 'index.css' : id.slice('tailwindcss/'.length),
-            ),
-          )
-        : readCss(join(base, id)),
-    loadModule: async () => {
-      throw new Error('the stylesheet must not load a module');
-    },
-  });
-
-  css = compiler.build([...TOKEN_CLASSES, ...COMPARED]);
-  customProperties = Object.fromEntries(
-    [...css.matchAll(/(--[\w-]+)\s*:\s*([^;}]+)[;}]/g)].map((m) => [
-      m[1] as string,
-      m[2]?.trim() ?? '',
-    ]),
-  );
+  theme = await compileTheme([...TOKEN_CLASSES, ...COMPARED]);
 }, 60_000);
 
-/**
- * The rule Tailwind emits for `className`, or `null` if it emits none. The
- * selector is matched loosely because a variant rule carries its own pseudo —
- * `focus:border-hard` compiles to `.focus\:border-hard:focus`.
- */
-function ruleFor(className: string): string | null {
-  const inCss = className.replace(/[!"#$%&'()*+,./:;<=>?@[\]^`{|}~]/g, (ch) => `\\${ch}`);
-  const pattern = inCss.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return new RegExp(`\\.${pattern}[^{}]*\\{([^}]*)\\}`).exec(css)?.[1] ?? null;
-}
-
-const UNITS_IN_PX: Record<string, number> = { px: 1, rem: 16 };
-
-/**
- * The length a utility actually renders at, in px, or `null` if it is not a
- * length this can measure. Resolves `var()` and the one `calc()` shape
- * Tailwind's numeric spacing scale produces.
- */
-function lengthOf(className: string, property: string): number | null {
-  const declared = new RegExp(`(?:^|[;{])\\s*${property}\\s*:\\s*([^;]+)`).exec(
-    ruleFor(className) ?? '',
-  );
-  return declared === null ? null : toPx(declared[1] ?? '', 0);
-}
-
-function toPx(value: string, depth: number): number | null {
-  if (depth > 6) return null;
-  const trimmed = value.trim();
-
-  const reference = /var\(\s*(--[\w-]+)\s*(?:,[^)]*)?\)/.exec(trimmed);
-  if (reference !== null) {
-    const resolved = customProperties[reference[1] as string];
-    return resolved === undefined ? null : toPx(trimmed.replace(reference[0], resolved), depth + 1);
-  }
-
-  const product = /^calc\(\s*(-?[\d.]+)(px|rem)\s*\*\s*(-?[\d.]+)\s*\)$/.exec(trimmed);
-  if (product !== null) {
-    return Number(product[1]) * (UNITS_IN_PX[product[2] as string] ?? 1) * Number(product[3]);
-  }
-
-  const length = /^(-?[\d.]+)(px|rem)$/.exec(trimmed);
-  return length === null ? null : Number(length[1]) * (UNITS_IN_PX[length[2] as string] ?? 1);
-}
+const ruleFor = (className: string) => theme.ruleFor(className);
+const lengthOf = (className: string, property: string) => theme.lengthOf(className, property);
 
 describe('design tokens', () => {
   it('generates a real rule for every class name these assertions look at', () => {
@@ -217,23 +137,23 @@ describe('design tokens', () => {
 
   it('sizes the named scale entries the way Tailwind sizes the numeric ones', () => {
     // 16px / 24px / 40px — `--k-space-md`, `-lg` and `-xl`.
-    expect(lengthOf('pt-md', 'padding-top')).toBe(16);
-    expect(lengthOf('p-md', 'padding')).toBe(16);
-    expect(lengthOf('gap-md', 'gap')).toBe(16);
-    expect(lengthOf('p-lg', 'padding')).toBe(24);
-    expect(lengthOf('gap-lg', 'gap')).toBe(24);
-    expect(lengthOf('p-xl', 'padding')).toBe(40);
+    expect(lengthOf('pt-k-md', 'padding-top')).toBe(16);
+    expect(lengthOf('p-k-md', 'padding')).toBe(16);
+    expect(lengthOf('gap-k-md', 'gap')).toBe(16);
+    expect(lengthOf('p-k-lg', 'padding')).toBe(24);
+    expect(lengthOf('gap-k-lg', 'gap')).toBe(24);
+    expect(lengthOf('p-k-xl', 'padding')).toBe(40);
   });
 
   it('gives the shell and the rail the vertical rhythm they were written for', () => {
     // `PageShell`: 16px above the fold on mobile, 24px and 40px at `md:`.
     // `DesktopRail`: 16px of padding, 24px between the main links, 16px between
     // the categories.
-    expect(lengthOf('md:pt-lg', 'padding-top')).toBe(lengthOf('p-6', 'padding'));
-    expect(lengthOf('md:pb-xl', 'padding-bottom')).toBe(lengthOf('p-10', 'padding'));
-    expect(lengthOf('md:p-md', 'padding')).toBe(lengthOf('p-4', 'padding'));
-    expect(lengthOf('gap-lg', 'gap')).toBe(24);
-    expect(lengthOf('gap-md', 'gap')).toBe(16);
+    expect(lengthOf('md:pt-k-lg', 'padding-top')).toBe(lengthOf('p-6', 'padding'));
+    expect(lengthOf('md:pb-k-xl', 'padding-bottom')).toBe(lengthOf('p-10', 'padding'));
+    expect(lengthOf('md:p-k-md', 'padding')).toBe(lengthOf('p-4', 'padding'));
+    expect(lengthOf('gap-k-lg', 'gap')).toBe(24);
+    expect(lengthOf('gap-k-md', 'gap')).toBe(16);
   });
 
   it('gives the shared utilities their variants, which a bare rule cannot', () => {

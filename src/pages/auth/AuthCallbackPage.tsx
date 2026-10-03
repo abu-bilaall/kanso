@@ -78,8 +78,7 @@ function BackToShop() {
 /** The way on again, followed by the way out. Every terminal state offers both. */
 function Recovery({ destination }: { destination: string }) {
   return (
-    // An explicit measure, not `max-w-sm`: see the note in `SignInCard`.
-    <div className="flex max-w-[24rem] flex-col items-start gap-3">
+    <div className="flex max-w-sm flex-col items-start gap-3">
       <GoogleSignInButton destination={destination} label="Try again" />
       <BackToShop />
     </div>

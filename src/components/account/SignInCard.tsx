@@ -51,11 +51,10 @@ export function SignInCard({
         <p className="max-w-prose text-body leading-6 text-ink-muted">{description}</p>
       </div>
 
-      {/* `max-w-sm` is 8px here and `max-w-md` is 16px: Tailwind resolves a
-          `max-w-<name>` against `--spacing-<name>` whenever the theme declares
-          one, and this theme declares both. See the contract request. An explicit
-          measure states the intent and cannot drift. */}
-      <div className="max-w-[24rem]">
+      {/* The measure for a control column. `max-w-sm` is Tailwind's 24rem here,
+          because the Kanso spacing scale is namespaced `k-`; see
+          `src/styles/tokens.css` and `tests/unit/styles/containerWidths.test.ts`. */}
+      <div className="max-w-sm">
         <GoogleSignInButton destination={destination} />
       </div>
 

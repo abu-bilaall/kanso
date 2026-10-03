@@ -86,9 +86,9 @@ export function DesktopRail() {
   const { itemCount } = useCart();
 
   return (
-    <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:z-50 md:flex md:w-rail md:flex-col md:justify-between md:border-r-2 md:border-ink md:bg-paper md:p-md">
-      <div className="flex flex-col gap-lg">
-        <div className="pt-xs">
+    <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:z-50 md:flex md:w-k-rail md:flex-col md:justify-between md:border-r-2 md:border-ink md:bg-paper md:p-k-md">
+      <div className="flex flex-col gap-k-lg">
+        <div className="pt-k-xs">
           <Link
             to="/"
             className="font-display text-xl uppercase leading-none tracking-[0.18em] text-ink"
@@ -98,10 +98,10 @@ export function DesktopRail() {
           </Link>
         </div>
 
-        <nav aria-label="Primary" className="flex flex-col gap-md">
-          <div className="flex flex-col gap-xs">
+        <nav aria-label="Primary" className="flex flex-col gap-k-md">
+          <div className="flex flex-col gap-k-xs">
             <RailLink to="/shop" label="Shop" end />
-            <div className="flex flex-col gap-1 border-l border-hairline pl-sm">
+            <div className="flex flex-col gap-1 border-l border-hairline pl-k-sm">
               <CategoryLink to="/shop" label="All" end />
               <CategoryLink to="/shop?category=desk" label="Desk" />
               <CategoryLink to="/shop?category=carry" label="Carry" />
@@ -144,7 +144,7 @@ export function DesktopRail() {
       {/* The Stitch prototypes close the rail with a status strip. It is kept as
           text, never as a live signal: a dot that animates forever is decoration
           and DESIGN.md says motion must communicate state. */}
-      <div className="flex flex-col gap-xs border-t border-hairline pt-md font-editorial text-[10px] uppercase tracking-tight text-ink-subtle">
+      <div className="flex flex-col gap-k-xs border-t border-hairline pt-k-md font-editorial text-[10px] uppercase tracking-tight text-ink-subtle">
         <span>Kanso — Tools for focus</span>
         <span>Lagos / Worldwide</span>
       </div>

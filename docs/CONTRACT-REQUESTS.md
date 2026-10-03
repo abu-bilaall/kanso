@@ -82,14 +82,21 @@ carts needed a product decision plus a schema and RLS change.
 
 ---
 
-## Still open
+## Resolutions — integration pass 3
 
-One request in this document has not been actioned. It is a real defect, not a
-preference, and it is not reachable from a frozen file without one.
+Two requests closed. Both are defects rather than preferences; both were filed
+against files the requester could not edit.
 
 | § | Request | Status |
 | --- | --- | --- |
-| 10 | `max-w-<name>` resolves against `--spacing-<name>`, shadowing the container scale | **Open.** The fix is a `--container-*` block in `src/styles/tokens.css`, which belongs to the design-token owner. `npm run check:classes` cannot catch it — the class generates a rule, just with the wrong value — and A4, A5 and A6 have all had to reach for `max-w-prose` or a numeric name instead. |
+| 10 | `max-w-<name>` resolves against `--spacing-<name>`, shadowing the container scale | **Applied.** The Kanso spacing scale is now namespaced — `--spacing-k-xs` … `--spacing-k-xl`, `--spacing-k-gutter`, `--spacing-k-gutter-desktop`, `--spacing-k-rail` — so it leaves the namespace Tailwind looks up `--container-<name>` in, and `max-w-sm` is 24rem again. The alternative A6 offered (restate `--container-*` in the theme) would have been a smaller diff and would have left the same collision waiting for the next scale entry. `tests/unit/styles/containerWidths.test.ts` compiles the real stylesheet and pins the five named widths; `designTokens.test.ts` measures the renamed scale. A6's two `max-w-[24rem]` workarounds are gone. |
+| 13 | `scripts/upload-images.ts` is outside every typecheck | **Applied.** `tsconfig.node.json` now includes `scripts`, and the Node types it needs come from `types/node-shim.d.ts` — the same trick `tests/types/node-shim.d.ts` used, consolidated into one file so the tests and the script share a single Node type surface. No `@types/node`, which the browser app and the Deno Edge Functions have no use for. `npm run typecheck` now sees a deploy step that writes to production Storage. |
+
+## Still open
+
+Nothing in this document is un-actioned. `scripts/fetch-product-image.sh` and
+`scripts/*.mjs` remain outside every typecheck — they are shell and JavaScript,
+which the project does not typecheck, and no request has asked it to.
 
 ---
 ---
@@ -751,6 +758,54 @@ had to reach for `max-w-prose` or a numeric name as a result.
 with the reason in a comment at each. It is explicit and cannot drift, but it
 is not a token, and this should be fixed at the source.
 
+**Resolved on `chore/integration-3`.** Applied in the token layer, where it
+belongs, by taking the second option A6 offered: the spacing aliases are renamed
+so they cannot collide with the size names.
+
+```diff
+  @theme inline {
+-   --spacing-xs: var(--k-space-xs);
+-   --spacing-sm: var(--k-space-sm);
+-   --spacing-md: var(--k-space-md);
+-   --spacing-lg: var(--k-space-lg);
+-   --spacing-xl: var(--k-space-xl);
++   /* k- namespaced: Tailwind resolves a named max-w-<name> against
++      --spacing-<name> as well as --container-<name>, and the spacing entry
++      wins. Bare names made `max-w-sm` 8px instead of 24rem. */
++   --spacing-k-xs: var(--k-space-xs);
++   --spacing-k-sm: var(--k-space-sm);
++   --spacing-k-md: var(--k-space-md);
++   --spacing-k-lg: var(--k-space-lg);
++   --spacing-k-xl: var(--k-space-xl);
+```
+
+**Why not the `--container-*` block.** It is a five-line diff and it works, but
+it leaves the collision in place: the theme still publishes `--spacing-lg`, so
+`w-lg` and `min-w-lg` are still captured, and the next person to add a scale
+entry under a size name re-creates the bug with no signal. Namespacing removes
+the whole class of defect, and the trade is twenty class names across four
+components — which `npm run check:classes` turns into a red build if one is
+missed, because the old names stop generating rules. That check is what made
+the rename safe.
+
+**Verified.** Compiled from the real stylesheet:
+
+| Class | Before | After |
+| --- | --- | --- |
+| `max-w-xs` | `4px` | `20rem` |
+| `max-w-sm` | `8px` | `24rem` |
+| `max-w-md` | `16px` | `28rem` |
+| `max-w-lg` | `24px` | `32rem` |
+| `max-w-xl` | `40px` | `36rem` |
+| `gap-k-md` | — (`gap-md`, 16px) | `16px` |
+| `px-k-gutter` | — (`px-gutter`, 16px) | `16px` |
+
+The catalogue hero line — `<p className="max-w-xl text-body-lg">` — measured
+40px wide in the browser before and 576px after, which is the squashed panel in
+A8's screenshot. A6's two `max-w-[24rem]` workarounds are now `max-w-sm`.
+`tests/unit/styles/containerWidths.test.ts` fails if any of it regresses,
+including if someone adds an un-namespaced `--spacing-*` back.
+
 ---
 
 ## 11. `AuthCallbackPage` honours the checkout return — RESOLVED on `feat/account-auth`
@@ -873,6 +928,33 @@ TypeScript. Renaming it to `.mjs` would match `process-product-images.mjs` and
 be honest about the fact that nothing typechecks it — but it would not *fix*
 anything either, and the type annotations document the Supabase surface better
 than JSDoc would. I have kept it as TypeScript and verified it by running it.
+
+**Resolved on `chore/integration-3`.** Applied the second option, and the
+trade-off is worth stating: the script is now inside a typecheck, and what makes
+that possible is a hand-written ambient declaration rather than `@types/node`.
+
+```diff
+  tsconfig.node.json
+- "include": ["vite.config.ts", "vitest.config.ts"]
++ "include": ["vite.config.ts", "vitest.config.ts", "scripts", "types"]
+```
+
+`types/node-shim.d.ts` declares `process`, `Buffer`, `node:child_process`,
+`node:fs`, `node:fs/promises`, `node:path`, `node:url` and `node:util` — the
+whole surface this repository uses, and nothing more. It **replaces**
+`tests/types/node-shim.d.ts` rather than sitting beside it: two shims would be
+two Node type surfaces that drift, and a script needing something only the test
+shim declared would fail to typecheck for no visible reason. Both `tsconfig`
+projects now include `types`.
+
+**Not `@types/node`, deliberately.** The browser bundle would carry its global
+augmentations and the Deno Edge Functions import from the same tree, so a
+Node-global dependency that both of those runtimes do not have becomes a future
+type error in two places to save twenty lines in one. The declarations are
+deleted with the file the moment `@types/node` is ever approved.
+
+Verified by introducing a deliberate type error into the script and watching
+`npm run typecheck` catch it, then removing it.
 
 ---
 

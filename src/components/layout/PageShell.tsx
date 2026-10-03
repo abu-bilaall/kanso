@@ -79,13 +79,13 @@ export function PageShell({ children, title, header, width = 'default' }: PageSh
           fixed tab bar on mobile. The mobile bottom inset is the tab bar's height
           plus its safe-area padding; `env()` resolves to 0 where there is no
           inset, so the same value is safe everywhere. */}
-      <div className="md:pl-rail">
+      <div className="md:pl-k-rail">
         <main
           id="main"
           tabIndex={-1}
-          className="mx-auto w-full px-gutter pb-[calc(var(--k-tabbar-height)+env(safe-area-inset-bottom)+var(--k-space-xl))] pt-md focus:outline-none md:px-gutter-desktop md:pb-xl md:pt-lg"
+          className="mx-auto w-full px-k-gutter pb-[calc(var(--k-tabbar-height)+env(safe-area-inset-bottom)+var(--k-space-xl))] pt-k-md focus:outline-none md:px-k-gutter-desktop md:pb-k-xl md:pt-k-lg"
         >
-          <div className={`mx-auto flex w-full flex-col gap-lg ${WIDTH_CLASSES[width]}`}>
+          <div className={`mx-auto flex w-full flex-col gap-k-lg ${WIDTH_CLASSES[width]}`}>
             {children}
           </div>
         </main>

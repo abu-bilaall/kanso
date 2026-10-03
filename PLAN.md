@@ -477,23 +477,48 @@ escalate rather than letting two agents edit the same file.
 
 ## 7. CI
 
-GitHub Actions, **no secrets**. One workflow, written by A8:
+GitHub Actions, **no secrets**. One workflow, written by A8 and committed at
+`.github/workflows/ci.yml` — the sketch below is that file, which is what
+actually runs:
 
 ```yaml
 name: ci
 on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
   verify:
     runs-on: ubuntu-latest        # Docker is preinstalled
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - uses: supabase/setup-action@v1
+      - uses: actions/setup-node@v4        # same Node as netlify.toml
+        with:
+          node-version: "24"
+          cache: npm
+      - uses: supabase/setup-cli@v2        # the action that actually exists
       - run: supabase start
       - run: supabase db reset   # migrations + seed, identical to local
+      - run: supabase status -o env >> $GITHUB_ENV
       - run: npm ci
       - run: npm run ci:check
       - run: npm run test:func
 ```
+
+Three lines of that were not in the original sketch and all three are load
+bearing:
+
+- **`supabase/setup-cli@v2`, not `supabase/setup-action@v1`** — the latter is
+  not an action that exists.
+- **The Node pin.** `package.json` asks for `>= 22`; the runner's default `node`
+  drifts with the image, so CI pins `24` and caches npm. `netlify.toml` pins the
+  same version, so the toolchain that builds the bundle and the toolchain that
+  checks it are the same one.
+- **`supabase status -o env >> $GITHUB_ENV`.** The functional suite reads its
+  connection values from the environment, and the values have to be *exported*
+  for `npm run` to pass them to a child process. The old
+  `eval "$(supabase status -o env)"` form set shell variables that never reached
+  the test process, so the suite skipped itself and reported green.
 
 `supabase db reset` is the load-bearing line: CI applies migrations the same way
 your machine does, so the two cannot drift. The runner behind

@@ -35,7 +35,7 @@ export function MobileHeader({ backTo, contextLabel }: MobileHeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 border-b border-hairline bg-paper/95 pt-[env(safe-area-inset-top)] backdrop-blur-md md:hidden">
-      <div className="flex h-14 items-center justify-between px-gutter">
+      <div className="flex h-14 items-center justify-between px-k-gutter">
         {showBack ? (
           <div className="flex min-w-0 items-center gap-3">
             <Link

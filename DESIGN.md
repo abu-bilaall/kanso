@@ -153,17 +153,21 @@ Products should feel like one coherent Kanso collection.
 
 Product images come from real photographic sources and are stored in Supabase Storage.
 
-> **Implementation note (`chore/deploy-docs`).** Two things about photography are
-> not yet as drawn, both recorded rather than papered over:
+> **Implementation note (`chore/integration-3`).** Three things about photography
+> are not yet as drawn, recorded rather than papered over:
 >
-> - **No photographs have shipped.** The catalogue has its ten products, but
->   `product-images/manifest.json` is still `{ "version": 1, "products": {} }` and
->   the Storage bucket holds no objects, so every product renders a neutral
->   placeholder. The requirement above stands; the work has not landed.
+> - **Four products have no photograph.** A3's pipeline shipped and the
+>   committed manifest holds 6 of the 10 seeded products, so
+>   `graphite-desk-pad`, `oak-pen-cup`, `canvas-messenger-bag` and
+>   `technical-fountain-pen` render the neutral panel. The other six resolve, and
+>   every derivative is committed under `public/product-images/`.
 > - **One frame per product in V1.** The image pipeline understands a `main` and
 >   a `thumb` variant, but the product page renders a single frame. Second angles
 >   were an explicit cut-list item, so the "Product gallery" below is a
 >   single-image renderer for now.
+> - **Uploading to Storage is a manual deploy step.** `scripts/upload-images.ts`
+>   writes the bucket and rewrites the manifest's URLs; it is not run by CI,
+>   which holds no credentials. See [`docs/IMAGES.md`](./docs/IMAGES.md).
 
 ## Components
 

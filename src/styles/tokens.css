@@ -111,10 +111,18 @@
      --color-hairline->  border-hairline
      --font-display ->  font-display
      --radius-component -> rounded-component
-     --spacing-gutter   ->  p-gutter
+     --spacing-k-gutter -> px-k-gutter
 
    These map to the `--k-*` primitives above, so there is exactly one place where
    a Stitch hex value is written.
+
+   The spacing scale carries a `k-` prefix on purpose. Tailwind v4 resolves a
+   named `max-w-<name>`, `w-<name>` and `min-w-<name>` against `--spacing-<name>`
+   *as well as* against `--container-<name>`, so a theme that publishes
+   `--spacing-sm` silently captures `max-w-sm` and renders it at 8px instead of
+   24rem — a class name that means something other than what it says. Namespacing
+   the scale (`gap-k-md`, not `gap-md`) keeps `max-w-sm` Tailwind's. See
+   `tests/unit/styles/containerWidths.test.ts`.
    =========================================================================== */
 
 @theme inline {
@@ -187,15 +195,19 @@
   --radius-component: var(--k-radius-component);
   --radius-panel: var(--k-radius-panel);
 
-  /* Spacing aliases mirroring the Stitch scale ------------------------------- */
-  --spacing-xs: var(--k-space-xs);
-  --spacing-sm: var(--k-space-sm);
-  --spacing-md: var(--k-space-md);
-  --spacing-lg: var(--k-space-lg);
-  --spacing-xl: var(--k-space-xl);
-  --spacing-gutter: var(--k-gutter);
-  --spacing-gutter-desktop: var(--k-gutter-desktop);
-  --spacing-rail: var(--k-rail-width);
+  /* Spacing aliases mirroring the Stitch scale -------------------------------
+     `k-` namespaced: see the note at the top of this block. A call site reads
+     `gap-k-md` and `md:pb-k-xl`, which cannot be mistaken for the container
+     scale, and `max-w-lg` stays 32rem.
+  */
+  --spacing-k-xs: var(--k-space-xs);
+  --spacing-k-sm: var(--k-space-sm);
+  --spacing-k-md: var(--k-space-md);
+  --spacing-k-lg: var(--k-space-lg);
+  --spacing-k-xl: var(--k-space-xl);
+  --spacing-k-gutter: var(--k-gutter);
+  --spacing-k-gutter-desktop: var(--k-gutter-desktop);
+  --spacing-k-rail: var(--k-rail-width);
 
   /* Motion -------------------------------------------------------------------- */
   --ease-kanso: var(--k-ease);
