@@ -8,7 +8,16 @@ V1: approximately 7–13 real products, targeting ~10, across Desk, Carry, and W
 
 Core journey:
 
-Home → Catalogue → Product → Cart → Google Auth → Checkout → Order Confirmation
+Home → Catalogue → Product → Google Auth → Cart → Checkout → Order Confirmation
+
+> **Implementation note (`chore/deploy-docs`).** Google Auth fires on the **first
+> add to cart**, not after it. A cart belongs to an account, so the account has to
+> exist before there is a cart: the product page catches the `unauthenticated`
+> rejection and offers sign-in inline, and the catalogue grid hides its quick-add
+> button while signed out. Checkout keeps its own gate for anyone who arrives
+> another way. Everything else in the journey is as drawn above. Recorded rather
+ than rewritten — see [`docs/CART-CHECKOUT.md`](./docs/CART-CHECKOUT.md) § 5 for
+> why the journey moved instead of the schema.
 
 ## Brand Direction
 
@@ -143,6 +152,18 @@ Suggested categories:
 Products should feel like one coherent Kanso collection.
 
 Product images come from real photographic sources and are stored in Supabase Storage.
+
+> **Implementation note (`chore/deploy-docs`).** Two things about photography are
+> not yet as drawn, both recorded rather than papered over:
+>
+> - **No photographs have shipped.** The catalogue has its ten products, but
+>   `product-images/manifest.json` is still `{ "version": 1, "products": {} }` and
+>   the Storage bucket holds no objects, so every product renders a neutral
+>   placeholder. The requirement above stands; the work has not landed.
+> - **One frame per product in V1.** The image pipeline understands a `main` and
+>   a `thumb` variant, but the product page renders a single frame. Second angles
+>   were an explicit cut-list item, so the "Product gallery" below is a
+>   single-image renderer for now.
 
 ## Components
 
