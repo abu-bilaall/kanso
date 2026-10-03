@@ -41,7 +41,7 @@ it is, or before you propose changing a frozen surface.
 
 | Document | What it is |
 | --- | --- |
-| [`CONTRACT-REQUESTS.md`](./CONTRACT-REQUESTS.md) | The integration-owned change log for the frozen files. Resolution tables at the top; the original request text below, left intact so the reasoning survives. Eleven requests, all actioned or deliberately declined, plus two still-open ones at § 10 and the `AuthCallbackPage` note. |
+| [`CONTRACT-REQUESTS.md`](./CONTRACT-REQUESTS.md) | The integration-owned change log for the frozen files. Resolution tables at the top; the original request text below, left intact so the reasoning survives. Fourteen requests, all actioned or deliberately declined — the last two closed on `chore/integration-3`. |
 | [`CART-CHECKOUT.md`](./CART-CHECKOUT.md) | A5's five requests against the frozen surface. All five are now resolved — see the table at the top. Kept because § 1 records a real bug that was found and fixed, and § 5 records a product decision. |
 
 Nothing was deleted to produce this split. Every document that existed before
@@ -50,37 +50,32 @@ them by path in comments.
 
 ---
 
-## Known gaps as of `chore/deploy-docs`
+## Known gaps
 
 Not documentation problems — things that are genuinely not done. Listed so
-nobody discovers them at launch.
+nobody discovers them at launch. Re-checked at `chore/integration-3`.
 
-1. **No product photographs.** `product-images/manifest.json` is still
-   `{ "version": 1, "products": {} }` and `product-images/_masters/` is empty, so
-   every product renders a neutral placeholder instead of a photograph.
-   `DESIGN.md` calls product photography a major visual element and `SPEC.md`
-   requires images in Supabase Storage. This is the media agent's work and it
-   never landed. Note the follow-on problem before filling the manifest: the
-   manifest's `webp` / `jpeg` values are repo-relative strings
-   (`product-images/desk/…`), Vite does not rewrite strings inside imported
-   JSON, and Netlify publishes only `dist/`. The derivatives have to land
-   somewhere the bundle actually serves from, or every image 404s on deploy.
-2. **`max-w-<name>` resolves against `--spacing-<name>`.** Tailwind v4 looks up
-   `--container-<name>` *and* `--spacing-<name>`; `src/styles/tokens.css`
-   declares the spacing scale, so `max-w-sm` resolves to `8px` instead of
-   `24rem` and the named widths are unusable. Fully written up in
-   [`CONTRACT-REQUESTS.md`](./CONTRACT-REQUESTS.md) § 10. `npm run check:classes`
-   cannot see it because the class does generate a rule, just with the wrong
-   value.
-3. **The OAuth redirect allow-list does not match any real origin.**
+1. **Four products have no photograph.** A3's pipeline landed and
+   `product-images/manifest.json` holds 6 of the 10 seeded products, so
+   `graphite-desk-pad`, `oak-pen-cup`, `canvas-messenger-bag` and
+   `technical-fountain-pen` render the neutral panel instead of a photograph.
+   The other six resolve, and every derivative is committed under
+   `public/product-images/` and served in a built bundle. Closing this needs four
+   more masters, not code.
+2. **The OAuth redirect allow-list does not match any real origin.**
    `supabase/config.toml` lists `https://127.0.0.1:3000`; the app sends
    `${window.location.origin}/auth/callback`, which is
    `http://localhost:5173/auth/callback` locally and
    `https://<site>.netlify.app/auth/callback` in production. Those go in the
    Supabase dashboard and the Google console. See the README.
-4. **Not yet deployed.** No Netlify site is connected and `create-order` has not
+3. **Not yet deployed.** No Netlify site is connected and `create-order` has not
    been deployed to the remote project. Both need credentials this repository
    does not have.
+
+**Closed on `chore/integration-3`:** `max-w-<name>` no longer resolves against
+`--spacing-<name>` — the Kanso scale is `k-` namespaced, so `max-w-sm` is 24rem
+([`CONTRACT-REQUESTS.md`](./CONTRACT-REQUESTS.md) § 10) — and the catch-all route
+renders a real not-found page instead of the build-state placeholder.
 
 ## Where the deploy lives
 

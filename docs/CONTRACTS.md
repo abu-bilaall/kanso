@@ -49,9 +49,10 @@ Foundation owns, and only Foundation edits:
 package.json          package-lock.json      tsconfig*.json
 biome.json            vite.config.ts        vitest.config.ts
 supabase/config.toml  .env.example         .gitignore
-src/routes.ts         src/styles/**         src/lib/**
+types/node-shim.d.ts                        the Node types tests and scripts need
+src/routes.ts         src/styles/**        src/lib/**
 src/hooks/**          src/components/**     src/schemas/**
-src/pages/_placeholder/**
+src/pages/not-found/**                      the catch-all page
 docs/CONTRACTS.md     docs/LOGGING.md       docs/CONTRACT-REQUESTS.md
 product-images/manifest.json   (the media agent fills it; nobody changes its shape)
 ```
@@ -79,15 +80,23 @@ unblock yourself" — that is how two agents end up with two `Button` components
 
 ## Placeholder pages — history, kept for the convention
 
-> **Historical.** Phase 1 wrote this when all nine routes rendered a
-> **placeholder**: a module that says so, rather than a half-finished page. Every
-> page has since replaced its own, and the convention is discharged — the only
-> importer left is `src/routes.ts`, which uses `Placeholder` for the `*` route so
-> a mistyped URL says so instead of rendering nothing. The list below is the
+> **Historical, and now fully discharged.** Phase 1 wrote this when all nine
+> routes rendered a **placeholder**: a module that says so, rather than a
+> half-finished page. Every page replaced its own, and at the integration-3 pass
+> the last importer went with it — the `*` route renders
+> `src/pages/not-found/NotFoundPage.tsx`, a real page, and
+> `src/pages/_placeholder/Placeholder.tsx` is deleted. The list below is the
 > original Phase 1 state, not today's.
+>
+> **Why the last one had to go rather than be kept for the catch-all.** The
+> catch-all route is right and stays: a blank screen on a mistyped URL is a
+> silent failure. What was wrong was what it rendered. "Not built yet" and
+> "Owned by nobody — it is not a real surface" told a stranger our build state
+> in our build voice. Scaffolding language belongs to the people writing the
+> code; a visitor gets a sentence about their URL and a way back into the shop.
 
 ```
-src/pages/_placeholder/Placeholder.tsx     the shared component
+src/pages/_placeholder/Placeholder.tsx     the shared component — deleted
 src/pages/home/HomePage.tsx                <Placeholder path="/" owner="A4 — Storefront" … />
 src/pages/catalog/CatalogPage.tsx
 src/pages/product/ProductPage.tsx
@@ -100,11 +109,12 @@ src/pages/auth/AuthCallbackPage.tsx
 
 **Your page replaces its module wholesale.** You own that path from Phase 2
 onward. Delete the `<Placeholder>` call; do not keep it in a branch, do not import
-it alongside real markup, do not feature-flag around it. When your surface exists,
-`Placeholder` should have one fewer importer.
+it alongside real markup, do not feature-flag around it.
 
-`npm run build` and `npm run dev` are green with all of them in place. That is the
-point of the convention: nobody mistakes a placeholder for finished work.
+`npm run build` and `npm run dev` are green with all of them in place. That was the
+point of the convention: nobody mistakes a placeholder for finished work — and
+the corollary, learned the hard way, is that a visitor must never be the one who
+mistakes one for the shop.
 
 ---
 
@@ -123,6 +133,18 @@ utility automatically.
 
 **Rule: no component ever contains a hex value.** Everything resolves from these
 tokens.
+
+**The spacing scale is `k-` namespaced, and it has to stay that way.** The
+entries are `--spacing-k-xs` … `--spacing-k-xl`, `--spacing-k-gutter`,
+`--spacing-k-gutter-desktop`, `--spacing-k-rail`, so a call site writes
+`gap-k-md`, `pt-k-lg`, `px-k-gutter`, `md:w-k-rail`. Tailwind resolves a named
+`max-w-<name>` (and `w-<name>`, `min-w-<name>`) against `--container-<name>`
+*and* `--spacing-<name>`; a theme that publishes a bare `--spacing-sm` silently
+captures `max-w-sm` and renders it at 8px instead of 24rem. A class name that
+means something other than what it says is the worst kind of bug, and it is
+invisible to `npm run check:classes`, which only asks whether a class generates
+a rule. `tests/unit/styles/containerWidths.test.ts` compiles the real stylesheet
+and pins the named widths.
 
 ### Colours
 
@@ -269,7 +291,7 @@ the shell is missing something, that is a `CONTRACT-REQUESTS.md` entry.
 | `/order/:id` | `src/pages/order-confirmation/OrderConfirmationPage` | A5 |
 | `/account` | `src/pages/account/AccountPage` | A6 |
 | `/auth/callback` | `src/pages/auth/AuthCallbackPage` | A6 |
-| `*` | inline `NotFound` in `routes.ts` | Foundation |
+| `*` | `src/pages/not-found/NotFoundPage` | Foundation |
 
 Two decisions that will bite if you miss them:
 
