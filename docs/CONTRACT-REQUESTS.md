@@ -789,3 +789,147 @@ reads `ROUTE_PATHS.account` **inside** the function rather than at module scope.
 import this one, so a module-scope read evaluates while the cycle is still open
 and yields `undefined` — a `TypeError` in every suite that imports a page. Worth
 knowing before anyone adds another `ROUTE_PATHS` read at module scope.
+
+---
+
+## 12. The manifest cannot express a multi-frame gallery
+
+**Raised by:** A3 (media) · **For:** Foundation, the owner of the manifest shape
+
+**What I am building.** The product detail page. Four products have second and
+third masters downloaded and waiting in `product-images/_masters/` —
+`graphite-desk-pad`, `oak-pen-cup`, `steel-rule`, `titanium-pencil` — and the
+detail page shows one frame per product.
+
+**The exact change.** A `frame` field on `ProductImageVariant`, and a lookup
+that takes one:
+
+```ts
+// manifest
+{ "ratio": "4x3", "role": "main", "frame": "detail", "width": 640, "height": 480, … }
+
+// src/lib/images.ts
+getImageUrls(slug: string, ratio: ImageRatio, frame?: string): ImageUrls | null
+```
+
+with `frame` defaulting to the variant whose `frame` is absent or `'main'`, so
+every existing call site keeps working and every existing manifest entry stays
+valid.
+
+**Why the existing surface cannot do it.** `images[]` is a flat list keyed by
+ratio, and `createImageLookup` collapses it to one frame per ratio:
+
+```ts
+if (existing) { /* duplicate ratio@width -> ConfigurationError */ }
+```
+
+Two variants at the same ratio and width is a hard error, not a warning —
+correctly, because `srcSet` would be ambiguous. So a second angle at `4x3`
+cannot coexist with the first in the committed file. Reserving a distinct width
+per frame (`-2` at 640w) would technically fit the schema, but then `src` is
+"the largest committed width", which would make the *second* frame the default
+`src` for every caller that does not ask for the first. That is a worse
+outcome than no gallery.
+
+**Who else depends on it.** `getImageUrls` is called by `ProductCard`,
+`CartLine`, `HomePage` and `ProductPage`, plus `tests/unit/images.test.tsx`.
+Adding an optional third parameter is source-compatible for all of them, but it
+does touch the module every renderer imports first.
+
+**My recommendation: do not take this for V1.** `PLAN.md` §9 already lists
+second-angle galleries as the first thing to cut, one frame per ratio is the
+designed behaviour of the frozen API, and I have shipped one frame per ratio
+with the alternates left untouched in `_masters/`. Worth taking only when
+someone is actually building the gallery, because until then this is a contract
+change that buys nothing visible.
+
+---
+
+## 13. `scripts/upload-images.ts` is outside every typecheck
+
+**Raised by:** A3 (media) · **For:** Foundation, the owner of `tsconfig*.json`
+
+**What I am building.** The Storage upload for the product derivatives.
+
+**The exact change.** Either add `@types/node` to `devDependencies` and widen
+`tsconfig.node.json` to `include: ["vite.config.ts", "vitest.config.ts",
+"scripts/**/*.ts"]`, or add a third `tsconfig` project for `scripts/`.
+
+**Why the existing surface cannot do it.** There is no `@types/node` anywhere in
+the dependency tree — deliberately, since the app targets the browser and the
+Edge Functions target Deno. `tsconfig.node.json` includes only the two Vite
+config files, and `tsconfig.app.json` includes only `src` and `tests`, so
+`npm run typecheck` never sees `scripts/`. Running `tsc` over
+`scripts/upload-images.ts` by hand reports 22 errors, all of them
+`Cannot find name 'process'` / `Cannot find module 'node:fs/promises'`. None is
+a defect in the script.
+
+**Who else depends on it.** Nothing today. `scripts/fetch-product-image.sh` and
+`scripts/*.mjs` are also unchecked, so this is a pre-existing gap that A3 made
+visible rather than one A3 introduced.
+
+**Note.** The brief specifies `scripts/upload-images.ts` by name, so it is
+TypeScript. Renaming it to `.mjs` would match `process-product-images.mjs` and
+be honest about the fact that nothing typechecks it — but it would not *fix*
+anything either, and the type annotations document the Supabase surface better
+than JSDoc would. I have kept it as TypeScript and verified it by running it.
+
+---
+
+## 14. `CONTRACTS.md` says the manifest paths are repo-relative. They are not.
+
+**Raised by:** A3 (media) · **For:** Foundation, the owner of `CONTRACTS.md`
+
+**What I am building.** The committed `product-images/manifest.json`, filled for
+the first time.
+
+**The exact change.** In § *The manifest*, replace
+
+```
+"webp": "product-images/desk/steel-rule-4x3-640.webp",   // repo-relative
+```
+
+with
+
+```
+"webp": "https://<project-ref>.supabase.co/storage/v1/object/public/product-images/desk/steel-rule-4x3-640.webp",
+```
+
+and say in the prose that `webp` and `jpeg` hold the **public Storage URL** of
+the object, written by `scripts/upload-images.ts` from the URL the bucket
+returns. The same line appears in the `ProductImageVariant` TypeScript block
+("`webp: string; // repo-relative`") and in `src/lib/images.ts`'s JSDoc.
+
+**Why the existing surface cannot do it.** I wrote repo-relative paths first,
+because the document said to. They fail twice:
+
+1. **They are not in the deployed bundle.** Vite does not rewrite strings inside
+   imported JSON, and a Netlify deploy publishes only `dist/`. `npm run build`
+   produced a `dist/` containing `assets/` and `favicon.svg` and not one
+   product photograph.
+2. **A relative path resolves against the current route.** `ProductImage` puts
+   `srcSet` and `src` into the DOM untouched, so on `/product/steel-rule` the
+   browser requested `/product/product-images/desk/steel-rule-4x3-640.webp` and
+   got a 404. Confirmed in a real browser: three `<img>` on the product page,
+   all `naturalWidth === 0`.
+
+Both are silent. The catalogue looked correct on `/shop` throughout, which is
+exactly why this needed a browser rather than a test.
+
+**Who else depends on it.** Nobody's code changes. `webp` and `jpeg` are
+validated as `z.string().min(1)` and are only ever handed to `srcSet`/`src`, so
+an absolute URL is already handled. This is a correction to the documentation,
+not to the schema.
+
+**What I shipped.** Root-absolute Storage URLs, derived from the bucket's own
+public configuration and byte-verified after upload. The committed derivatives
+stay on disk under `public/product-images/` and their repo-relative paths are
+tabulated in `docs/IMAGES.md`, so the committed files remain auditable.
+
+**One consequence Foundation should decide about.** The manifest's URLs are
+environment-specific: the committed file carries `http://127.0.0.1:54321/…`
+because that is the stack available here. Running `upload-images.ts` against the
+production project rewrites them, so **it has to be a deploy step**, not a
+one-off, or the deployed storefront shows every product its neutral panel. I have
+documented that in `docs/IMAGES.md`; whether `netlify.toml` or the deploy script
+should invoke it is Foundation's call.

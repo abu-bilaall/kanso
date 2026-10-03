@@ -1,0 +1,91 @@
+{
+  "//": "Per-slug crop table for scripts/process-product-images.mjs. One row per product, in PLAN §2.4 order.",
+  "//focus": "Focal point in 0..1 source coordinates (x from left, y from top). The crop window is centred on it, then clamped so it never runs off an edge.",
+  "//zoom": "Fraction of the largest crop window the target ratio allows. 1.0 is widest, 0.4 is two and a half times as tight.",
+  "//frame": "Which master in product-images/_masters/ supplies the frame. The schema holds one frame per ratio, so pick the best frame rather than the first one.",
+  "//ship": "false keeps a product out of the manifest entirely. The reason is printed on every run and recorded in docs/IMAGES.md.",
+  "//alt": "Describes the photograph, not the product. A screen reader reads it aloud, so it has to be true of the pixels — and the crop decides the pixels, which is why alt is per ratio rather than per product.",
+  "products": {
+    "graphite-desk-pad": {
+      "ship": false,
+      "frame": "graphite-desk-pad.jpg",
+      "reason": "Every candidate is a dark lifestyle desk shot. The primary has a laptop lid, two pencils and a second rule; -2 is an iPad with an Apple Pencil, a mouse and a plant; -3 is a keyboard and a mouse under an RGB monitor. Cropping to the felt mat alone leaves a featureless dark rectangle with no object in it. No crop makes any of them a product photograph."
+    },
+    "milled-desk-weight": {
+      "ship": true,
+      "category": "desk",
+      "frame": "milled-desk-weight.jpg",
+      "focus": { "4x3": [0.5, 0.525], "1x1": [0.5, 0.525] },
+      "zoom": { "4x3": 1.0, "1x1": 0.8 },
+      "alt": {
+        "4x3": "Knurled cast iron desk weight standing on pale concrete, lit hard from the left so its shadow falls sharply to the right.",
+        "1x1": "Close crop of the fluted cast iron desk weight on pale concrete, its shadow falling to the right."
+      }
+    },
+    "oak-pen-cup": {
+      "ship": false,
+      "frame": "oak-pen-cup.jpg",
+      "reason": "The primary is a branded takeaway coffee cup on a dark background; the printed cafe name and logo stay legible at 640w, and PLAN §2.4 rejects a visible third-party logo outright. -2 is a decorated ceramic pen pot, -3 is a cup of highlighters with a legible brand. No crop fixes any of them."
+    },
+    "steel-rule": {
+      "ship": true,
+      "category": "desk",
+      "frame": "steel-rule.jpg",
+      "focus": { "4x3": [0.5, 0.24], "1x1": [0.5, 0.24] },
+      "zoom": { "4x3": 0.38, "1x1": 0.32 },
+      "alt": {
+        "4x3": "Engraved stainless steel rule lying across a white desk, its graduated scale and stamped numerals running corner to corner.",
+        "1x1": "Close crop of the engraved scale on a stainless steel rule, the graduations filling the frame."
+      }
+    },
+    "waxed-canvas-folio": {
+      "ship": true,
+      "category": "carry",
+      "frame": "waxed-canvas-folio.jpg",
+      "focus": { "4x3": [0.51, 0.5], "1x1": [0.51, 0.5] },
+      "zoom": { "4x3": 1.0, "1x1": 0.9 },
+      "alt": {
+        "4x3": "Plain cream canvas tote standing upright on a flat grey ground, its two handles arched above the body.",
+        "1x1": "Square crop of the cream canvas tote on flat grey, handles and full body inside the frame."
+      }
+    },
+    "travel-tech-pouch": {
+      "ship": true,
+      "category": "carry",
+      "frame": "travel-tech-pouch.jpg",
+      "focus": { "4x3": [0.5, 0.5], "1x1": [0.5, 0.52] },
+      "zoom": { "4x3": 1.0, "1x1": 0.88 },
+      "alt": {
+        "4x3": "Two cotton drawstring pouches on pale marble, a natural one in front and a slate-blue one behind it.",
+        "1x1": "Two cotton drawstring pouches on pale marble, the natural one in front with its black cord gathered at the mouth."
+      }
+    },
+    "dot-grid-notebook": {
+      "ship": true,
+      "category": "write",
+      "frame": "dot-grid-notebook.jpg",
+      "focus": { "4x3": [0.5, 0.5], "1x1": [0.6, 0.36] },
+      "zoom": { "4x3": 1.0, "1x1": 0.92 },
+      "alt": {
+        "4x3": "Three notebooks fanned across a pale desk — a pink dot-grid, a kraft grid pad and an open white lined notebook — with two slim pens laid alongside.",
+        "1x1": "The open white lined notebook of a fanned stack, its blank page filling most of the frame."
+      }
+    },
+    "titanium-pencil": {
+      "ship": true,
+      "category": "write",
+      "frame": "titanium-pencil-2.jpg",
+      "focus": { "4x3": [0.42, 0.52], "1x1": [0.42, 0.52] },
+      "zoom": { "4x3": 0.68, "1x1": 0.55 },
+      "alt": {
+        "4x3": "Close crop of a mechanical pencil's dark barrel and brass-toned knurled end cap lying on a pale desk, a hard band of sunlight across the metal.",
+        "1x1": "Tighter crop of the pencil's knurled end cap and barrel on a pale desk, cut by a hard band of sunlight."
+      }
+    },
+    "technical-fountain-pen": {
+      "ship": false,
+      "frame": "technical-fountain-pen.jpg",
+      "reason": "A macro of a nib with the maker's name engraved on it, legible at 640w, and the only master for the slug. PLAN §2.4 rejects an engraved brand name outright; shipping it would put a third-party trademark on the product page for a Kanso pen."
+    }
+  }
+}
