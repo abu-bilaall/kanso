@@ -1,5 +1,9 @@
 # Kanso — the data model
 
+> **Status: current guidance.** Accurately describes the six migrations in
+> `supabase/migrations/**` as they stand on `main`. See
+> [`docs/README.md`](./README.md) for the rest of the map.
+
 Everything Kanso stores, why it is shaped that way, and what each caller is
 allowed to do with it. Written so that you can write a query, an Edge Function or
 a test against this document without opening a migration.
@@ -369,6 +373,8 @@ Migrations, in order:
 
 `supabase/seed.sql` runs after them on every reset. Both migrations and seed are
 idempotent, so `db:reset` is always safe and always converges.
+
+## Testing it
 
 ```bash
 npm run test:func

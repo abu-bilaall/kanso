@@ -184,6 +184,22 @@ Product records reference stored images rather than embedding image data in Post
 
 Optimize images before storage.
 
+> **Implementation note (`chore/deploy-docs`).** The bucket exists — `product-images`,
+> public, webp/jpeg/png, 5 MiB — and `products.image_path` records the Storage
+> object for the record, as required above. Two deliberate differences from a
+> literal reading:
+>
+> - **The storefront reads a committed manifest, not Storage.** The browser
+>   resolves image URLs from `product-images/manifest.json` at build time, so the
+>   first paint needs no Storage round trip. `image_path` is still the Storage
+>   object reference; nothing embeds image data in Postgres.
+> - **Nothing is in the bucket yet.** No photographs have been produced, so
+>   `image_path` is null for all ten products and every product renders a neutral
+>   placeholder. Verification item 2 below cannot pass until the media work lands.
+>   Before filling the manifest: its `webp` / `jpeg` values are repo-relative
+>   strings that Vite does not rewrite, and Netlify publishes only `dist/`, so the
+>   derivatives have to land somewhere the bundle actually serves from.
+
 ## UI Requirements
 
 Implement the surfaces defined in `DESIGN.md`:
@@ -223,6 +239,15 @@ The application will be deployed on Netlify for frontend, Supabase for DB, Auth,
 Separate environment/secrets from source code.
 
 Document required environment variables and Supabase/Mailgun configuration.
+
+> **Implementation note (`chore/deploy-docs`).** Satisfied. `netlify.toml` pins the
+> build (`npm run build`), the publish directory (`dist`) and the Node version, and
+> carries the SPA rewrite that keeps client-side routes working on a hard refresh.
+> The two browser-safe variables are set in the Netlify UI; the Edge Function
+> secrets live in the Supabase dashboard and are never in a repository file. The
+> Edge Function is deployed by hand, deliberately, so CI needs no secrets. Every
+> command, both variable tables and the exact deploy steps are in
+> [`README.md`](./README.md) — one copy, not two.
 
 ## Verification
 

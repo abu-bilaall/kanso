@@ -1,5 +1,12 @@
 # Kanso — Contracts
 
+> **Status: reference, with history.** Written in Phase 1 to freeze a surface six
+> agents could build against without seeing each other. The API shapes — tokens,
+> components, `PageShell`, routes, hooks, money, errors, schemas — are still the
+> contract and still describe the code. Statements about the state of the world
+> *during* the build have aged; the two that would actively mislead you are
+> corrected in place and marked. See [`docs/README.md`](./README.md).
+
 **Frozen contract surface. Phase 1 (Foundation) owns everything in this document.**
 
 Six agents build the rest of Kanso in parallel, each on its own branch, none able
@@ -18,7 +25,7 @@ integration — see [How to ask for a change](#how-to-ask-for-a-change).
 ## Contents
 
 1. [The rule about frozen files](#the-rule-about-frozen-files)
-2. [Placeholder pages](#placeholder-pages--read-this-before-you-ship)
+2. [Placeholder pages](#placeholder-pages--history-kept-for-the-convention) *(history)*
 3. [Design tokens](#design-tokens)
 4. [Component vocabulary](#component-vocabulary)
 5. [Page shell and the responsive switch](#page-shell-and-the-responsive-switch)
@@ -70,10 +77,14 @@ unblock yourself" — that is how two agents end up with two `Button` components
 
 ---
 
-## Placeholder pages — read this before you ship
+## Placeholder pages — history, kept for the convention
 
-Every route currently renders a **placeholder**. A placeholder is not a partially
-finished page; it is a module that says so.
+> **Historical.** Phase 1 wrote this when all nine routes rendered a
+> **placeholder**: a module that says so, rather than a half-finished page. Every
+> page has since replaced its own, and the convention is discharged — the only
+> importer left is `src/routes.ts`, which uses `Placeholder` for the `*` route so
+> a mistyped URL says so instead of rendering nothing. The list below is the
+> original Phase 1 state, not today's.
 
 ```
 src/pages/_placeholder/Placeholder.tsx     the shared component
@@ -276,10 +287,12 @@ Two decisions that will bite if you miss them:
 Import from `@/hooks`. All of them are backed by real Supabase queries, and all of
 them share one return shape.
 
-> **The database has no tables yet.** The data agent writes migrations in Phase 2.
-> Until then every hook here degrades into a clean `error` state — it never
-> throws, never hangs, never returns a rejected promise. That is deliberate, and
-> it is tested.
+> **Historical.** This was written when the database had no tables and every
+> hook degraded into a clean `error` state. The schema landed in Phase 2 — six
+> migrations, ten seeded products — so the hooks now hit real tables. The
+> degradation itself is still the contract and is still tested: a hook never
+> throws, never hangs, and never returns a rejected promise. See
+> [`DATA-MODEL.md`](./DATA-MODEL.md).
 
 ### The shared shape
 
@@ -566,6 +579,9 @@ ADDRESS_FIELDS                    // ['fullName','email','phone','addressLine1',
                                   //  'addressLine2','city','state','country']
 createOrderPayloadSchema          // { shipping: <address> } — nothing else
 createOrderResultSchema           // { orderId, reference, totalKobo, emailSent }
+                                  //  the four keys the client reads. The function
+                                  //  also returns `order` and `items`; see its
+                                  //  README for the full 200 body
 normalisePhone(value: string)     // any accepted input -> '+2348030000000'
 
 type FieldErrors = Record<string, string | undefined>;

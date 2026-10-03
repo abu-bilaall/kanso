@@ -1,25 +1,32 @@
-# A5 — cart and checkout: open items for integration
+# A5 — cart and checkout: request log
+
+> **Status: a resolved log, not guidance.** All five requests below are closed.
+> The text under each heading is A5's original request, left intact so the
+> reasoning survives the answer. Read [`CONTRACTS.md`](./CONTRACTS.md) for the
+> surface these were raised against. See [`docs/README.md`](./README.md).
 
 Requests from **A5** (`feat/cart-checkout`) against the frozen surface in
 [`CONTRACTS.md`](./CONTRACTS.md).
 
 [`CONTRACT-REQUESTS.md`](./CONTRACT-REQUESTS.md) is the integration-owned log and
 was closed by the integration pass; A5 did not edit it. The five requests raised
-during the original build are recorded here instead, with their current status
-against `main` as of the `feat/cart-checkout` merge.
+during the original build are recorded here instead. The table is current as of
+`chore/deploy-docs`:
 
 | # | Request | Status |
 | --- | --- | --- |
 | 1 | Freeze the `create-order` error envelope | **Resolved** — see below |
-| 2 | `AuthCallbackPage` honours the checkout return after OAuth | **Open** |
+| 2 | `AuthCallbackPage` honours the checkout return after OAuth | **Resolved** — `readDestination` in `src/features/auth/destination.ts`; recorded in [`CONTRACT-REQUESTS.md`](./CONTRACT-REQUESTS.md) § 11 |
 | 3 | `--spacing-md/-lg/-xl` are never generated | **Closed** on `chore/integration-2` |
 | 4 | `useCart` is per-call-site, so the cart badge never clears | **Closed** on `chore/integration-2` |
-| 5 | An anonymous visitor cannot build a cart | **Open — needs a product decision** |
+| 5 | An anonymous visitor cannot build a cart | **Decided and built** — the sign-in gate fires at the first add, not at checkout; see below |
 
-> Items 3 and 4 below were closed by the integration pass on
-> `chore/integration-2`; see [`CONTRACT-REQUESTS.md`](./CONTRACT-REQUESTS.md)
-> § *Resolutions — integration pass 2* for what was actually done. Items 2 and 5
-> are still open and are still the right shape as written below.
+> Items 3 and 4 were closed by the integration pass on `chore/integration-2`;
+> see [`CONTRACT-REQUESTS.md`](./CONTRACT-REQUESTS.md) § *Resolutions — integration
+> pass 2* for what was actually done. Items 1 and 2 are recorded in
+> `CONTRACT-REQUESTS.md` and in the `create-order` function's README. Item 5 is
+> the only one whose answer was a product choice rather than an implementation,
+> so the reasoning is kept here.
 
 ---
 
@@ -58,7 +65,7 @@ continue."* The page stays on `/checkout`; no order is confirmed.
 
 ---
 
-## 2. `AuthCallbackPage` must honour the checkout return — OPEN
+## 2. `AuthCallbackPage` must honour the checkout return — RESOLVED on `feat/account-auth`
 
 **What A5 built.** `src/features/checkout/returnIntent.ts`. Before starting
 Google sign-in, checkout writes `/checkout` to `sessionStorage` under
@@ -81,10 +88,22 @@ Remove the `sessionStorage` key before navigating. It is one-shot; a stale inten
 must never bounce somebody back to a checkout page days later. A5's checkout
 also consumes it on mount, so the marker cannot loop.
 
-**Deployment note, not a code change.** The Supabase redirect allow-list has to
-contain the app origin. `supabase/config.toml` currently lists only
-`https://127.0.0.1:3000` and is shared across worktrees, so it belongs in the
-integration pass rather than in a branch.
+**Resolved on `feat/account-auth`.** Built exactly as specified: `readDestination`
+in `src/features/auth/destination.ts` reads `?returnTo=` first through
+`isSafeReturnTo`, then the one-shot `sessionStorage` marker through the same
+check, then falls back to `/account`. `GoogleSignInButton` writes both channels,
+so checkout's sign-in and the account page's sign-in behave identically.
+`tests/unit/auth/authCallbackPage.test.tsx` covers the parameter, the marker, the
+parameter winning over the marker, the marker being cleared, `//evil.example`
+refused, and an off-origin URL refused. Full write-up in
+[`CONTRACT-REQUESTS.md`](./CONTRACT-REQUESTS.md) § 11.
+
+**The deployment note A5 raised alongside it still stands, and is now a launch blocker.**
+The Supabase redirect allow-list must contain the app origin. `supabase/config.toml`
+still lists only `https://127.0.0.1:3000`, which matches neither the Vite dev
+origin (`http://localhost:5173`) nor a Netlify origin, and the production
+allow-list lives in the Supabase dashboard. See the README → *Deploying the Edge
+Function*.
 
 ---
 
@@ -170,7 +189,7 @@ always returned, including `status: 'loading'` while the session settles.
 `tests/unit/cart/sharedCartStore.test.tsx` pins all three.
 ---
 
-## 5. An anonymous visitor cannot build a cart — OPEN, needs a decision
+## 5. An anonymous visitor cannot build a cart — DECIDED, built on `feat/account-auth`
 
 **Observation.** `useCart` runs its fetcher only when `isAuthenticated`, and
 `addItem` / `setItemQuantity` reject with `unauthenticated` when there is no
@@ -180,14 +199,31 @@ anywhere in the app, and DESIGN.md's journey —
 in V1 as drawn. The sign-in gate has to fire before the first add, not at
 checkout.
 
-**Why it needs integration rather than a note.** Either the journey moves
+**Why it needed integration rather than a note.** Either the journey moves
 (checkout follows Google Auth, and the storefront's add-to-cart prompts for
 sign-in first — a product call), or carts become anonymous-capable and merge into
 the user's cart on sign-in (a `carts.user_id` that may be NULL, plus a merge path
 in `create-order` — a schema and RLS change). Both are larger than a contract
 tweak.
 
-**What I built in the meantime.** Checkout sends an unauthenticated visitor
+**What A5 built in the meantime.** Checkout sends an unauthenticated visitor
 through Google sign-in and returns them there, which is A5's brief and is correct
 either way. The cart page shows an honest empty state for an anonymous visitor
 and says the cart travels with the account.
+
+**The decision: the journey moved.** No anonymous cart, no `carts.user_id` that
+may be NULL, no merge path in `create-order`. A cart belongs to an account, so
+the account has to exist before there is a cart — and V1 now says so at the
+first add rather than at checkout:
+
+- `ProductPage` calls `addItem`, catches the `unauthenticated` rejection, and
+  renders "Sign in to use a cart" with a Google sign-in action that returns to
+  the same product. A signed-out visitor is never left on a dead button.
+- `ProductCard` does not render its quick-add button at all when signed out, so
+  the catalogue grid cannot produce the error the product page would have to
+  explain.
+- The cart page keeps A5's honest empty state, and checkout keeps its own gate
+  for anyone who reaches it another way.
+
+`DESIGN.md`'s journey is therefore still true, with Google Auth moved a step
+earlier — it fires on the first add rather than at the checkout.
