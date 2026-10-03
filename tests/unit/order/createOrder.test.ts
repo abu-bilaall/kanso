@@ -562,6 +562,40 @@ describe('transport', () => {
     expect(store.orders).toHaveLength(0);
   });
 
+  /**
+   * Regression. `@supabase/supabase-js` attaches `x-application-name` to every
+   * request when the client sets `global.headers`, so it goes out on
+   * `functions.invoke` and the browser names it in `Access-Control-Request-
+   * Headers`. When the allow-list omitted it, the preflight failed, the POST
+   * never left the page, and checkout surfaced `TypeError: Failed to fetch` —
+   * a message that points at the network and not at a CORS header.
+   */
+  it('allows x-application-name, which the Supabase client sends unasked', async () => {
+    const store = orderableStore();
+    const response = await handleCreateOrder(
+      new Request('http://localhost/functions/v1/create-order', { method: 'OPTIONS' }),
+      depsFor(store),
+    );
+
+    expect(response.headers.get('access-control-allow-headers')).toContain('x-application-name');
+  });
+
+  it('echoes back any header the browser asks for, so the list cannot drift', async () => {
+    const store = orderableStore();
+    const request = new Request('http://localhost/functions/v1/create-order', { method: 'OPTIONS' });
+    request.headers.set('access-control-request-headers', 'authorization, x-some-future-header');
+
+    const response = await handleCreateOrder(request, depsFor(store));
+    const allowed = response.headers.get('access-control-allow-headers') ?? '';
+
+    expect(allowed).toContain('x-some-future-header');
+    // The documented set must survive the union, not be replaced by it.
+    expect(allowed).toContain('authorization');
+    expect(allowed).toContain('apikey');
+    expect(allowed).toContain('content-type');
+    expect(allowed).toContain('x-client-info');
+  });
+
   it('carries the runtime request id onto the response', async () => {
     const store = orderableStore();
     const request = checkoutRequest({ shipping: { ...SHIPPING } });

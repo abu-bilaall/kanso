@@ -73,7 +73,7 @@ export async function handleCreateOrder(
   const requestId = readRequestId(request);
   const startedAt = now();
 
-  if (request.method === 'OPTIONS') return preflightResponse();
+  if (request.method === 'OPTIONS') return preflightResponse(request);
   if (request.method !== 'POST') {
     return fail(
       new OrderError('validation', 'This endpoint only accepts POST.', {
