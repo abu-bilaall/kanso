@@ -16,10 +16,9 @@
  * | `/order/:id`       | `src/pages/order-confirmation/…`           | A5 |
  * | `/account`         | `src/pages/account/AccountPage`            | A6 |
  * | `/auth/callback`   | `src/pages/auth/AuthCallbackPage`          | A6 |
+ * | `*`                | `src/pages/not-found/NotFoundPage`         | Foundation |
  *
- * Every module is currently a placeholder (see
- * `src/pages/_placeholder/Placeholder.tsx`). Downstream agents **replace those
- * page modules wholesale** — not this file. If you genuinely need a different
+ * Every one of those modules is a real page. If you genuinely need a different
  * path, a nested layout, or a route guard wrapper, write it in
  * `docs/CONTRACT-REQUESTS.md` and keep building against what is here.
  *
@@ -43,13 +42,13 @@
 
 import { createElement, type ReactElement } from 'react';
 import type { RouteObject } from 'react-router-dom';
-import { Placeholder } from './pages/_placeholder/Placeholder';
 import { AccountPage } from './pages/account/AccountPage';
 import { AuthCallbackPage } from './pages/auth/AuthCallbackPage';
 import { CartPage } from './pages/cart/CartPage';
 import { CatalogPage } from './pages/catalog/CatalogPage';
 import { CheckoutPage } from './pages/checkout/CheckoutPage';
 import { HomePage } from './pages/home/HomePage';
+import { NotFoundPage } from './pages/not-found/NotFoundPage';
 import { OrderConfirmationPage } from './pages/order-confirmation/OrderConfirmationPage';
 import { ProductPage } from './pages/product/ProductPage';
 
@@ -58,14 +57,11 @@ import { ProductPage } from './pages/product/ProductPage';
  *
  * Not part of the frozen table, and deliberately so: without it a mistyped or
  * stale URL renders nothing at all, which is exactly the silent failure SPEC
- * forbids. It has no page module, so nobody "owns" a 404 — it is written here.
+ * forbids. It renders `NotFoundPage`, which says the page does not exist and
+ * offers the way back — never anything about what we are still building.
  */
 function NotFound(): ReactElement {
-  return createElement(Placeholder, {
-    path: 'this URL',
-    owner: 'nobody — it is not a real surface',
-    intent: 'No route matched, so this is the not-found page.',
-  });
+  return createElement(NotFoundPage);
 }
 
 /**
