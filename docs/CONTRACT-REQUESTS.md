@@ -1,5 +1,15 @@
 # Contract requests
 
+> **Status: a resolved log, not guidance.** Every decision here is history —
+> what was asked for, what was actually done, and why. Nothing in this document
+> is a rule you follow. The surface these requests were raised against is still
+> described in [`CONTRACTS.md`](./CONTRACTS.md); if you are changing code, that
+> is the document to read.
+>
+> Layout: resolution tables first, newest last, then the original request text
+> left untouched so the reasoning survives alongside the answer. See
+> [`docs/README.md`](./README.md).
+
 ---
 
 ## Resolutions
@@ -58,11 +68,30 @@ Tailwind emits nothing. It found 10 before the fix and 0 after.
 `tests/unit/styles/designTokens.test.ts` pins the same ground at unit level;
 all five of its tests fail against the pre-fix `tokens.css`.
 
-**Not actioned.** A5's other two requests stay open and stay documented in
-[`CART-CHECKOUT.md`](./CART-CHECKOUT.md) § 2 and § 5: the `AuthCallbackPage`
-return-to reader is A6's page to build, and anonymous carts need a product
-decision plus a schema and RLS change. Neither is small, and neither is a
-defect.
+**Not actioned at the time of this pass.** A5's other two requests were left open
+here and documented in [`CART-CHECKOUT.md`](./CART-CHECKOUT.md) § 2 and § 5:
+the `AuthCallbackPage` return-to reader was A6's page to build, and anonymous
+carts needed a product decision plus a schema and RLS change.
+
+**Both have since moved**, and neither needed a change here:
+
+| § | Request | Where it landed |
+| --- | --- | --- |
+| — | `AuthCallbackPage` honours the checkout return | Built on `feat/account-auth` — § 11 below, now RESOLVED. |
+| — | An anonymous visitor cannot build a cart | Decided and built: the gate fires at the first add, not at checkout. `ProductPage` catches the `unauthenticated` rejection and offers sign-in; `ProductCard` hides its quick-add when signed out. The journey moved rather than the schema — see [`CART-CHECKOUT.md`](./CART-CHECKOUT.md) § 5. |
+
+---
+
+## Still open
+
+One request in this document has not been actioned. It is a real defect, not a
+preference, and it is not reachable from a frozen file without one.
+
+| § | Request | Status |
+| --- | --- | --- |
+| 10 | `max-w-<name>` resolves against `--spacing-<name>`, shadowing the container scale | **Open.** The fix is a `--container-*` block in `src/styles/tokens.css`, which belongs to the design-token owner. `npm run check:classes` cannot catch it — the class generates a rule, just with the wrong value — and A4, A5 and A6 have all had to reach for `max-w-prose` or a numeric name instead. |
+
+---
 ---
 
 **What you are building:** the data layer — `supabase/migrations/**`,

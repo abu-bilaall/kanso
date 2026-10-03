@@ -1,5 +1,9 @@
 # Kanso — Logging conventions
 
+> **Status: current guidance, and binding.** Every agent logs this way. The
+> canonical event vocabulary below is what the shipped code emits. See
+> [`docs/README.md`](./README.md) for the rest of the map.
+
 Settled in Phase 1 by running the `logging-best-practices` skill once, then
 cutting it down to what a ten-product shop actually needs. **Every agent logs the
 same way.** If you need a convention that is not here, it is a
@@ -160,9 +164,10 @@ not.
 Each already carries the identifying fields: `userId`, `cartId`, `orderId`,
 `slug`, `category`, `durationMs`.
 
-### Reserved for downstream agents
+### Shipped with Phase 2
 
-These names are claimed. Use them as written.
+These names are claimed and these are the surfaces that emit them. The names are
+the contract; the split by agent is history.
 
 **A2 — `create-order` Edge Function**
 
@@ -184,6 +189,18 @@ These names are claimed. Use them as written.
 
 **A6 — account and auth** · `auth_callback_completed`, `auth_callback_failed`,
 `auth_callback_denied`, `auth_session_expired`, `auth_signed_out`
+
+**Three of these are claimed but not currently emitted.** Recorded rather than
+silently corrected, because a reserved name stays reserved:
+
+| Event | Why it does not fire |
+| --- | --- |
+| `inventory_update_failed` | `create_order_atomic` decrements stock inside the same transaction as the order write, so a stock failure cannot leave the order behind. It surfaces as `order_create_failed` with `stage: 'evaluate_cart'`, with `inventory_insufficient` alongside it. There is no separate stock-write failure to report. |
+| `catalogue_filter_applied` | The category filter is a pure derivation from the `?category=` search param. There is no event. |
+| `product_quantity_clamped` | Quantity is clamped by `clampQuantity` during render, not in an effect. |
+
+If one of these ever becomes a real event, emit it under the name already
+reserved. Renaming a name already in use is what makes log search die.
 
 ---
 
