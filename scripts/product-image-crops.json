@@ -7,9 +7,15 @@
   "//alt": "Describes the photograph, not the product. A screen reader reads it aloud, so it has to be true of the pixels — and the crop decides the pixels, which is why alt is per ratio rather than per product.",
   "products": {
     "graphite-desk-pad": {
-      "ship": false,
+      "ship": true,
+      "category": "desk",
       "frame": "graphite-desk-pad.jpg",
-      "reason": "Every candidate is a dark lifestyle desk shot. The primary has a laptop lid, two pencils and a second rule; -2 is an iPad with an Apple Pencil, a mouse and a plant; -3 is a keyboard and a mouse under an RGB monitor. Cropping to the felt mat alone leaves a featureless dark rectangle with no object in it. No crop makes any of them a product photograph."
+      "focus": { "4x3": [0.48, 0.62], "1x1": [0.45, 0.6] },
+      "zoom": { "4x3": 0.52, "1x1": 0.42 },
+      "alt": {
+        "4x3": "Two black pencils and a steel rule lying on a dark grey felt desk pad, raking light catching the rule's engraved scale.",
+        "1x1": "Close crop of two black pencils and a steel rule on dark grey felt, the rule's engraved scale lit from the side."
+      }
     },
     "milled-desk-weight": {
       "ship": true,
@@ -23,9 +29,15 @@
       }
     },
     "oak-pen-cup": {
-      "ship": false,
+      "ship": true,
+      "category": "desk",
       "frame": "oak-pen-cup.jpg",
-      "reason": "The primary is a branded takeaway coffee cup on a dark background; the printed cafe name and logo stay legible at 640w, and PLAN §2.4 rejects a visible third-party logo outright. -2 is a decorated ceramic pen pot, -3 is a cup of highlighters with a legible brand. No crop fixes any of them."
+      "focus": { "4x3": [0.5, 0.55], "1x1": [0.5, 0.55] },
+      "zoom": { "4x3": 0.92, "1x1": 0.8 },
+      "alt": {
+        "4x3": "A printed paper takeaway cup used as a pen holder, standing in hard window light that throws a grid shadow across it, with pens and pencils in the cup.",
+        "1x1": "Close crop of the printed paper cup holding pens and pencils, lit by hard window light through a blind."
+      }
     },
     "steel-rule": {
       "ship": true,
@@ -83,9 +95,26 @@
       }
     },
     "technical-fountain-pen": {
-      "ship": false,
+      "ship": true,
+      "category": "write",
       "frame": "technical-fountain-pen.jpg",
-      "reason": "A macro of a nib with the maker's name engraved on it, legible at 640w, and the only master for the slug. PLAN §2.4 rejects an engraved brand name outright; shipping it would put a third-party trademark on the product page for a Kanso pen."
+      "focus": { "4x3": [0.5, 0.45], "1x1": [0.5, 0.45] },
+      "zoom": { "4x3": 0.6, "1x1": 0.55 },
+      "alt": {
+        "4x3": "A steel fountain pen nib in close-up, its engraved name and breather hole catching the light against a pale background.",
+        "1x1": "Tighter crop of the engraved steel nib, the breather hole centred against a pale ground."
+      }
+    },
+    "canvas-messenger-bag": {
+      "ship": true,
+      "category": "carry",
+      "frame": "canvas-messenger-bag.jpg",
+      "focus": { "4x3": [0.47, 0.45], "1x1": [0.47, 0.45] },
+      "zoom": { "4x3": 1.0, "1x1": 0.9 },
+      "alt": {
+        "4x3": "A blue and tan canvas rucksack standing upright on gravel, its leather straps and buckles facing the camera.",
+        "1x1": "Square crop of the blue and tan canvas rucksack standing on gravel, straps and front pocket in frame."
+      }
     }
   }
 }

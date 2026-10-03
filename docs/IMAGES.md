@@ -95,15 +95,19 @@ the repo-relative path of every derivative is:
 
 | Product | 4:3 main | 1:1 thumb |
 | --- | --- | --- |
+| `canvas-messenger-bag` | `public/product-images/carry/canvas-messenger-bag-4x3-640.webp` | `public/product-images/carry/canvas-messenger-bag-1x1-320.webp` |
 | `dot-grid-notebook` | `public/product-images/write/dot-grid-notebook-4x3-640.webp` | `public/product-images/write/dot-grid-notebook-1x1-320.webp` |
+| `graphite-desk-pad` | `public/product-images/desk/graphite-desk-pad-4x3-640.webp` | `public/product-images/desk/graphite-desk-pad-1x1-320.webp` |
 | `milled-desk-weight` | `public/product-images/desk/milled-desk-weight-4x3-640.webp` | `public/product-images/desk/milled-desk-weight-1x1-320.webp` |
+| `oak-pen-cup` | `public/product-images/desk/oak-pen-cup-4x3-640.webp` | `public/product-images/desk/oak-pen-cup-1x1-320.webp` |
 | `steel-rule` | `public/product-images/desk/steel-rule-4x3-640.webp` | `public/product-images/desk/steel-rule-1x1-320.webp` |
+| `technical-fountain-pen` | `public/product-images/write/technical-fountain-pen-4x3-640.webp` | `public/product-images/write/technical-fountain-pen-1x1-320.webp` |
 | `titanium-pencil` | `public/product-images/write/titanium-pencil-4x3-640.webp` | `public/product-images/write/titanium-pencil-1x1-320.webp` |
 | `travel-tech-pouch` | `public/product-images/carry/travel-tech-pouch-4x3-640.webp` | `public/product-images/carry/travel-tech-pouch-1x1-320.webp` |
 | `waxed-canvas-folio` | `public/product-images/carry/waxed-canvas-folio-4x3-640.webp` | `public/product-images/carry/waxed-canvas-folio-1x1-320.webp` |
 
 Every one has a `.jpg` sibling at the same path with the extension swapped.
-Sizes and true pixel dimensions for all twelve are in
+Sizes and true pixel dimensions for all twenty are in
 `.cache/product-images-build.json` and in the manifest itself.
 
 They live under `public/` so `npm run build` copies them into `dist/` and a
@@ -160,16 +164,37 @@ them**; there is no heuristic that replaces that step.
 
 ---
 
-## When a master is unusable
+## Art direction, and what happens when it is not met
 
-`"ship": false` with a `reason`. The product then has no manifest entry, and
-`getImageUrls` returns `null` for it — which is the designed behaviour, not a
-failure. `ProductImage` renders a neutral panel of exactly the same size, so the
-grid neither breaks nor shifts.
+`PLAN.md` §2.4 sets the art direction: one object, no hands or devices, a light
+ground, a single hard light, no visible third-party logo or engraved brand name,
+mostly neutral colour.
 
-A master is unusable when **no crop fixes it**, not when the crop is merely hard.
-The three cases here are all third-party trademarks legible at 640w, which
-`PLAN.md` §2.4 rejects outright and which no amount of cropping removes.
+**Every product now ships.** Four of the ten do not meet it, three of them
+deliberately and knowingly:
+
+| Slug | Deviation |
+| --- | --- |
+| `oak-pen-cup` | a printed takeaway cup used as a pen holder, on a dark ground, with a hard window-blind shadow |
+| `technical-fountain-pen` | a macro of a nib with an engraved maker's name, legible at 640w |
+| `graphite-desk-pad` | a dark lifestyle frame: two pencils and a rule on the felt pad, raking light |
+
+The human has ruled that these ship as they are — this is not a commercial
+product, so the logo and the engraved name are accepted. The crops were still
+chosen to give each the most product-like reading the frame allows: for
+`graphite-desk-pad` that meant picking the one frame of three where the felt
+pad is the subject rather than the background.
+
+**Alt text describes what is in the frame, honestly.** It does not pretend the
+printing on the cup is not there, and it does not name the third-party brand
+either — "a printed paper takeaway cup used as a pen holder" is both true and
+the right thing to read aloud.
+
+`"ship": false` still exists in the schema for a genuinely unusable master — a
+blurred frame, a person in shot, a crop that cannot be saved. The product then
+has no manifest entry, `getImageUrls` returns `null`, and `ProductImage` renders
+a neutral panel of exactly the same size. Nothing in the current catalogue uses
+it.
 
 A master that is merely badly framed is a `focus`/`zoom` problem: keep
 `"ship": true` and re-cut it.
@@ -262,67 +287,63 @@ integration.
 
 ## Weight
 
-Committed derivatives, six products, both ratios, WebP **and** JPEG:
+Committed derivatives, ten products, both ratios, WebP **and** JPEG:
 
 | Product | Bytes | |
 | --- | ---: | --- |
-| `waxed-canvas-folio` | 46,013 | 45.0 KB |
+| `graphite-desk-pad` | 43,052 | 42.0 KB |
+| `waxed-canvas-folio` | 46,013 | 44.9 KB |
 | `titanium-pencil` | 57,526 | 56.2 KB |
+| `technical-fountain-pen` | 69,429 | 67.8 KB |
 | `milled-desk-weight` | 73,542 | 71.8 KB |
+| `oak-pen-cup` | 82,651 | 80.7 KB |
 | `dot-grid-notebook` | 97,354 | 95.1 KB |
 | `travel-tech-pouch` | 120,632 | 117.8 KB |
+| `canvas-messenger-bag` | 146,302 | 142.9 KB |
 | `steel-rule` | 150,009 | 146.5 KB |
-| **total** | **545,076** | **532.3 KB** |
+| **total** | **886,510** | **865.7 KB** |
 
-Mean **88.8 KB per product** against a ~150 KB budget. What a browser downloads
-is the WebP half: **166,398 bytes** across all twelve variants, 13.9 KB mean.
+Mean **86.6 KB per product** against a ~150 KB budget; the heaviest, `steel-rule`
+and `canvas-messenger-bag`, land at it rather than over it. What a browser
+downloads is the WebP half: **264,060 bytes** across all twenty variants, 12.9 KB
+mean. The committed manifest itself is 12,451 bytes.
 
-`steel-rule` is the heaviest because a macro of engraved metal has detail
-everywhere; it lands at the budget rather than over it. Lowering `WEBP_QUALITY`
-in the pipeline would buy headroom at the cost of exactly the numerals the
-photograph exists to show.
+`steel-rule` is heavy because a macro of engraved metal has detail everywhere;
+`canvas-messenger-bag` because the canvas weave and gravel are high-frequency.
+Lowering `WEBP_QUALITY` in the pipeline would buy headroom at the cost of
+exactly the detail these photographs exist to show.
 
 ---
 
 ## Open gaps
 
-### Attribution is a placeholder on all six products
+### Attribution is unsourced, on purpose, on all ten products
 
-The schema requires `attribution.sourceUrl`, `photographer` and `license` to be
-present and non-empty, and that provenance was recorded by hand during the
-downloads — it is not in this repository. **Every entry currently carries an
-obviously unfilled placeholder**, and every one of these slugs needs the real
-values:
-
-`dot-grid-notebook`, `milled-desk-weight`, `steel-rule`, `titanium-pencil`,
-`travel-tech-pouch`, `waxed-canvas-folio`
+The photographs were downloaded from stock libraries and the page URL and
+photographer were recorded by hand during the download. **That record is not in
+this repository and is not going to be supplied** — the human has ruled that
+Kanso is not a commercial product, so there is nothing to attribute. Every entry
+therefore carries truthful values rather than invented ones:
 
 ```jsonc
 "attribution": {
-  "sourceUrl": "https://example.invalid/attribution/TODO",  // RFC 2606: can never resolve
-  "photographer": "TODO — photographer not recorded",
-  "license": "TODO — licence not recorded"
+  "sourceUrl": "https://github.com/abu-bilaall/kanso/blob/feat/media/docs/IMAGES.md",
+  "photographer": "unrecorded",
+  "license": "unverified — unsourced stock, no licence recorded"
 }
 ```
 
-Fabricated attribution is worse than missing attribution, so nothing was guessed.
-When the provenance is recovered, replace the three fields per product in
-`scripts/product-image-crops.json`'s sibling — the `ATTRIBUTION` constant in
-`scripts/process-product-images.mjs` is the one place they are written from — and
-re-run both stages.
+`sourceUrl` is the one field the frozen schema constrains to a URL
+(`z.url()`), and it cannot be a sentence. It points at **this paragraph** — a
+real, resolvable page that records the decision — and is deliberately not a
+claim about where any photograph came from. Read it as "provenance: see here",
+not as a citation.
 
-### Four products have no photograph
-
-| Slug | Why |
-| --- | --- |
-| `canvas-messenger-bag` | no master was downloaded |
-| `graphite-desk-pad` | every candidate is a dark lifestyle desk shot; cropping to the felt mat alone leaves a featureless rectangle |
-| `oak-pen-cup` | the primary is a branded takeaway cup on a dark ground; the alternates are a decorated pen pot and a cup of branded highlighters |
-| `technical-fountain-pen` | a nib macro with the maker's name engraved on it, legible at 640w |
-
-All four render as the neutral panel. Adding a master is: drop it in
-`_masters/`, add or flip its row in `scripts/product-image-crops.json`, run both
-stages.
+No photographer name and no licence has been asserted anywhere, and no
+`example.invalid` placeholder survives in the committed manifest. If provenance
+is ever recovered, the `ATTRIBUTION` constant in
+`scripts/process-product-images.mjs` is the one place the three fields are
+written from; change it and re-run both stages.
 
 ### Second angles are downloaded but unused
 
@@ -333,3 +354,10 @@ cannot be expressed without changing a contract four agents depend on. One frame
 per ratio ships. `titanium-pencil` uses its `-2` master because the primary is
 too small in frame; the rest are unused. See
 [`CONTRACT-REQUESTS.md`](./CONTRACT-REQUESTS.md) § 12.
+
+### The committed manifest points at the local stack
+
+`webp` and `jpeg` carry `http://127.0.0.1:54321/…` because that is the project
+this branch was built against. **Running `upload-images.ts` against production
+is a deploy step, not a one-off** — see
+[The manifest holds Storage URLs](#the-manifest-holds-storage-urls-and-they-are-environment-specific).
