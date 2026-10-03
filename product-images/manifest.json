@@ -1,4 +1,179 @@
 {
   "version": 1,
-  "products": {}
+  "products": {
+    "dot-grid-notebook": {
+      "slug": "dot-grid-notebook",
+      "alt": "Three notebooks fanned across a pale desk — a pink dot-grid, a kraft grid pad and an open white lined notebook — with two slim pens laid alongside.",
+      "attribution": {
+        "sourceUrl": "https://example.invalid/attribution/TODO",
+        "photographer": "TODO — photographer not recorded",
+        "license": "TODO — licence not recorded"
+      },
+      "images": [
+        {
+          "ratio": "4x3",
+          "role": "main",
+          "width": 640,
+          "height": 480,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/dot-grid-notebook-4x3-640.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/dot-grid-notebook-4x3-640.jpg",
+          "bytes": 20560
+        },
+        {
+          "ratio": "1x1",
+          "role": "thumb",
+          "width": 320,
+          "height": 320,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/dot-grid-notebook-1x1-320.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/dot-grid-notebook-1x1-320.jpg",
+          "bytes": 8432
+        }
+      ]
+    },
+    "milled-desk-weight": {
+      "slug": "milled-desk-weight",
+      "alt": "Knurled cast iron desk weight standing on pale concrete, lit hard from the left so its shadow falls sharply to the right.",
+      "attribution": {
+        "sourceUrl": "https://example.invalid/attribution/TODO",
+        "photographer": "TODO — photographer not recorded",
+        "license": "TODO — licence not recorded"
+      },
+      "images": [
+        {
+          "ratio": "4x3",
+          "role": "main",
+          "width": 640,
+          "height": 480,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/milled-desk-weight-4x3-640.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/milled-desk-weight-4x3-640.jpg",
+          "bytes": 14128
+        },
+        {
+          "ratio": "1x1",
+          "role": "thumb",
+          "width": 320,
+          "height": 320,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/milled-desk-weight-1x1-320.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/milled-desk-weight-1x1-320.jpg",
+          "bytes": 7032
+        }
+      ]
+    },
+    "steel-rule": {
+      "slug": "steel-rule",
+      "alt": "Engraved stainless steel rule lying across a white desk, its graduated scale and stamped numerals running corner to corner.",
+      "attribution": {
+        "sourceUrl": "https://example.invalid/attribution/TODO",
+        "photographer": "TODO — photographer not recorded",
+        "license": "TODO — licence not recorded"
+      },
+      "images": [
+        {
+          "ratio": "4x3",
+          "role": "main",
+          "width": 640,
+          "height": 480,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/steel-rule-4x3-640.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/steel-rule-4x3-640.jpg",
+          "bytes": 34090
+        },
+        {
+          "ratio": "1x1",
+          "role": "thumb",
+          "width": 320,
+          "height": 320,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/steel-rule-1x1-320.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/desk/steel-rule-1x1-320.jpg",
+          "bytes": 16472
+        }
+      ]
+    },
+    "titanium-pencil": {
+      "slug": "titanium-pencil",
+      "alt": "Close crop of a mechanical pencil's dark barrel and brass-toned knurled end cap lying on a pale desk, a hard band of sunlight across the metal.",
+      "attribution": {
+        "sourceUrl": "https://example.invalid/attribution/TODO",
+        "photographer": "TODO — photographer not recorded",
+        "license": "TODO — licence not recorded"
+      },
+      "images": [
+        {
+          "ratio": "4x3",
+          "role": "main",
+          "width": 640,
+          "height": 480,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/titanium-pencil-4x3-640.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/titanium-pencil-4x3-640.jpg",
+          "bytes": 10474
+        },
+        {
+          "ratio": "1x1",
+          "role": "thumb",
+          "width": 320,
+          "height": 320,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/titanium-pencil-1x1-320.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/write/titanium-pencil-1x1-320.jpg",
+          "bytes": 3792
+        }
+      ]
+    },
+    "travel-tech-pouch": {
+      "slug": "travel-tech-pouch",
+      "alt": "Two cotton drawstring pouches on pale marble, a natural one in front and a slate-blue one behind it.",
+      "attribution": {
+        "sourceUrl": "https://example.invalid/attribution/TODO",
+        "photographer": "TODO — photographer not recorded",
+        "license": "TODO — licence not recorded"
+      },
+      "images": [
+        {
+          "ratio": "4x3",
+          "role": "main",
+          "width": 640,
+          "height": 480,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/travel-tech-pouch-4x3-640.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/travel-tech-pouch-4x3-640.jpg",
+          "bytes": 27914
+        },
+        {
+          "ratio": "1x1",
+          "role": "thumb",
+          "width": 320,
+          "height": 320,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/travel-tech-pouch-1x1-320.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/travel-tech-pouch-1x1-320.jpg",
+          "bytes": 12960
+        }
+      ]
+    },
+    "waxed-canvas-folio": {
+      "slug": "waxed-canvas-folio",
+      "alt": "Plain cream canvas tote standing upright on a flat grey ground, its two handles arched above the body.",
+      "attribution": {
+        "sourceUrl": "https://example.invalid/attribution/TODO",
+        "photographer": "TODO — photographer not recorded",
+        "license": "TODO — licence not recorded"
+      },
+      "images": [
+        {
+          "ratio": "4x3",
+          "role": "main",
+          "width": 640,
+          "height": 480,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/waxed-canvas-folio-4x3-640.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/waxed-canvas-folio-4x3-640.jpg",
+          "bytes": 6714
+        },
+        {
+          "ratio": "1x1",
+          "role": "thumb",
+          "width": 320,
+          "height": 320,
+          "webp": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/waxed-canvas-folio-1x1-320.webp",
+          "jpeg": "http://127.0.0.1:54321/storage/v1/object/public/product-images/carry/waxed-canvas-folio-1x1-320.jpg",
+          "bytes": 3830
+        }
+      ]
+    }
+  }
 }
