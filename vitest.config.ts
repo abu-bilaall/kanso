@@ -24,6 +24,16 @@ export default defineConfig({
           globals: false,
           include: ['tests/unit/**/*.test.{ts,tsx}'],
           setupFiles: ['tests/setup/unit.ts'],
+          // These are jsdom renders of whole pages against mocked async hooks,
+          // not pure functions, so the 5s Vitest default is tight. Under load it
+          // produced red runs whose assertions were all still correct — three
+          // concurrent suites on four cores put fifteen processes on the machine
+          // and a handful of AccountPage and AuthCallbackPage cases crossed five
+          // seconds. A CI runner is two cores, so this is a real exposure rather
+          // than a symptom of one busy desktop. Generous, because a genuine
+          // regression here fails by never rendering, not by rendering slowly.
+          testTimeout: 30_000,
+          hookTimeout: 30_000,
         },
       },
       {
