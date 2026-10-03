@@ -1,0 +1,19 @@
+<!--
+  Kanso favicon. The reticle from the wordmark, without the word: at 16px a
+  letterform is six grey pixels and the mark is the only part still legible.
+
+  Colours are the two tokens the mark is built from, written out because a
+  favicon is a standalone document with nothing to inherit from. They are the
+  paper and ink primitives in src/styles/tokens.css.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
+  <title>Kanso</title>
+  <rect x="2" y="2" width="36" height="36" rx="4" fill="#faf9f5" stroke="#1b1c1a" stroke-width="3" />
+  <circle cx="20" cy="20" r="5.5" fill="#1b1c1a" />
+  <path
+    d="M20 9v5M20 26v5M9 20h5M26 20h5"
+    stroke="#1b1c1a"
+    stroke-width="2.75"
+    stroke-linecap="square"
+  />
+</svg>

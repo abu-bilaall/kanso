@@ -664,3 +664,99 @@ today.
 **What I did instead.** `supabase/functions/_shared/logger.ts` is a faithful port
 of the same `scrub` and the same API, with the two fixes applied and a comment
 pointing here. If this is applied, that file collapses to an import.
+
+---
+
+## 10. `max-w-<name>` resolves against `--spacing-<name>`, not the container scale
+
+**Who I am:** A6 — account and auth, `feat/account-auth`.
+
+**What I am building.** The Google sign-in surface and the OAuth callback's
+recovery actions. Both want a control column narrower than the page.
+
+**The exact change.** One of the following in `src/styles/tokens.css`:
+
+```diff
+   @theme inline {
++  /* Container scale, so `max-w-sm` is 24rem and not the 8px spacing token. */
++  --container-xs: 20rem;
++  --container-sm: 24rem;
++  --container-md: 28rem;
++  --container-lg: 32rem;
++  --container-xl: 36rem;
+     --spacing-xs: var(--k-space-xs);
+```
+
+or, if the container scale is meant to stay implicit, rename the spacing aliases
+so they cannot collide with the size names (`--spacing-2xs`, `--space-sm`, …) and
+update the four `--spacing-*` aliases above accordingly.
+
+**Why the existing surface cannot do it.** Tailwind v4 resolves `max-w-<name>`
+against `--container-<name>` **and** against `--spacing-<name>`; whichever it
+finds, it uses. `tokens.css` declares `--spacing-xs/sm/md/lg/xl`, so the size
+names are shadowed by spacing. Measured in the running app against `main` as of
+the integration-2 pass:
+
+| Class | Resolves to | Should be |
+| --- | --- | --- |
+| `max-w-sm` | `8px` | `24rem` |
+| `max-w-md` | `16px` | `28rem` |
+| `max-w-xl` | `40px` | `36rem` |
+| `max-w-lg` | `none` | `32rem` |
+| `max-w-2xl` | `672px` | `672rem` ✓ (numeric names are unaffected) |
+
+This is not the missing-spacing-scale defect that integration-2 closed —
+`gap-sm` is `8px`, `gap-lg` is `24px` and `gap-xl` is `40px` now, all correct.
+The size names are shadowed instead, and they were shadowed before that pass too.
+
+`npm run check:classes` cannot see it: `max-w-sm` *does* generate a rule, just
+with the wrong value. Neither can `tests/unit/styles/designTokens.test.ts`, which
+reads the tokens rather than the compiled widths.
+
+**Who else depends on it.** Anything that writes `max-w-<name>` rather than
+`max-w-<number>`: `max-w-prose` (595.92px, correct, because `prose` is not a
+spacing key) is the only named width currently behaving. A4, A5 and A6 have all
+had to reach for `max-w-prose` or a numeric name as a result.
+
+**What I did instead.** `max-w-[24rem]` in the two places I needed a measure,
+with the reason in a comment at each. It is explicit and cannot drift, but it
+is not a token, and this should be fixed at the source.
+
+---
+
+## 11. `AuthCallbackPage` honours the checkout return — RESOLVED on `feat/account-auth`
+
+**Who asked:** A5, in [`CART-CHECKOUT.md`](./CART-CHECKOUT.md) § 2. Open on
+`main`.
+
+**What was built.** `readDestination` in `src/features/auth/destination.ts` is the
+reader A5's request asked for, in A5's order of preference:
+
+1. `?returnTo=` from `location.search`, through `isSafeReturnTo`.
+2. `consumeReturnTo()` — the one-shot `sessionStorage` marker — through the same
+   check, which also removes the key.
+3. `ROUTE_PATHS.account`.
+
+`useAuthCallback` resolves it **once per distinct `search`** and holds the
+answer, rather than in a `useMemo`. Reading the marker consumes it, and React
+renders twice in development, so a memo would resolve once and discard the
+answer — landing on `/account` instead of `/checkout`, in development only.
+
+`GoogleSignInButton` writes both channels before it opens Google —
+`rememberReturnTo(destination)` and `callbackUrlFor(destination)` — so the
+account page's sign-in and checkout's sign-in behave identically.
+
+`callbackMachine.parseAuthResponse` treats `returnTo` as a known parameter, so a
+callback URL carrying one is not reported as `unexpected_parameter`.
+
+Covered by `tests/unit/auth/authCallbackPage.test.tsx`: the parameter, the
+stored marker, the parameter winning over the marker, the marker being cleared,
+`//evil.example` refused, an off-origin URL refused, and the retry writing the
+destination back out.
+
+**A6's other note, for whoever reviews this.** `src/features/auth/destination.ts`
+reads `ROUTE_PATHS.account` **inside** the function rather than at module scope.
+`src/routes.ts` imports every page module and those import the components that
+import this one, so a module-scope read evaluates while the cycle is still open
+and yields `undefined` — a `TypeError` in every suite that imports a page. Worth
+knowing before anyone adds another `ROUTE_PATHS` read at module scope.
