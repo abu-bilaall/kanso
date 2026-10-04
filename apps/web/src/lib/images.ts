@@ -32,7 +32,7 @@
  */
 
 import { z } from 'zod';
-import manifestJson from '../../product-images/manifest.json';
+import manifestJson from '../../../../product-images/manifest.json';
 import { ConfigurationError } from './errors';
 
 /** The two crops the UI uses. PLAN §4: 4:3 main at 640w, 1:1 thumb at 320w. */

@@ -12,8 +12,8 @@
  * `tsconfig.app.json` rejects it — see `docs/CONTRACT-REQUESTS.md`.
  */
 
-import { createOrderPayloadSchema } from '../../../src/schemas/checkout.ts';
-import { handleCreateOrder, type CreateOrderDeps } from '../_shared/create-order.ts';
+import { createOrderPayloadSchema } from '../../../apps/web/src/schemas/checkout.ts';
+import { type CreateOrderDeps, handleCreateOrder } from '../_shared/create-order.ts';
 import { logger } from '../_shared/logger.ts';
 import { createMailgunMailer, type Mailer } from '../_shared/mailgun.ts';
 import { OrderError } from '../_shared/order-error.ts';
@@ -34,7 +34,12 @@ Deno.serve(async (request: Request): Promise<Response> => {
         : new OrderError('configuration', 'Order creation is not configured correctly.', {
             cause: error,
           });
-    logger.error({ event: 'order_create_failed', scope: 'create-order', stage: 'boot', error: failure });
+    logger.error({
+      event: 'order_create_failed',
+      scope: 'create-order',
+      stage: 'boot',
+      error: failure,
+    });
     return new Response(JSON.stringify(failure.toBody()), {
       status: failure.status,
       headers: { 'content-type': 'application/json; charset=utf-8' },

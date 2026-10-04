@@ -86,7 +86,7 @@ describe('named max-widths', () => {
   it('publishes no un-namespaced spacing entry that could shadow it again', () => {
     // The trap is a later edit adding `--spacing-md` back beside the namespaced
     // ones. It is one line in a stylesheet, so it is worth a test.
-    const tokens = readFileSync(join(ROOT, 'src/styles/tokens.css'), 'utf8');
+    const tokens = readFileSync(join(ROOT, 'apps/web/src/styles/tokens.css'), 'utf8');
     const themeBlock = /@theme inline \{([^}]*)\}/.exec(tokens)?.[1] ?? '';
     const declared = [...themeBlock.matchAll(/--spacing-([\w-]+)\s*:/g)].map(
       (match) => match[1] ?? '',

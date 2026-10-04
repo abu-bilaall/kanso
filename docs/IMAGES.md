@@ -4,8 +4,8 @@ How a downloaded photograph becomes the file the storefront loads, how to
 re-cut one when it is framed badly, where everything lives, and what is still
 missing.
 
-The consumer of all of this is `src/lib/images.ts` and
-`src/components/media/ProductImage.tsx`. Both are **frozen** — see
+The consumer of all of this is `apps/web/src/lib/images.ts` and
+`apps/web/src/components/media/ProductImage.tsx`. Both are **frozen** — see
 [`CONTRACTS.md`](./CONTRACTS.md) § *Product images*. This document describes how
 the data they read is produced. It does not describe how they behave.
 
@@ -33,7 +33,7 @@ Requires ImageMagick 7 (`magick`) and, for the upload, the Supabase CLI or
 
 | Stage | Reads | Writes |
 | --- | --- | --- |
-| `process-product-images.mjs` | `product-images/_masters/` | `public/product-images/…` and `.cache/product-images-build.json` |
+| `process-product-images.mjs` | `product-images/_masters/` | `apps/web/public/product-images/…` and `.cache/product-images-build.json` |
 | `upload-images.ts` | the build record | the Storage bucket and `product-images/manifest.json` |
 
 The manifest holds the **public URL of each derivative in Supabase Storage**,
@@ -57,7 +57,7 @@ Two crops, WebP plus a JPEG fallback for each. That is the whole set.
 - `-strip` on every export. EXIF can carry a photographer, a device and a
   location, and none of that belongs in a public bucket.
 - **The 1600w and 800w variants are cut.** They double the committed weight for
-  bytes no V1 surface requests. `srcSet` in `src/lib/images.ts` reads whatever
+  bytes no V1 surface requests. `srcSet` in `apps/web/src/lib/images.ts` reads whatever
   widths the manifest commits, so adding one back is a row in the pipeline's
   `VARIANTS` and a re-run — not a code change.
 
@@ -95,24 +95,25 @@ the repo-relative path of every derivative is:
 
 | Product | 4:3 main | 1:1 thumb |
 | --- | --- | --- |
-| `canvas-messenger-bag` | `public/product-images/carry/canvas-messenger-bag-4x3-640.webp` | `public/product-images/carry/canvas-messenger-bag-1x1-320.webp` |
-| `dot-grid-notebook` | `public/product-images/write/dot-grid-notebook-4x3-640.webp` | `public/product-images/write/dot-grid-notebook-1x1-320.webp` |
-| `graphite-desk-pad` | `public/product-images/desk/graphite-desk-pad-4x3-640.webp` | `public/product-images/desk/graphite-desk-pad-1x1-320.webp` |
-| `milled-desk-weight` | `public/product-images/desk/milled-desk-weight-4x3-640.webp` | `public/product-images/desk/milled-desk-weight-1x1-320.webp` |
-| `oak-pen-cup` | `public/product-images/desk/oak-pen-cup-4x3-640.webp` | `public/product-images/desk/oak-pen-cup-1x1-320.webp` |
-| `steel-rule` | `public/product-images/desk/steel-rule-4x3-640.webp` | `public/product-images/desk/steel-rule-1x1-320.webp` |
-| `technical-fountain-pen` | `public/product-images/write/technical-fountain-pen-4x3-640.webp` | `public/product-images/write/technical-fountain-pen-1x1-320.webp` |
-| `titanium-pencil` | `public/product-images/write/titanium-pencil-4x3-640.webp` | `public/product-images/write/titanium-pencil-1x1-320.webp` |
-| `travel-tech-pouch` | `public/product-images/carry/travel-tech-pouch-4x3-640.webp` | `public/product-images/carry/travel-tech-pouch-1x1-320.webp` |
-| `waxed-canvas-folio` | `public/product-images/carry/waxed-canvas-folio-4x3-640.webp` | `public/product-images/carry/waxed-canvas-folio-1x1-320.webp` |
+| `canvas-messenger-bag` | `apps/web/public/product-images/carry/canvas-messenger-bag-4x3-640.webp` | `apps/web/public/product-images/carry/canvas-messenger-bag-1x1-320.webp` |
+| `dot-grid-notebook` | `apps/web/public/product-images/write/dot-grid-notebook-4x3-640.webp` | `apps/web/public/product-images/write/dot-grid-notebook-1x1-320.webp` |
+| `graphite-desk-pad` | `apps/web/public/product-images/desk/graphite-desk-pad-4x3-640.webp` | `apps/web/public/product-images/desk/graphite-desk-pad-1x1-320.webp` |
+| `milled-desk-weight` | `apps/web/public/product-images/desk/milled-desk-weight-4x3-640.webp` | `apps/web/public/product-images/desk/milled-desk-weight-1x1-320.webp` |
+| `oak-pen-cup` | `apps/web/public/product-images/desk/oak-pen-cup-4x3-640.webp` | `apps/web/public/product-images/desk/oak-pen-cup-1x1-320.webp` |
+| `steel-rule` | `apps/web/public/product-images/desk/steel-rule-4x3-640.webp` | `apps/web/public/product-images/desk/steel-rule-1x1-320.webp` |
+| `technical-fountain-pen` | `apps/web/public/product-images/write/technical-fountain-pen-4x3-640.webp` | `apps/web/public/product-images/write/technical-fountain-pen-1x1-320.webp` |
+| `titanium-pencil` | `apps/web/public/product-images/write/titanium-pencil-4x3-640.webp` | `apps/web/public/product-images/write/titanium-pencil-1x1-320.webp` |
+| `travel-tech-pouch` | `apps/web/public/product-images/carry/travel-tech-pouch-4x3-640.webp` | `apps/web/public/product-images/carry/travel-tech-pouch-1x1-320.webp` |
+| `waxed-canvas-folio` | `apps/web/public/product-images/carry/waxed-canvas-folio-4x3-640.webp` | `apps/web/public/product-images/carry/waxed-canvas-folio-1x1-320.webp` |
 
 Every one has a `.jpg` sibling at the same path with the extension swapped.
 Sizes and true pixel dimensions for all twenty are in
 `.cache/product-images-build.json` and in the manifest itself.
 
-They live under `public/` so `npm run build` copies them into `dist/` and a
-local checkout can be served without Storage at all. They are **not** what the
-browser loads in the running app — the manifest's Storage URLs are.
+They live under `apps/web/public/` so `npm run build` copies them into
+`apps/web/dist/` and a local checkout can be served without Storage at all.
+They are **not** what the browser loads in the running app — the manifest's
+Storage URLs are.
 
 ---
 
@@ -213,7 +214,7 @@ node scripts/upload-images.ts --dry-run   # keys and target, no writes
 node scripts/upload-images.ts
 ```
 
-- Object keys are `desk/steel-rule-4x3-640.webp`: the `public/` prefix is
+- Object keys are `desk/steel-rule-4x3-640.webp`: the `apps/web/public/` prefix is
   dropped because that is the directory Vite serves from, and the
   `product-images/` prefix is dropped because the bucket already carries it.
   Without that, every URL would read `.../product-images/product-images/...`.

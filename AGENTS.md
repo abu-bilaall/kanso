@@ -29,20 +29,28 @@ Keep the architecture understandable. Do not introduce abstractions, dependencie
 Adapt this to the chosen frontend setup rather than forcing it:
 
 ```text
-src/
-├── components/
-├── pages/
-├── features/
-├── lib/
-├── schemas/
-├── services/
-├── types/
-└── utils/
+apps/web/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   ├── features/
+│   ├── lib/
+│   ├── schemas/
+│   ├── services/
+│   ├── types/
+│   └── utils/
+└── tests/
+    ├── setup/
+    └── unit/
 
 supabase/
 ├── migrations/
 └── functions/
     └── create-order/
+
+tests/
+├── functional/
+└── setup/
 ```
 
 ## Key Commands

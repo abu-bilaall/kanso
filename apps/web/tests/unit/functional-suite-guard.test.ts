@@ -13,7 +13,11 @@
 
 import { spawnSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
-import { connectionProblem, requireConnection, resolveConnection } from '../functional/connection';
+import {
+  connectionProblem,
+  requireConnection,
+  resolveConnection,
+} from '../../../../tests/functional/connection';
 
 /** A port nothing is listening on, so "the stack is down" is deterministic. */
 const DEAD_STACK = 'http://127.0.0.1:9';

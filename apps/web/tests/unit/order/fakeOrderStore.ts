@@ -10,7 +10,7 @@
  * failed checkout leaves no half-order".
  */
 
-import { OrderError } from '../../../supabase/functions/_shared/order-error';
+import { OrderError } from '../../../../../supabase/functions/_shared/order-error';
 import type {
   ActiveCart,
   CartLine,
@@ -18,7 +18,7 @@ import type {
   CommittedOrder,
   CommittedOrderItem,
   OrderStore,
-} from '../../../supabase/functions/_shared/types';
+} from '../../../../../supabase/functions/_shared/types';
 
 export interface FakeProduct {
   id: string;

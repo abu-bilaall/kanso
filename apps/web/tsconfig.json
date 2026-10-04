@@ -1,0 +1,7 @@
+{
+  /* The same solution the repository root carries, so `tsc -b` also works when
+     the working directory is the app itself — which is where Netlify runs the
+     build, because `base` is this directory. */
+  "files": [],
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
+}

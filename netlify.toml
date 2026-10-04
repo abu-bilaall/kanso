@@ -7,9 +7,17 @@
 # design, and the service-role key is never reachable from a browser.
 #
 # `npm run build` runs `tsc -b && vite build`, so a type error fails the build
-# rather than shipping a broken bundle. Vite writes to `dist`.
+# rather than shipping a broken bundle. Vite writes to `dist` inside the app.
+#
+# `base` is the app's directory in this repository. Netlify installs
+# dependencies and runs the build command from inside it, and resolves
+# `publish` against it, so `dist` below means `apps/web/dist`. npm walks up to
+# the workspace root from there, so the install still reads the committed
+# lockfile and the build command is the app's own script. Nothing else moves
+# with it — the rewrite rules are relative to the published site root.
 
 [build]
+  base = "apps/web"
   command = "npm run build"
   publish = "dist"
 
@@ -22,8 +30,9 @@
 
 # History-API routing.
 #
-# This is a client-side-routed SPA (`createBrowserRouter` in `src/main.tsx`),
-# so `/shop`, `/product/:slug`, `/cart`, `/checkout`, `/order/:id`, `/account`
+# This is a client-side-routed SPA (`createBrowserRouter` in
+# `apps/web/src/main.tsx`), so `/shop`, `/product/:slug`, `/cart`, `/checkout`,
+# `/order/:id`, `/account`
 # and `/auth/callback` are all real URLs that must survive a hard refresh and a
 # shared link. Without this rule Netlify looks for a file at each of those paths,
 # finds none, and returns 404 — the app never even boots, so there is no

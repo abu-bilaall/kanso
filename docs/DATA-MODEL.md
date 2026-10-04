@@ -57,7 +57,7 @@ Money arrives from the catalogue and leaves on the order. In between, arithmetic
 happens in exactly two places: the line total, which is
 `order_items.quantity * order_items.unit_price_kobo`, and the order total, which
 `create-order` sums server-side. The browser formats kobo for display and
-nothing else — `src/lib/money.ts` is the only formatter.
+nothing else — `apps/web/src/lib/money.ts` is the only formatter.
 
 `check (price_kobo >= 0)`, `check (unit_price_kobo >= 0)` and
 `check (subtotal_kobo >= 0)` / `check (total_kobo >= 0)` make a negative amount
