@@ -13,8 +13,7 @@
       "!**/coverage",
       "!**/product-images",
       "!**/stitch-designs",
-      "!**/.supabase",
-      "!supabase/functions"
+      "!**/.supabase"
     ]
   },
   "formatter": {

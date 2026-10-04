@@ -29,9 +29,9 @@
  * a one-off. The committed local manifest is a working development default, not
  * a claim about production.
  *
- * The committed derivatives stay on disk under `public/product-images/` and stay
- * auditable; `docs/IMAGES.md` records where. They are the source, the Storage
- * objects are the served copy.
+ * The committed derivatives stay on disk under `apps/web/public/product-images/`
+ * and stay auditable; `docs/IMAGES.md` records where. They are the source, the
+ * Storage objects are the served copy.
  *
  * ## The bucket is not created here
  *
@@ -42,7 +42,7 @@
  *
  * ## Where the key comes from
  *
- * `public/product-images/desk/steel-rule-4x3-640.webp` reduces to
+ * `apps/web/public/product-images/desk/steel-rule-4x3-640.webp` reduces to
  * `desk/steel-rule-4x3-640.webp`. The bucket is already called
  * `product-images`, so the prefix is dropped rather than repeated — otherwise
  * every URL would read `.../product-images/product-images/...`. That key with the
@@ -202,16 +202,17 @@ async function resolveConnection(): Promise<Connection> {
    =========================================================================== */
 
 /**
- * `public/product-images/desk/Steel Rule-4x3-640.webp` ->
+ * `apps/web/public/product-images/desk/Steel Rule-4x3-640.webp` ->
  * `desk/steel-rule-4x3-640.webp`.
  *
- * The `public/` prefix is stripped because that is the directory Vite serves
- * from, and the `product-images/` prefix because the bucket already carries it.
+ * The `apps/web/public/` prefix is stripped because that is the directory Vite
+ * serves from, and the `product-images/` prefix because the bucket already
+ * carries it.
  */
 function objectKey(repoPath: string): string {
   const relative = repoPath
     .replace(/^\/+/, '')
-    .replace(/^public\//, '')
+    .replace(/^apps\/web\/public\//, '')
     .replace(new RegExp(`^${REPO_ROOT}/`), '');
 
   const segments = relative.split('/').map((segment) =>

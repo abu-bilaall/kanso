@@ -16,7 +16,7 @@ during the original build are recorded here instead. The table is current as of
 | # | Request | Status |
 | --- | --- | --- |
 | 1 | Freeze the `create-order` error envelope | **Resolved** — see below |
-| 2 | `AuthCallbackPage` honours the checkout return after OAuth | **Resolved** — `readDestination` in `src/features/auth/destination.ts`; recorded in [`CONTRACT-REQUESTS.md`](./CONTRACT-REQUESTS.md) § 11 |
+| 2 | `AuthCallbackPage` honours the checkout return after OAuth | **Resolved** — `readDestination` in `apps/web/src/features/auth/destination.ts`; recorded in [`CONTRACT-REQUESTS.md`](./CONTRACT-REQUESTS.md) § 11 |
 | 3 | `--spacing-md/-lg/-xl` are never generated | **Closed** on `chore/integration-2` |
 | 4 | `useCart` is per-call-site, so the cart badge never clears | **Closed** on `chore/integration-2` |
 | 5 | An anonymous visitor cannot build a cart | **Decided and built** — the sign-in gate fires at the first add, not at checkout; see below |
@@ -56,7 +56,7 @@ the control it names. A nested `{ error: { … } }` envelope is still accepted a
 fallback, because being wrong about the envelope costs a generic message and
 not accepting it costs more.
 
-`tests/unit/checkout/createOrder.test.tsx` pins the documented shape verbatim.
+`apps/web/tests/unit/checkout/createOrder.test.tsx` pins the documented shape verbatim.
 
 **Verified against the real function**, not a mock: a live `create-order` with a
 product drained to zero stock returns `409` and the browser renders its sentence
@@ -67,13 +67,13 @@ continue."* The page stays on `/checkout`; no order is confirmed.
 
 ## 2. `AuthCallbackPage` must honour the checkout return — RESOLVED on `feat/account-auth`
 
-**What A5 built.** `src/features/checkout/returnIntent.ts`. Before starting
+**What A5 built.** `apps/web/src/features/checkout/returnIntent.ts`. Before starting
 Google sign-in, checkout writes `/checkout` to `sessionStorage` under
 `kanso:return-to` and passes `redirectTo` as
 `<origin>/auth/callback?returnTo=%2Fcheckout`. Both channels are written;
 neither is read yet.
 
-**What is needed.** `src/pages/auth/AuthCallbackPage.tsx` is still the 13-line
+**What is needed.** `apps/web/src/pages/auth/AuthCallbackPage.tsx` is still the 13-line
 placeholder, so the return has no reader and a signed-out visitor who reaches
 `/checkout` is sent to Google and then to whatever the placeholder renders.
 Resolve the destination in this order, then `navigate`:
@@ -89,11 +89,11 @@ must never bounce somebody back to a checkout page days later. A5's checkout
 also consumes it on mount, so the marker cannot loop.
 
 **Resolved on `feat/account-auth`.** Built exactly as specified: `readDestination`
-in `src/features/auth/destination.ts` reads `?returnTo=` first through
+in `apps/web/src/features/auth/destination.ts` reads `?returnTo=` first through
 `isSafeReturnTo`, then the one-shot `sessionStorage` marker through the same
 check, then falls back to `/account`. `GoogleSignInButton` writes both channels,
 so checkout's sign-in and the account page's sign-in behave identically.
-`tests/unit/auth/authCallbackPage.test.tsx` covers the parameter, the marker, the
+`apps/web/tests/unit/auth/authCallbackPage.test.tsx` covers the parameter, the marker, the
 parameter winning over the marker, the marker being cleared, `//evil.example`
 refused, and an off-origin URL refused. Full write-up in
 [`CONTRACT-REQUESTS.md`](./CONTRACT-REQUESTS.md) § 11.
@@ -113,7 +113,7 @@ Function*.
 `PageShell`.
 
 **The exact change.** Add three aliases to the `@theme inline` block in
-`src/styles/tokens.css`, beside the `--spacing-xs` / `--spacing-sm` entries that
+`apps/web/src/styles/tokens.css`, beside the `--spacing-xs` / `--spacing-sm` entries that
 are already there:
 
 ```css
@@ -178,7 +178,7 @@ seconds later, and shipping it would look like a fix.
 
 
 **Resolved on `chore/integration-2`.** Cart state moved into one external
-store, `src/hooks/internal/cartStore.ts`, which every `useCart()` call site
+store, `apps/web/src/hooks/internal/cartStore.ts`, which every `useCart()` call site
 subscribes to. Measured in the running app with a signed-in user: four mounted
 consumers (rail, mobile header, tab bar, page) issue **one** `carts` read, and a
 `removeItem` on the cart page clears the rail badge and the mobile header badge
@@ -186,7 +186,7 @@ in the same view with one further read — no reload, no manual refresh. The
 public API and return shape in `docs/CONTRACTS.md` are unchanged; `useCart`
 reads the store through `useSyncExternalStore` and derives the same fields it
 always returned, including `status: 'loading'` while the session settles.
-`tests/unit/cart/sharedCartStore.test.tsx` pins all three.
+`apps/web/tests/unit/cart/sharedCartStore.test.tsx` pins all three.
 ---
 
 ## 5. An anonymous visitor cannot build a cart — DECIDED, built on `feat/account-auth`

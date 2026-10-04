@@ -11,17 +11,17 @@
  * `scrub` was restated here line for line.
  */
 
-import { createLogger, type LogFields, type Logger } from '../../../src/lib/logger.ts';
+import { createLogger, type LogFields, type Logger } from '../../../apps/web/src/lib/logger.ts';
 
-export { createLogger, REDACTED, scrub } from '../../../src/lib/logger.ts';
 export type {
   LogEvent,
   LogFields,
+  Logger,
   LogLevel,
   LogLevelGate,
   LogSink,
-  Logger,
-} from '../../../src/lib/logger.ts';
+} from '../../../apps/web/src/lib/logger.ts';
+export { createLogger, REDACTED, scrub } from '../../../apps/web/src/lib/logger.ts';
 
 /**
  * The slice of the Deno global this module needs, and `undefined` everywhere

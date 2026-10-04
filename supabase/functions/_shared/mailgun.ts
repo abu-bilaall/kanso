@@ -14,8 +14,8 @@
  *    message, not into the returned `OrderError`.
  */
 
-import { OrderError } from './order-error.ts';
 import { formatKobo } from './money.ts';
+import { OrderError } from './order-error.ts';
 import type { CheckoutShipping, CommittedOrder } from './types.ts';
 
 export interface MailgunConfig {

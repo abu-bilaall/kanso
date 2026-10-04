@@ -18,17 +18,20 @@ import { checkoutFieldErrors, createOrderPayloadSchema } from '@/schemas/checkou
 import {
   type CreateOrderDeps,
   handleCreateOrder,
-} from '../../../supabase/functions/_shared/create-order';
-import { createCapturingLogger, createLogger } from '../../../supabase/functions/_shared/logger';
+} from '../../../../../supabase/functions/_shared/create-order';
+import {
+  createCapturingLogger,
+  createLogger,
+} from '../../../../../supabase/functions/_shared/logger';
 import {
   type ConfirmationMessage,
   createMailgunMailer,
   type Mailer,
   type SendResult,
-} from '../../../supabase/functions/_shared/mailgun';
-import type { OrderErrorBody } from '../../../supabase/functions/_shared/order-error';
-import { ORDER_ERROR_CODES } from '../../../supabase/functions/_shared/order-error';
-import type { CreateOrderResult } from '../../../supabase/functions/_shared/types';
+} from '../../../../../supabase/functions/_shared/mailgun';
+import type { OrderErrorBody } from '../../../../../supabase/functions/_shared/order-error';
+import { ORDER_ERROR_CODES } from '../../../../../supabase/functions/_shared/order-error';
+import type { CreateOrderResult } from '../../../../../supabase/functions/_shared/types';
 import { FakeOrderStore } from './fakeOrderStore';
 
 /* ===========================================================================
@@ -582,7 +585,9 @@ describe('transport', () => {
 
   it('echoes back any header the browser asks for, so the list cannot drift', async () => {
     const store = orderableStore();
-    const request = new Request('http://localhost/functions/v1/create-order', { method: 'OPTIONS' });
+    const request = new Request('http://localhost/functions/v1/create-order', {
+      method: 'OPTIONS',
+    });
     request.headers.set('access-control-request-headers', 'authorization, x-some-future-header');
 
     const response = await handleCreateOrder(request, depsFor(store));

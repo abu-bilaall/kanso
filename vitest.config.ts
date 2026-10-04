@@ -1,16 +1,23 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
 
-const srcDir = decodeURIComponent(new URL('./src', import.meta.url).pathname);
+const srcDir = decodeURIComponent(new URL('./apps/web/src', import.meta.url).pathname);
 
 /**
  * Two Vitest projects, deliberately separated by what they need to run:
  *
- * - `unit`      — jsdom + a mocked Supabase client. No Docker, no database. Always runnable.
- * - `functional`— node, hits the real local Supabase stack. Needs Docker up and the
- *                 connection values exported (see `tests/functional/README.md`).
+ * - `unit`      — jsdom + a mocked Supabase client. Runs the web app's suite in
+ *                 `apps/web/tests/unit`. No Docker, no database. Always runnable.
+ * - `functional`— node, hits the real local Supabase stack. Stays at the
+ *                 repository root, next to the migrations and the Edge Function
+ *                 it exercises. Needs Docker up and the connection values exported
+ *                 (see `tests/functional/README.md`).
  *
  * They never share a run, so a machine without Docker still has `npm run test:unit`.
+ *
+ * This file stays at the repository root rather than moving into `apps/web`: it
+ * is the only config that spans both trees, and `scripts/functional-env.mjs`
+ * runs it with the repository root as its working directory.
  */
 export default defineConfig({
   test: {
@@ -22,8 +29,8 @@ export default defineConfig({
           name: 'unit',
           environment: 'jsdom',
           globals: false,
-          include: ['tests/unit/**/*.test.{ts,tsx}'],
-          setupFiles: ['tests/setup/unit.ts'],
+          include: ['apps/web/tests/unit/**/*.test.{ts,tsx}'],
+          setupFiles: ['apps/web/tests/setup/unit.ts'],
           // These are jsdom renders of whole pages against mocked async hooks,
           // not pure functions, so the 5s Vitest default is tight. Under load it
           // produced red runs whose assertions were all still correct — three

@@ -23,7 +23,7 @@
  * exactly one outcome event is logged per request.
  */
 
-import { validatePayload, type CreateOrderPayloadSchema } from './checkout.ts';
+import { type CreateOrderPayloadSchema, validatePayload } from './checkout.ts';
 import { jsonResponse, preflightResponse, readBearerToken, readRequestId } from './http.ts';
 import { logger as defaultLogger, type Logger } from './logger.ts';
 import type { Mailer, SendResult } from './mailgun.ts';

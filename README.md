@@ -51,7 +51,7 @@ npm run dev                       # http://localhost:5173
 - `supabase/config.toml` pins `project_id = "kanso"` and API port `54321` on
   purpose: every Kanso worktree on this machine shares one local stack. Do not
   change either value.
-- The dev server is on **5173** (`vite.config.ts`); the Supabase API is on
+- The dev server is on **5173** (`apps/web/vite.config.ts`); the Supabase API is on
   **54321**, Postgres on **54322**, Studio on **54323**, Mailpit on **54324**.
 - Stop everything with `npm run db:stop`.
 
@@ -80,7 +80,7 @@ Two groups, and they are not interchangeable.
 These two are the only values that ever reach the browser. Vite inlines anything
 prefixed `VITE_` into the public bundle, so **only the publishable key belongs
 here** — a service-role or secret key in a `VITE_` variable ships it to every
-visitor. `src/lib/supabase.ts` asserts at module load that no secret credential
+visitor. `apps/web/src/lib/supabase.ts` asserts at module load that no secret credential
 is present and throws if one is.
 
 | Variable | Where it is set | Value |
@@ -163,12 +163,12 @@ grant to get a token.
 npm run typecheck       # tsc -b
 npm run check           # biome check (format + lint)
 npm run check:fix       # biome check --write
-npm run check:classes   # audit: utility classes used in src/ that Tailwind emits nothing for
+npm run check:classes   # audit: utility classes used in apps/web/src/ that Tailwind emits nothing for
 npm run test:unit       # 272 tests. jsdom. No Docker, no network, no stack.
 npm run test:func       # 35 tests against the local stack. NEEDS THE STACK RUNNING.
 npm run ci:check        # typecheck + check + test:unit. What CI runs before the functional suite.
 npm test                # vitest run — both projects. Read the warning below.
-npm run build           # tsc -b && vite build, into dist/
+npm run build           # tsc -b && vite build, into apps/web/dist/
 ```
 
 `npm run test:func` finds the local stack itself and **fails loudly** if it
@@ -180,7 +180,7 @@ process, and the suite skips itself and reports green while verifying nothing.
 `scripts/functional-env.mjs` exists to make that failure mode impossible.
 
 `npm run check:classes` is a separate local guard, not part of `ci:check`. It
-compiles the real stylesheet and fails on any class name `src/` uses for which
+compiles the real stylesheet and fails on any class name `apps/web/src/` uses for which
 Tailwind generates nothing — the failure mode where a class silently does
 nothing.
 
@@ -195,9 +195,10 @@ is what CI does.
 
 ## Deploying the frontend
 
-The build config is committed in [`netlify.toml`](./netlify.toml): `npm run
-build`, publish `dist`, and a rewrite of `/*` to `/index.html` so client-side
-routes survive a hard refresh. Nothing secret is in that file.
+The build config is committed in [`netlify.toml`](./netlify.toml): base
+`apps/web`, `npm run build`, publish `dist` (which Netlify resolves against the
+base, so it is `apps/web/dist`), and a rewrite of `/*` to `/index.html` so
+client-side routes survive a hard refresh. Nothing secret is in that file.
 
 To deploy, in the Netlify UI:
 

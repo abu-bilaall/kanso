@@ -28,9 +28,9 @@ import { OrderError } from './order-error.ts';
 import type {
   ActiveCart,
   CartLine,
+  CommitOrderInput,
   CommittedOrder,
   CommittedOrderItem,
-  CommitOrderInput,
   OrderStore,
 } from './types.ts';
 
@@ -197,9 +197,13 @@ function commitRejection(outcome: { code: string } & Record<string, unknown>): O
     });
   }
   if (outcome.code === 'cart_not_active' || outcome.code === 'cart_empty') {
-    return new OrderError('validation', 'Your cart is no longer available. Refresh and try again.', {
-      details,
-    });
+    return new OrderError(
+      'validation',
+      'Your cart is no longer available. Refresh and try again.',
+      {
+        details,
+      },
+    );
   }
   return new OrderError('server', 'The order could not be confirmed.', { details });
 }

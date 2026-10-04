@@ -60,7 +60,7 @@ nobody discovers them at launch. Re-checked at `chore/integration-3`.
    `graphite-desk-pad`, `oak-pen-cup`, `canvas-messenger-bag` and
    `technical-fountain-pen` render the neutral panel instead of a photograph.
    The other six resolve, and every derivative is committed under
-   `public/product-images/` and served in a built bundle. Closing this needs four
+   `apps/web/public/product-images/` and served in a built bundle. Closing this needs four
    more masters, not code.
 2. **The OAuth redirect allow-list does not match any real origin.**
    `supabase/config.toml` lists `https://127.0.0.1:3000`; the app sends

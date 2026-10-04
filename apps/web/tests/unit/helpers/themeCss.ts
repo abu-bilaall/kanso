@@ -1,7 +1,7 @@
 /**
  * Compile the application's real stylesheet and measure what a class name does.
  *
- * `src/styles/index.css` and everything it imports, run through the Tailwind
+ * `apps/web/src/styles/index.css` and everything it imports, run through the Tailwind
  * engine, is the only honest source for "what does `gap-k-md` render at". A
  * test that reads `tokens.css` and asserts the token is declared proves the
  * token exists; it does not prove the class resolves, and it cannot see a class
@@ -40,7 +40,7 @@ const UNITS_IN_PX: Record<string, number> = { px: 1, rem: 16 };
 export async function compileTheme(candidates: readonly string[]): Promise<ThemeCss> {
   // The real entry stylesheet, minus the @fontsource imports. Those ship woff2
   // files and have nothing to say about which utilities exist.
-  const entry = readFileSync(join(ROOT, 'src/styles/index.css'), 'utf8')
+  const entry = readFileSync(join(ROOT, 'apps/web/src/styles/index.css'), 'utf8')
     .split('\n')
     .filter((line) => !line.startsWith('@import "@fontsource'))
     .join('\n');
@@ -52,7 +52,7 @@ export async function compileTheme(candidates: readonly string[]): Promise<Theme
   });
 
   const compiler = await compile(entry, {
-    base: join(ROOT, 'src/styles'),
+    base: join(ROOT, 'apps/web/src/styles'),
     loadStylesheet: async (id, base) =>
       id === 'tailwindcss' || id.startsWith('tailwindcss/')
         ? readCss(

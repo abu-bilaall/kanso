@@ -21,7 +21,7 @@ import { Scanner } from '@tailwindcss/oxide';
 import { compile } from 'tailwindcss';
 
 const root = process.cwd();
-const srcDir = path.join(root, 'src');
+const srcDir = path.join(root, 'apps/web/src');
 const stylesDir = path.join(srcDir, 'styles');
 
 /** Strips comments: prose is not a class name, and Tailwind scans it anyway. */
@@ -211,7 +211,9 @@ const dead = candidates.filter((name) => {
   return !needle.test(built);
 });
 
-console.log(`class names used in src/: ${classNames.size}   compiled css: ${built.length} bytes`);
+console.log(
+  `class names used in apps/web/src/: ${classNames.size}   compiled css: ${built.length} bytes`,
+);
 console.log(`\nDEAD — used as a class, generates nothing (${dead.length}):`);
 for (const name of dead.sort()) console.log(`  ${name}`);
 

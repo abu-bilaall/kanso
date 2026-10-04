@@ -24,11 +24,11 @@ their own reasoning; this is the answer.
 | 2 | `carts` / `orders` `Relationships` | **Left as written, with one correction.** `Relationships: [UserFk]` stays: it is inert and harmless. But `UserFk` named the constraint `profiles_id_fkey` for two tables that do not have it, so the type is now `UserFk<'carts_user_id_fkey'>` / `UserFk<'orders_user_id_fkey'>` — a widening, so nothing that compiled before stops compiling, and the file no longer states a constraint name that is not in the database. |
 | 3 | `Insert` marks nullable columns optional | **Left as written.** The hand-written shape is stricter than the generator's, and the difference only ever widens the database relative to the contract. Changing it would touch five agents' insert calls for no behavioural gain. |
 | 4 | Extra `graphql_public` schema key | **Left as written.** Cosmetic, and only appears if the file is regenerated wholesale. |
-| 5 | `eval "$(supabase status -o env)"` does not export | **Applied, and then some.** `npm run test:func` now runs `scripts/functional-env.mjs`, which takes the values from the environment when they are there (the CI path), otherwise parses `supabase status -o env` itself, and refuses to start if the stack is not answering. `tests/setup/functional.ts` **throws** instead of skipping, so there is no longer a code path that reports success without asserting anything. `tests/unit/functional-suite-guard.test.ts` pins both halves, including a subprocess run that must exit non-zero. |
+| 5 | `eval "$(supabase status -o env)"` does not export | **Applied, and then some.** `npm run test:func` now runs `scripts/functional-env.mjs`, which takes the values from the environment when they are there (the CI path), otherwise parses `supabase status -o env` itself, and refuses to start if the stack is not answering. `tests/setup/functional.ts` **throws** instead of skipping, so there is no longer a code path that reports success without asserting anything. `apps/web/tests/unit/functional-suite-guard.test.ts` pins both halves, including a subprocess run that must exit non-zero. |
 | 6 | `products.image_path` is null in the seed | **Not actioned — blocked on the media agent, deliberately.** No product images exist yet, so there is no Storage object to point at. The storefront renders from the committed `product-images/manifest.json`, which §6 itself records, so the column being null breaks nothing today. It becomes a one-line `update` in `supabase/seed.sql` when the media agent names the paths; the convention to follow is in §6. |
 | 7 | `create_order_atomic` | **Landed** as `supabase/migrations/20261002090500_create_order_atomic.sql`, after `decrement_inventory` which it calls. `revoke execute … from public, anon, authenticated` and `grant … to service_role` are in the migration, not applied by hand. The one deviation from the SQL in §7: `set search_path = ''` rather than `public`, matching the other migrations. Every table and function the body touches is schema-qualified, so nothing resolves differently. `tests/functional/db/order-commit.test.ts` proves a signed-in browser gets `42501` while the service role still commits, and that a `PGRST202` (function deleted) would fail the test too. |
 | 8 | `allowImportingTsExtensions` | **Applied** in `tsconfig.app.json`, together with the change it makes unnecessary: `supabase/functions/**` now imports its own modules with `.ts` specifiers, and the ten `supabase/functions/_shared/*.js` resolver bridges are deleted. `deno check create-order/index.ts` is clean. |
-| 9 | Export `createLogger` from `src/lib/logger.ts` | **Applied.** `createLogger` and `LogSink` are exported, `import.meta.env` is read through a widened cast, and `./errors` is imported as `./errors.ts` so the module loads under Deno. `supabase/functions/_shared/logger.ts` is now a re-export plus the edge environment context. |
+| 9 | Export `createLogger` from `apps/web/src/lib/logger.ts` | **Applied.** `createLogger` and `LogSink` are exported, `import.meta.env` is read through a widened cast, and `./errors` is imported as `./errors.ts` so the module loads under Deno. `supabase/functions/_shared/logger.ts` is now a re-export plus the edge environment context. |
 
 Merging the two loggers surfaced a real defect in the browser copy: its level
 gate was `if (level === 'info' && logLevel === 'error') return`, so the default
@@ -48,7 +48,7 @@ both found downstream and both fixed at the source. Neither needed a change to
 | # | Request | Resolution |
 | --- | --- | --- |
 | 10 | `--spacing-md` / `-lg` / `-xl` are never generated | **Applied.** Three lines added to `@theme inline` beside the `--spacing-xs` / `--spacing-sm` entries already there, each pointing at the primitive that was always declared: `--spacing-md: var(--k-space-md)`, `-lg`, `-xl`. The scale is extended, not replaced — `gap-lg` and `gap-6` are the same 24px. The three `flex flex-col gap-6` wrappers A5 put on the cart, checkout and confirmation pages existed only to stand in for the missing `gap-lg`; all three, and their comments, are gone. |
-| 11 | `useCart` is per-call-site, so the badge never clears | **Applied.** Cart state now lives in one external store, `src/hooks/internal/cartStore.ts`, and every `useCart()` call site subscribes to it. `useCart`'s public API and return shape are unchanged, `docs/CONTRACTS.md` § *Hooks* is untouched, and no new provider has to be mounted. Concurrent consumers share one request; a mutation in any of them republishes to all of them. |
+| 11 | `useCart` is per-call-site, so the badge never clears | **Applied.** Cart state now lives in one external store, `apps/web/src/hooks/internal/cartStore.ts`, and every `useCart()` call site subscribes to it. `useCart`'s public API and return shape are unchanged, `docs/CONTRACTS.md` § *Hooks* is untouched, and no new provider has to be mounted. Concurrent consumers share one request; a mutation in any of them republishes to all of them. |
 
 **Two more dead class names, found by the same sweep and fixed the same way.**
 
@@ -63,9 +63,9 @@ both found downstream and both fixed at the source. Neither needed a change to
   Stitch token name — Kanso calls that colour `surface-high`.
 
 **And a guard, so this cannot come back silently.** `npm run check:classes`
-compiles the real stylesheet and reports every class name `src/` uses for which
+compiles the real stylesheet and reports every class name `apps/web/src/` uses for which
 Tailwind emits nothing. It found 10 before the fix and 0 after.
-`tests/unit/styles/designTokens.test.ts` pins the same ground at unit level;
+`apps/web/tests/unit/styles/designTokens.test.ts` pins the same ground at unit level;
 all five of its tests fail against the pre-fix `tokens.css`.
 
 **Not actioned at the time of this pass.** A5's other two requests were left open
@@ -89,8 +89,8 @@ against files the requester could not edit.
 
 | § | Request | Status |
 | --- | --- | --- |
-| 10 | `max-w-<name>` resolves against `--spacing-<name>`, shadowing the container scale | **Applied.** The Kanso spacing scale is now namespaced — `--spacing-k-xs` … `--spacing-k-xl`, `--spacing-k-gutter`, `--spacing-k-gutter-desktop`, `--spacing-k-rail` — so it leaves the namespace Tailwind looks up `--container-<name>` in, and `max-w-sm` is 24rem again. The alternative A6 offered (restate `--container-*` in the theme) would have been a smaller diff and would have left the same collision waiting for the next scale entry. `tests/unit/styles/containerWidths.test.ts` compiles the real stylesheet and pins the five named widths; `designTokens.test.ts` measures the renamed scale. A6's two `max-w-[24rem]` workarounds are gone. |
-| 13 | `scripts/upload-images.ts` is outside every typecheck | **Applied.** `tsconfig.node.json` now includes `scripts`, and the Node types it needs come from `types/node-shim.d.ts` — the same trick `tests/types/node-shim.d.ts` used, consolidated into one file so the tests and the script share a single Node type surface. No `@types/node`, which the browser app and the Deno Edge Functions have no use for. `npm run typecheck` now sees a deploy step that writes to production Storage. |
+| 10 | `max-w-<name>` resolves against `--spacing-<name>`, shadowing the container scale | **Applied.** The Kanso spacing scale is now namespaced — `--spacing-k-xs` … `--spacing-k-xl`, `--spacing-k-gutter`, `--spacing-k-gutter-desktop`, `--spacing-k-rail` — so it leaves the namespace Tailwind looks up `--container-<name>` in, and `max-w-sm` is 24rem again. The alternative A6 offered (restate `--container-*` in the theme) would have been a smaller diff and would have left the same collision waiting for the next scale entry. `apps/web/tests/unit/styles/containerWidths.test.ts` compiles the real stylesheet and pins the five named widths; `designTokens.test.ts` measures the renamed scale. A6's two `max-w-[24rem]` workarounds are gone. |
+| 13 | `scripts/upload-images.ts` is outside every typecheck | **Applied.** `tsconfig.node.json` now includes `scripts`, and the Node types it needs come from `apps/web/types/node-shim.d.ts` — the same trick `tests/types/node-shim.d.ts` used, consolidated into one file so the tests and the script share a single Node type surface. No `@types/node`, which the browser app and the Deno Edge Functions have no use for. `npm run typecheck` now sees a deploy step that writes to production Storage. |
 
 ## Still open
 
@@ -105,7 +105,7 @@ which the project does not typecheck, and no request has asked it to.
 `supabase/seed.sql`, `docs/DATA-MODEL.md`, `tests/functional/db/**` on
 `feat/data-layer`.
 
-**Rule followed:** `src/lib/supabase.types.ts` was not edited. The migrations
+**Rule followed:** `apps/web/src/lib/supabase.types.ts` was not edited. The migrations
 were changed until the generated types matched it. Five differences remain that
 no migration can remove; they are listed below in the order they matter.
 
@@ -148,7 +148,7 @@ in the database, and only A1 writes SQL. The function is
 `SECURITY DEFINER` with `execute` revoked from `anon` and `authenticated`, so a
 browser cannot decrement stock.
 
-**The exact change** to `src/lib/supabase.types.ts`, replacing
+**The exact change** to `apps/web/src/lib/supabase.types.ts`, replacing
 `Functions: Record<never, never>`:
 
 ```diff
@@ -556,7 +556,7 @@ either side breaks checkout at integration time, not at build time:
 | --- | --- |
 | RPC name | `create_order_atomic` |
 | Arguments | `p_user_id: uuid`, `p_cart_id: uuid`, `p_shipping: jsonb` |
-| `p_shipping` keys | `fullName`, `email`, `phone`, `addressLine1`, `addressLine2` (may be absent or `""`), `city`, `state`, `country` — camelCase, the wire names from `src/schemas/checkout.ts` |
+| `p_shipping` keys | `fullName`, `email`, `phone`, `addressLine1`, `addressLine2` (may be absent or `""`), `city`, `state`, `country` — camelCase, the wire names from `apps/web/src/schemas/checkout.ts` |
 | Success | `{ "ok": true, "order": { …orders row… }, "items": [ { product_id, product_name, quantity, unit_price_kobo } ] }` |
 | Rejection | `{ "ok": false, "code": "insufficient_inventory" \| "cart_not_active" \| "cart_empty" \| "invalid_quantity", …facts }` |
 | Raised fault | `errcode = 'P0001'` with message `inventory_race …` or `reference_collision …` |
@@ -612,7 +612,7 @@ stock that no longer exists.
 the shared local stack and removed again afterwards. Four real orders went
 through the served function over HTTP with a real Supabase session, and one
 real confirmation was delivered to Mailpit. Nothing about the schema had to
-change: every column the function reads matches `src/lib/supabase.types.ts`
+change: every column the function reads matches `apps/web/src/lib/supabase.types.ts`
 exactly. Two things I learned that are worth passing on:
 
 - **`orders.reference` already has a default.** A1 defines it as
@@ -646,7 +646,7 @@ extension on relative imports, so the Edge Function writes
 `import { createOrderPayloadSchema } from '../../../src/schemas/checkout.ts'`.
 TypeScript rejects a `.ts` extension unless `allowImportingTsExtensions` is on.
 `noEmit` is already set, which is the only other precondition. The same friction
-is why `src/lib/errors.ts` and `src/lib/money.ts` are restated inside the
+is why `apps/web/src/lib/errors.ts` and `apps/web/src/lib/money.ts` are restated inside the
 function rather than imported: with the flag on, both would import directly and
 those copies would go.
 
@@ -658,12 +658,12 @@ and be unit-tested under Vitest.
 **Cheaper alternative, if Foundation would rather not.** Nothing. I worked around
 it with `.js` specifiers inside `supabase/functions/**` (which Deno resolves to
 the `.ts` source and which TypeScript's bundler resolution also accepts), so
-only the single import that crosses from `supabase/functions/` into `src/`
+only the single import that crosses from `supabase/functions/` into `apps/web/src/`
 needs the flag. The workarounds are documented in place.
 
 ---
 
-## 9. `createLogger` exported from `src/lib/logger.ts`
+## 9. `createLogger` exported from `apps/web/src/lib/logger.ts`
 
 **Raised by:** A2 · **For:** Foundation
 
@@ -710,7 +710,7 @@ pointing here. If this is applied, that file collapses to an import.
 **What I am building.** The Google sign-in surface and the OAuth callback's
 recovery actions. Both want a control column narrower than the page.
 
-**The exact change.** One of the following in `src/styles/tokens.css`:
+**The exact change.** One of the following in `apps/web/src/styles/tokens.css`:
 
 ```diff
    @theme inline {
@@ -746,7 +746,7 @@ This is not the missing-spacing-scale defect that integration-2 closed —
 The size names are shadowed instead, and they were shadowed before that pass too.
 
 `npm run check:classes` cannot see it: `max-w-sm` *does* generate a rule, just
-with the wrong value. Neither can `tests/unit/styles/designTokens.test.ts`, which
+with the wrong value. Neither can `apps/web/tests/unit/styles/designTokens.test.ts`, which
 reads the tokens rather than the compiled widths.
 
 **Who else depends on it.** Anything that writes `max-w-<name>` rather than
@@ -803,7 +803,7 @@ the rename safe.
 The catalogue hero line — `<p className="max-w-xl text-body-lg">` — measured
 40px wide in the browser before and 576px after, which is the squashed panel in
 A8's screenshot. A6's two `max-w-[24rem]` workarounds are now `max-w-sm`.
-`tests/unit/styles/containerWidths.test.ts` fails if any of it regresses,
+`apps/web/tests/unit/styles/containerWidths.test.ts` fails if any of it regresses,
 including if someone adds an un-namespaced `--spacing-*` back.
 
 ---
@@ -813,7 +813,7 @@ including if someone adds an un-namespaced `--spacing-*` back.
 **Who asked:** A5, in [`CART-CHECKOUT.md`](./CART-CHECKOUT.md) § 2. Open on
 `main`.
 
-**What was built.** `readDestination` in `src/features/auth/destination.ts` is the
+**What was built.** `readDestination` in `apps/web/src/features/auth/destination.ts` is the
 reader A5's request asked for, in A5's order of preference:
 
 1. `?returnTo=` from `location.search`, through `isSafeReturnTo`.
@@ -833,14 +833,14 @@ account page's sign-in and checkout's sign-in behave identically.
 `callbackMachine.parseAuthResponse` treats `returnTo` as a known parameter, so a
 callback URL carrying one is not reported as `unexpected_parameter`.
 
-Covered by `tests/unit/auth/authCallbackPage.test.tsx`: the parameter, the
+Covered by `apps/web/tests/unit/auth/authCallbackPage.test.tsx`: the parameter, the
 stored marker, the parameter winning over the marker, the marker being cleared,
 `//evil.example` refused, an off-origin URL refused, and the retry writing the
 destination back out.
 
-**A6's other note, for whoever reviews this.** `src/features/auth/destination.ts`
+**A6's other note, for whoever reviews this.** `apps/web/src/features/auth/destination.ts`
 reads `ROUTE_PATHS.account` **inside** the function rather than at module scope.
-`src/routes.ts` imports every page module and those import the components that
+`apps/web/src/routes.ts` imports every page module and those import the components that
 import this one, so a module-scope read evaluates while the cycle is still open
 and yields `undefined` — a `TypeError` in every suite that imports a page. Worth
 knowing before anyone adds another `ROUTE_PATHS` read at module scope.
@@ -887,7 +887,7 @@ per frame (`-2` at 640w) would technically fit the schema, but then `src` is
 outcome than no gallery.
 
 **Who else depends on it.** `getImageUrls` is called by `ProductCard`,
-`CartLine`, `HomePage` and `ProductPage`, plus `tests/unit/images.test.tsx`.
+`CartLine`, `HomePage` and `ProductPage`, plus `apps/web/tests/unit/images.test.tsx`.
 Adding an optional third parameter is source-compatible for all of them, but it
 does touch the module every renderer imports first.
 
@@ -939,7 +939,7 @@ that possible is a hand-written ambient declaration rather than `@types/node`.
 + "include": ["vite.config.ts", "vitest.config.ts", "scripts", "types"]
 ```
 
-`types/node-shim.d.ts` declares `process`, `Buffer`, `node:child_process`,
+`apps/web/types/node-shim.d.ts` declares `process`, `Buffer`, `node:child_process`,
 `node:fs`, `node:fs/promises`, `node:path`, `node:url` and `node:util` — the
 whole surface this repository uses, and nothing more. It **replaces**
 `tests/types/node-shim.d.ts` rather than sitting beside it: two shims would be
@@ -980,7 +980,7 @@ with
 and say in the prose that `webp` and `jpeg` hold the **public Storage URL** of
 the object, written by `scripts/upload-images.ts` from the URL the bucket
 returns. The same line appears in the `ProductImageVariant` TypeScript block
-("`webp: string; // repo-relative`") and in `src/lib/images.ts`'s JSDoc.
+("`webp: string; // repo-relative`") and in `apps/web/src/lib/images.ts`'s JSDoc.
 
 **Why the existing surface cannot do it.** I wrote repo-relative paths first,
 because the document said to. They fail twice:
@@ -1005,7 +1005,7 @@ not to the schema.
 
 **What I shipped.** Root-absolute Storage URLs, derived from the bucket's own
 public configuration and byte-verified after upload. The committed derivatives
-stay on disk under `public/product-images/` and their repo-relative paths are
+stay on disk under `apps/web/public/product-images/` and their repo-relative paths are
 tabulated in `docs/IMAGES.md`, so the committed files remain auditable.
 
 **One consequence Foundation should decide about.** The manifest's URLs are

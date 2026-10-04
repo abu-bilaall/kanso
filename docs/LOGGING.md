@@ -90,7 +90,7 @@ Always attach, where they apply: `itemCount`, `subtotalKobo`, `totalKobo`,
 
 ### 6. Environment context is attached once, centrally
 
-`src/lib/logger.ts` injects `app`, `runtime`, `env`, `release`, `userAgent` and
+`apps/web/src/lib/logger.ts` injects `app`, `runtime`, `env`, `release`, `userAgent` and
 `timestamp` into every line. **No call site ever adds them.** If you find yourself
 writing `environment: 'production'` somewhere, stop.
 

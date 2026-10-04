@@ -47,12 +47,13 @@ Foundation owns, and only Foundation edits:
 
 ```
 package.json          package-lock.json      tsconfig*.json
-biome.json            vite.config.ts        vitest.config.ts
+biome.json                                    vitest.config.ts
 supabase/config.toml  .env.example         .gitignore
-types/node-shim.d.ts                        the Node types tests and scripts need
-src/routes.ts         src/styles/**        src/lib/**
-src/hooks/**          src/components/**     src/schemas/**
-src/pages/not-found/**                      the catch-all page
+apps/web/tsconfig*.json                       apps/web/vite.config.ts
+apps/web/types/node-shim.d.ts                 the Node types tests and scripts need
+apps/web/src/routes.ts   apps/web/src/styles/**   apps/web/src/lib/**
+apps/web/src/hooks/**    apps/web/src/components/**  apps/web/src/schemas/**
+apps/web/src/pages/not-found/**               the catch-all page
 docs/CONTRACTS.md     docs/LOGGING.md       docs/CONTRACT-REQUESTS.md
 product-images/manifest.json   (the media agent fills it; nobody changes its shape)
 ```
@@ -84,8 +85,8 @@ unblock yourself" — that is how two agents end up with two `Button` components
 > routes rendered a **placeholder**: a module that says so, rather than a
 > half-finished page. Every page replaced its own, and at the integration-3 pass
 > the last importer went with it — the `*` route renders
-> `src/pages/not-found/NotFoundPage.tsx`, a real page, and
-> `src/pages/_placeholder/Placeholder.tsx` is deleted. The list below is the
+> `apps/web/src/pages/not-found/NotFoundPage.tsx`, a real page, and
+> `apps/web/src/pages/_placeholder/Placeholder.tsx` is deleted. The list below is the
 > original Phase 1 state, not today's.
 >
 > **Why the last one had to go rather than be kept for the catch-all.** The
@@ -120,7 +121,7 @@ mistakes one for the shop.
 
 ## Design tokens
 
-`src/styles/tokens.css`. Two layers, and the distinction matters:
+`apps/web/src/styles/tokens.css`. Two layers, and the distinction matters:
 
 | Layer | Where | Who touches it |
 | --- | --- | --- |
@@ -143,7 +144,7 @@ entries are `--spacing-k-xs` … `--spacing-k-xl`, `--spacing-k-gutter`,
 captures `max-w-sm` and renders it at 8px instead of 24rem. A class name that
 means something other than what it says is the worst kind of bug, and it is
 invisible to `npm run check:classes`, which only asks whether a class generates
-a rule. `tests/unit/styles/containerWidths.test.ts` compiles the real stylesheet
+a rule. `apps/web/tests/unit/styles/containerWidths.test.ts` compiles the real stylesheet
 and pins the named widths.
 
 ### Colours
@@ -208,7 +209,7 @@ transition and animation collapses. Do not re-enable motion in a component.
 
 ## Component vocabulary
 
-`src/components/ui` — DESIGN.md's list and nothing more. Import from
+`apps/web/src/components/ui` — DESIGN.md's list and nothing more. Import from
 `@/components/ui`.
 
 | Component | Notes |
@@ -224,11 +225,11 @@ transition and animation collapses. Do not re-enable motion in a component.
 | `Skeleton` | `aria-hidden` by default; the owning region carries the label |
 | `Alert` | inline non-blocking message. `tone`: `info`/`success`/`warning`/`danger`. `role="alert"` for danger and warning |
 
-Icons: `src/components/icons.tsx` — twelve outline SVGs on one grid. No icon
+Icons: `apps/web/src/components/icons.tsx` — twelve outline SVGs on one grid. No icon
 package is a dependency; **add to that file rather than importing another family.**
 
 Product imagery is separate, because it is a different kind of component: one
-product, one component. `src/components/media/ProductImage.tsx` renders every
+product, one component. `apps/web/src/components/media/ProductImage.tsx` renders every
 photo in the app — see [Product images](#product-images).
 
 Adding a tenth-and-a-half primitive is a contract change. Two agents with two
@@ -236,7 +237,7 @@ variants of `Button` is how a shop stops looking like one shop.
 
 ## Page shell and the responsive switch
 
-`src/components/layout`:
+`apps/web/src/components/layout`:
 
 | Component | Visibility |
 | --- | --- |
@@ -279,19 +280,19 @@ the shell is missing something, that is a `CONTRACT-REQUESTS.md` entry.
 
 ## Routes
 
-`src/routes.ts` is frozen. Import `routes`, or the `ROUTE_PATHS` helpers.
+`apps/web/src/routes.ts` is frozen. Import `routes`, or the `ROUTE_PATHS` helpers.
 
 | Path | Module | Agent |
 | --- | --- | --- |
-| `/` | `src/pages/home/HomePage` | A4 |
-| `/shop` · `/shop?category=` | `src/pages/catalog/CatalogPage` | A4 |
-| `/product/:slug` | `src/pages/product/ProductPage` | A4 |
-| `/cart` | `src/pages/cart/CartPage` | A5 |
-| `/checkout` | `src/pages/checkout/CheckoutPage` | A5 |
-| `/order/:id` | `src/pages/order-confirmation/OrderConfirmationPage` | A5 |
-| `/account` | `src/pages/account/AccountPage` | A6 |
-| `/auth/callback` | `src/pages/auth/AuthCallbackPage` | A6 |
-| `*` | `src/pages/not-found/NotFoundPage` | Foundation |
+| `/` | `apps/web/src/pages/home/HomePage` | A4 |
+| `/shop` · `/shop?category=` | `apps/web/src/pages/catalog/CatalogPage` | A4 |
+| `/product/:slug` | `apps/web/src/pages/product/ProductPage` | A4 |
+| `/cart` | `apps/web/src/pages/cart/CartPage` | A5 |
+| `/checkout` | `apps/web/src/pages/checkout/CheckoutPage` | A5 |
+| `/order/:id` | `apps/web/src/pages/order-confirmation/OrderConfirmationPage` | A5 |
+| `/account` | `apps/web/src/pages/account/AccountPage` | A6 |
+| `/auth/callback` | `apps/web/src/pages/auth/AuthCallbackPage` | A6 |
+| `*` | `apps/web/src/pages/not-found/NotFoundPage` | Foundation |
 
 Two decisions that will bite if you miss them:
 
@@ -337,7 +338,7 @@ failure.
 ### `useAuth()`
 
 The single source of truth for the session. Mount `<AuthProvider>` once — it is
-already in `src/main.tsx`. Every other hook reads from it rather than touching
+already in `apps/web/src/main.tsx`. Every other hook reads from it rather than touching
 `supabase.auth`.
 
 ```ts
@@ -489,7 +490,7 @@ there is no N+1.
 
 ## Money
 
-`src/lib/money.ts`. **Integer kobo everywhere.** 1 naira = 100 kobo. No floats
+`apps/web/src/lib/money.ts`. **Integer kobo everywhere.** 1 naira = 100 kobo. No floats
 in application code — not `price * 0.9`, not a `reduce` that can drift.
 
 ```ts
@@ -522,7 +523,7 @@ authoritative total server-side; your subtotal is a courtesy.
 
 ## Errors
 
-`src/lib/errors.ts`. Every error crossing a service boundary is normalised to
+`apps/web/src/lib/errors.ts`. Every error crossing a service boundary is normalised to
 `AppError`, so UI code decides on `error.code` and never string-matches a
 message.
 
@@ -648,7 +649,7 @@ The client is created **lazily**. Importing the module never throws for a
 *missing* configuration, only for a *forbidden* one — so the shell renders and
 each hook reports a clean error state.
 
-`src/lib/supabase.types.ts` is hand-written from SPEC.md. The data agent
+`apps/web/src/lib/supabase.types.ts` is hand-written from SPEC.md. The data agent
 regenerates it with `supabase gen types typescript --local`. **If that changes
 anything, that is a contract change** → `CONTRACT-REQUESTS.md`, not a silent
 patch. Domain aliases (`Product`, `Cart`, `Order`, …) live at the bottom of the
@@ -657,7 +658,7 @@ file; import those, not the `*Row` names.
 ## Product images
 
 **Three agents render product photography and none of them should be inventing
-how.** `src/lib/images.ts` and `src/components/media/ProductImage.tsx` are
+how.** `apps/web/src/lib/images.ts` and `apps/web/src/components/media/ProductImage.tsx` are
 frozen contract surface. The media agent owns `product-images/**` (except the
 manifest *shape*), `scripts/**`, and `docs/IMAGES.md`.
 
@@ -665,8 +666,8 @@ manifest *shape*), `scripts/**`, and `docs/IMAGES.md`.
 
 | Path | Owner |
 | --- | --- |
-| `src/lib/images.ts` | **frozen.** Nobody edits. |
-| `src/components/media/ProductImage.tsx` | **frozen.** Nobody edits. |
+| `apps/web/src/lib/images.ts` | **frozen.** Nobody edits. |
+| `apps/web/src/components/media/ProductImage.tsx` | **frozen.** Nobody edits. |
 | `product-images/manifest.json` — the **shape** | **frozen.** This section is the schema. |
 | `product-images/manifest.json` — the **contents** | the media agent fills it |
 | `product-images/**` (derivatives) | the media agent generates them |
@@ -769,7 +770,7 @@ the work rather than ship broken images.
 In practice it stops two things, both automatic:
 
 - **`npm run ci:check` fails**, which is what PLAN §7's CI job runs.
-   `tests/unit/images.test.ts` validates the committed file, so a bad manifest is
+   `apps/web/tests/unit/images.test.ts` validates the committed file, so a bad manifest is
    a red build before it can be merged.
 - **The app fails loudly at import** rather than rendering broken photographs.
 

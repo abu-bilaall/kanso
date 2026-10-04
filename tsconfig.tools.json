@@ -1,0 +1,20 @@
+{
+  /* The Node-side tooling that stays at the repository root: the Vitest config
+     that spans both trees, the image pipeline scripts, and the functional suite.
+
+     Before the web app moved into `apps/web`, `tsconfig.node.json` covered all
+     three alongside `vite.config.ts`. That config moved with the app, so this
+     project keeps the same files inside a typecheck rather than letting them
+     drop out of `tsc -b` silently. The options are inherited unchanged; only
+     the buildinfo path and the `@/` alias are set here, because the alias now
+     points into the app. */
+  "extends": "./apps/web/tsconfig.node.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tools.tsbuildinfo",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./apps/web/src/*"]
+    }
+  },
+  "include": ["vitest.config.ts", "scripts", "tests/functional", "tests/setup", "apps/web/types"]
+}

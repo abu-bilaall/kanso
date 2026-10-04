@@ -85,7 +85,7 @@ Each is an OAuth *provider*. The redirect URLs, scopes and consent screens diffe
 dance is identical.
 
 **Kanso's code.** One call starts it, and it's worth reading closely —
-`src/hooks/useAuth.tsx` around line 194:
+`apps/web/src/hooks/useAuth.tsx` around line 194:
 
 ```ts
 await client.auth.signInWithOAuth({
@@ -121,7 +121,7 @@ one Google has been told about in the console. That single config step is where 
   exchanges it. A random `code_verifier` proves that whoever received the code is the
   same party that started the flow, so a stolen code is useless.
 
-Kanso uses PKCE: `src/lib/supabase.ts` sets `flowType: 'pkce'`.
+Kanso uses PKCE: `apps/web/src/lib/supabase.ts` sets `flowType: 'pkce'`.
 
 ### The `state` parameter
 
@@ -324,10 +324,10 @@ is a backend-as-a-service."
 |---|---|---|
 | Postgres | The database — real SQL, real transactions | `supabase/migrations/` |
 | **Row Level Security** | Authorization *inside* the database | `supabase/migrations/20261002090100_row_level_security.sql` |
-| Auth | Identity, sessions, OAuth glue | `src/hooks/useAuth.tsx` |
+| Auth | Identity, sessions, OAuth glue | `apps/web/src/hooks/useAuth.tsx` |
 | Storage | File storage with access control | `scripts/upload-images.ts` |
 | Edge Functions | TypeScript backend, one request each | `supabase/functions/create-order/` |
-| PostgREST | Turns SQL tables into REST endpoints, for free | What `src/lib/supabase.ts` talks to |
+| PostgREST | Turns SQL tables into REST endpoints, for free | What `apps/web/src/lib/supabase.ts` talks to |
 
 ### The integration detail worth stealing
 
@@ -346,7 +346,7 @@ Two more integration details:
   it exists. No API layer to write. It also means schema changes *are* API changes —
   a real trade-off.
 - **The edge function and the frontend share the contract in TypeScript.** The same Zod
-  schema validates checkout in both (`src/schemas/checkout.ts`, referenced by the
+  schema validates checkout in both (`apps/web/src/schemas/checkout.ts`, referenced by the
   function). One rule, two places, can't drift.
 
 ### What we'd have had to build or glue otherwise
@@ -381,7 +381,7 @@ Every one of these happened on this project. This section is the most useful par
 **What happened.** Pressing "Place Order" showed `TypeError: Failed to fetch`.
 
 **Why.** The browser blocked the request before it left the page. Our Supabase client
-sets an `x-application-name` header on everything (see `src/lib/supabase.ts`), the browser
+sets an `x-application-name` header on everything (see `apps/web/src/lib/supabase.ts`), the browser
 sent a CORS preflight, and our Edge Function's allowed-header list didn't include it. The
 preflight failed; the POST never happened.
 
@@ -436,7 +436,7 @@ elsewhere.
 **Fix.** A single external store read through `useSyncExternalStore`, so every consumer
 shares one value and one in-flight request — while the public API stayed byte-for-byte
 identical, because four agents were coding against it in parallel.
-→ `src/hooks/internal/cartStore.ts`
+→ `apps/web/src/hooks/internal/cartStore.ts`
 
 **Lesson.** Module-level state inside a hook means *one copy per caller*. If a component
 should reflect shared state, the state must live outside the component. Also: **a contract
@@ -451,7 +451,7 @@ Netlify publishes only `dist/`, and a relative path resolves against the *curren
 
 **Fix.** Absolute Storage URLs in the manifest, satisfying SPEC's "product images load
 from Storage".
-→ `src/lib/images.ts`, `scripts/upload-images.ts`
+→ `apps/web/src/lib/images.ts`, `scripts/upload-images.ts`
 
 **Lesson.** Relative URLs survive nowhere near as long as they appear to. Vite transforms
 *modules*, not strings inside data files.
@@ -537,14 +537,14 @@ the part no document can give you.
 |---|---|
 | The database | `supabase/migrations/20261002090000_core_schema.sql`, then `..._row_level_security.sql` |
 | The atomic order | `supabase/migrations/20261002090500_create_order_atomic.sql` |
-| OAuth start | `src/hooks/useAuth.tsx` (~line 194) |
-| OAuth return | `src/features/auth/callbackMachine.ts`, `src/pages/auth/AuthCallbackPage.tsx` |
+| OAuth start | `apps/web/src/hooks/useAuth.tsx` (~line 194) |
+| OAuth return | `apps/web/src/features/auth/callbackMachine.ts`, `apps/web/src/pages/auth/AuthCallbackPage.tsx` |
 | The serverless function | `supabase/functions/create-order/index.ts` |
 | Order logic + email | `supabase/functions/_shared/create-order.ts`, `_shared/mailgun.ts` |
 | The CORS bug | `supabase/functions/_shared/http.ts` |
 | RLS proving itself | `tests/functional/db/rls.test.ts` |
 | Inventory race | `tests/functional/db/inventory.test.ts` |
-| Honest failure wording | `src/features/checkout/emailNotice.ts` |
-| Money as integers | `src/lib/money.ts` |
+| Honest failure wording | `apps/web/src/features/checkout/emailNotice.ts` |
+| Money as integers | `apps/web/src/lib/money.ts` |
 | The quiet CI bug | `scripts/functional-env.mjs` |
 | Every agent's open questions | `docs/CONTRACT-REQUESTS.md` |

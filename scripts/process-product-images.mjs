@@ -18,15 +18,15 @@
  *
  * The 1600w and 800w variants PLAN §4 once contemplated are cut: they double
  * the committed weight for bytes no surface in V1 requests. `srcSet` in
- * `src/lib/images.ts` reads whatever widths the manifest commits, so adding one
- * back later is a manifest edit plus a re-run, not a code change.
+ * `apps/web/src/lib/images.ts` reads whatever widths the manifest commits, so
+ * adding one back later is a manifest edit plus a re-run, not a code change.
  *
  * ## Where the files go
  *
- * `public/product-images/<category>/`. Vite copies `public/**` into `dist/` and
- * serves it at the site root, so these are committed, auditable, and readable
- * from the repository without a Storage round trip. The manifest points at
- * Storage; this is the local copy, not the one the browser loads.
+ * `apps/web/public/product-images/<category>/`. Vite copies the app's `public/**`
+ * into `dist/` and serves it at the site root, so these are committed, auditable,
+ * and readable from the repository without a Storage round trip. The manifest
+ * points at Storage; this is the local copy, not the one the browser loads.
  *
  * ## Re-cropping without refetching
  *
@@ -64,11 +64,11 @@ import { promisify } from 'node:util';
 const run = promisify(execFile);
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const PUBLIC = join(ROOT, 'public');
+const PUBLIC = join(ROOT, 'apps/web', 'public');
 const MASTERS = join(ROOT, 'product-images', '_masters');
 
 /**
- * Derivatives live under `public/`, not beside the manifest: Vite copies
+ * Derivatives live under the app's `public/`, not beside the manifest: Vite copies
  * `public/**` into `dist/` and serves it at the site root.
  */
 const DERIVATIVES = join(PUBLIC, 'product-images');

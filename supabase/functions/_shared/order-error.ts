@@ -174,7 +174,11 @@ function fromDatabaseError(error: DatabaseError, stage: string, context: string)
     });
   }
   if (status === 403) {
-    return new OrderError('forbidden', 'You do not have access to that.', { stage, details, cause: error });
+    return new OrderError('forbidden', 'You do not have access to that.', {
+      stage,
+      details,
+      cause: error,
+    });
   }
 
   return new OrderError('server', `${context}.`, {
