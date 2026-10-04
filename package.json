@@ -1,0 +1,36 @@
+{
+  "name": "kanso",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "npm run dev --workspace apps/web",
+    "build": "tsc -b && npm run build --workspace apps/web",
+    "preview": "npm run preview --workspace apps/web",
+    "typecheck": "tsc -b --pretty",
+    "check": "biome check .",
+    "check:fix": "biome check --write .",
+    "check:classes": "node scripts/audit-classes.mjs",
+    "ci:check": "npm run typecheck && npm run check && npm run test:unit",
+    "test": "vitest run",
+    "test:unit": "vitest run --project unit",
+    "test:func": "node scripts/functional-env.mjs",
+    "db:start": "supabase start",
+    "db:reset": "supabase db reset",
+    "db:stop": "supabase stop",
+    "db:status": "supabase status",
+    "db:functions": "supabase functions serve create-order --env-file supabase/.env.local"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.2.2",
+    "@vitejs/plugin-react": "^5.0.2",
+    "jsdom": "^27.0.0",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}
