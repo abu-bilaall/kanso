@@ -6,20 +6,23 @@
 # this file should ever become one — the Supabase publishable key is public by
 # design, and the service-role key is never reachable from a browser.
 #
-# `npm run build` runs `tsc -b && vite build`, so a type error fails the build
-# rather than shipping a broken bundle. Vite writes to `dist` inside the app.
+# `npm run build` is the repository root's script, which delegates to the app's
+# own `tsc -b && vite build`, so a type error still fails the build rather than
+# shipping a broken bundle. Vite writes to `apps/web/dist`.
 #
-# `base` is the app's directory in this repository. Netlify installs
-# dependencies and runs the build command from inside it, and resolves
-# `publish` against it, so `dist` below means `apps/web/dist`. npm walks up to
-# the workspace root from there, so the install still reads the committed
-# lockfile and the build command is the app's own script. Nothing else moves
-# with it — the rewrite rules are relative to the published site root.
+# There is deliberately no `base` directory. The repository root stays the
+# install root, which is the one arrangement already proven by the deploy that
+# serves use-kanso.netlify.app today: `npm ci` reads the committed root lockfile
+# and resolves the app's dependencies through the `apps/*` workspace. Setting a
+# base directory would move dependency installation into `apps/web`, where there
+# is no lockfile of its own — an arrangement that cannot be verified without a
+# real deploy, and an install failure is invisible until customers see it. Only
+# `publish` moves, because only the build output moved. The rewrite rules below
+# are relative to the published site root and are unaffected.
 
 [build]
-  base = "apps/web"
   command = "npm run build"
-  publish = "dist"
+  publish = "apps/web/dist"
 
 [build.environment]
   # Pinned so a Netlify image update cannot silently change the toolchain under
